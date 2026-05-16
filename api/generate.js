@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         'X-Title': 'Vakeel AI'
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'openrouter/auto',
         messages: [{ role: 'user', content: fullPrompt }],
         max_tokens: 1200,
         temperature: 0.4
