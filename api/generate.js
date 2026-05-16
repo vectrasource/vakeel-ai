@@ -5,23 +5,27 @@ export default async function handler(req, res) {
 
   try {
     const { fullPrompt } = req.body;
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
 
     if (!apiKey) {
-      return res.status(500).json({ error: { message: 'GEMINI_API_KEY not set in Vercel environment variables.' } });
+      return res.status(500).json({ error: { message: 'OPENROUTER_API_KEY not set in Vercel environment variables.' } });
     }
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: fullPrompt }] }],
-          generationConfig: { maxOutputTokens: 1200, temperature: 0.4 }
-        })
-      }
-    );
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://vakeel-ai.vercel.app',
+        'X-Title': 'Vakeel AI'
+      },
+      body: JSON.stringify({
+        model: 'meta-llama/llama-3.3-8b-instruct:free',
+        messages: [{ role: 'user', content: fullPrompt }],
+        max_tokens: 1200,
+        temperature: 0.4
+      })
+    });
 
     const data = await response.json();
 
@@ -29,7 +33,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: { message: data.error.message } });
     }
 
-    return res.status(200).json(data);
+    const text = data.choices?.[0]?.message?.content || 'No output received.';
+    return res.status(200).json({ text });
 
   } catch (err) {
     return res.status(500).json({ error: { message: err.message } });
