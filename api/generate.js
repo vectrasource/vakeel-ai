@@ -16,11 +16,11 @@ export default async function handler(req, res) {
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://vakeel-ai.vercel.app',
+        'HTTP-Referer': 'https://vakeel-ai-eta.vercel.app',
         'X-Title': 'Vakeel AI'
       },
       body: JSON.stringify({
-        model: 'meta-llama/llama-3.3-8b-instruct:free',
+        model: 'google/gemini-2.0-flash-exp:free',
         messages: [{ role: 'user', content: fullPrompt }],
         max_tokens: 1200,
         temperature: 0.4
