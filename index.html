@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vakeel AI — Legal Drafting for Kerala Advocates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --green-light: #E1F5EE;
+    --green-mid: #9FE1CB;
+    --ink: #1a2920;
+    --ink-mid: #3d4f47;
+    --ink-light: #7a8f86;
+    --border: rgba(30,80,60,0.15);
+    --surface: #f9fdf9;
+    --white: #ffffff;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(249,253,249,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--border);
+    padding: 0 2rem; height: 58px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; }
+  .nav-logo { width: 32px; height: 32px; background: var(--ink); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .nav-logo svg { width: 18px; height: 18px; fill: var(--green-mid); }
+  .nav-name { font-family: 'Lora', serif; font-size: 18px; font-weight: 600; color: var(--ink); }
+  .nav-name span { color: var(--green); }
+  .nav-badge { font-size: 11px; padding: 3px 8px; background: var(--green-light); color: var(--green-dark); border-radius: 20px; font-weight: 500; }
+  .hero { text-align: center; padding: 4rem 1.5rem 2rem; max-width: 680px; margin: 0 auto; }
+  .hero-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green-dark); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px; margin-bottom: 1.5rem; }
+  h1 { font-family: 'Lora', serif; font-size: clamp(28px, 5vw, 42px); font-weight: 600; line-height: 1.2; color: var(--ink); margin-bottom: 1rem; }
+  h1 em { color: var(--green); font-style: normal; }
+  .hero-sub { font-size: 16px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .app-container { max-width: 680px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+  .tool-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 1.25rem; }
+  @media (min-width: 480px) { .tool-tabs { grid-template-columns: repeat(4, 1fr); } }
+  .tab { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 10px; cursor: pointer; text-align: left; transition: border-color 0.15s, background 0.15s; }
+  .tab:hover { border-color: var(--green); }
+  .tab.active { border: 1.5px solid var(--green); background: var(--green-light); }
+  .tab-icon { font-size: 18px; margin-bottom: 6px; display: block; }
+  .tab-name { font-size: 12px; font-weight: 500; color: var(--ink); display: block; }
+  .tab-desc { font-size: 10px; color: var(--ink-light); display: block; margin-top: 1px; }
+  .form-card { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  label { display: block; font-size: 12px; color: var(--ink-light); font-weight: 500; margin-bottom: 5px; }
+  select, textarea { width: 100%; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 9px 12px; font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); outline: none; transition: border-color 0.15s; }
+  select:focus, textarea:focus { border-color: var(--green); }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+  .gen-btn { width: 100%; background: var(--green); color: white; border: none; border-radius: var(--radius); padding: 14px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .gen-btn:hover { background: var(--green-dark); }
+  .gen-btn:active { transform: scale(0.99); }
+  .gen-btn:disabled { background: #b0c8bf; cursor: not-allowed; }
+  .output-card { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-top: 1rem; }
+  .output-topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 1.5rem; border-bottom: 0.5px solid var(--border); background: var(--surface); }
+  .output-label { font-size: 12px; font-weight: 500; color: var(--ink-mid); }
+  .copy-btn { font-size: 12px; color: var(--green); background: none; border: 0.5px solid var(--green); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
+  .copy-btn:hover { background: var(--green-light); }
+  .output-body { padding: 1.5rem; min-height: 140px; }
+  .output-placeholder { font-size: 13px; color: var(--ink-light); font-style: italic; line-height: 1.7; }
+  .output-text { font-size: 13px; color: var(--ink); line-height: 1.8; white-space: pre-wrap; }
+  .loader { display: flex; align-items: center; gap: 8px; padding: 1rem 0; }
+  .loader-dots { display: flex; gap: 5px; }
+  .loader-dots span { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: pulse 1.1s infinite ease-in-out; }
+  .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+  .loader-text { font-size: 13px; color: var(--ink-light); }
+  .disclaimer-box { font-size: 11px; color: #721c24; background: #f8d7da; border: 0.5px solid #f5c6cb; padding: 15px; border-radius: 10px; margin-bottom: 1.5rem; line-height: 1.6; }
+  footer { text-align: center; padding: 2rem; font-size: 12px; color: var(--ink-light); border-top: 0.5px solid var(--border); margin-top: 2rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2zm-1 14l-3-3 1.41-1.41L11 13.17l4.59-4.58L17 10l-6 6z"/></svg>
+    </div>
+    <span class="nav-name">Vakeel<span>AI</span></span>
+  </div>
+  <span class="nav-badge">Kerala HC policy aware</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-pill">⚖️ Vectrasource Legal Suite</div>
+  <h1>Draft legal documents in <em>Malayalam</em> — in seconds</h1>
+  <p class="hero-sub">AI drafting assistant for Kerala Advocates. Instant structure, professional language.</p>
+</div>
+
+<div class="app-container">
+
+  <div class="disclaimer-box">
+    <strong>⚠️ MANDATORY LEGAL DISCLAIMER (BETA V1.0)</strong><br>
+    Vakeel AI is a drafting aid, not a lawyer. Per 2026 guidelines, the Advocate is solely responsible for verifying all facts, citations, and law. Use of this tool constitutes agreement that Vectrasource/Vakeel AI is not liable for AI-generated errors or professional misconduct.
+  </div>
+
+  <div class="tool-tabs">
+    <button class="tab active" data-tool="petition" onclick="selectTool(this)">
+      <span class="tab-icon">📄</span>
+      <span class="tab-name">Petition</span>
+      <span class="tab-desc">Civil / criminal</span>
+    </button>
+    <button class="tab" data-tool="notice" onclick="selectTool(this)">
+      <span class="tab-icon">📨</span>
+      <span class="tab-name">Legal notice</span>
+      <span class="tab-desc">Demand letters</span>
+    </button>
+    <button class="tab" data-tool="explain" onclick="selectTool(this)">
+      <span class="tab-icon">💬</span>
+      <span class="tab-name">Clause explainer</span>
+      <span class="tab-desc">Plain language</span>
+    </button>
+    <button class="tab" data-tool="client" onclick="selectTool(this)">
+      <span class="tab-icon">✉️</span>
+      <span class="tab-name">Client letter</span>
+      <span class="tab-desc">Case updates</span>
+    </button>
+  </div>
+
+  <div class="form-card">
+    <div class="form-grid">
+      <div>
+        <label for="langSelect">Output language</label>
+        <select id="langSelect">
+          <option value="Malayalam">Malayalam (മലയാളം)</option>
+          <option value="English">English</option>
+          <option value="bilingual Malayalam and English">Bilingual</option>
+        </select>
+      </div>
+      <div>
+        <label for="courtSelect">Court / forum</label>
+        <select id="courtSelect">
+          <option value="Kerala High Court">Kerala High Court</option>
+          <option value="District Court Kerala">District Court</option>
+          <option value="Magistrate Court Kerala">Magistrate Court</option>
+          <option value="Consumer Forum Kerala">Consumer Forum</option>
+          <option value="general Kerala legal context">General / Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label id="inputLabel">Describe the case facts briefly</label>
+      <textarea id="userInput" placeholder="E.g. Property dispute in Thrissur..."></textarea>
+    </div>
+    <button class="gen-btn" id="genBtn" onclick="generate()">✦ Generate Draft</button>
+  </div>
+
+  <div class="output-card">
+    <div class="output-topbar">
+      <div class="output-label">📋 AI draft output</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyOutput()" style="display:none">Copy</button>
+    </div>
+    <div class="output-body">
+      <div class="loader" id="loaderEl" style="display:none">
+        <div class="loader-dots"><span></span><span></span><span></span></div>
+        <span class="loader-text">Drafting in <span id="loaderLang">Malayalam</span>...</span>
+      </div>
+      <div class="output-placeholder" id="placeholder">Your draft will appear here. Always review before filing.</div>
+      <div class="output-text" id="outputText" style="display:none"></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>VakeelAI — Part of Vectrasource Digital Product Suite</footer>
+
+<script>
+const tools = {
+  petition: {
+    label: 'Describe the case facts briefly',
+    placeholder: 'E.g. Property dispute in Thrissur...',
+    prompt: (lang, court, input) => `As Vakeel AI for Kerala lawyers, draft a petition for ${court} in ${lang}. Use proper legal terminology. [BRACKETS] for parties and dates. Facts: ${input}`
+  },
+  notice: {
+    label: 'Who is sending to whom, and why',
+    placeholder: 'Cheque bounce or recovery notice...',
+    prompt: (lang, court, input) => `Draft a legal notice in ${lang}. Include facts, legal grounds, 15-day demand, and consequences. Mark [BRACKETS]. Details: ${input}`
+  },
+  explain: {
+    label: 'Paste clause text',
+    placeholder: 'Paste text from contract...',
+    prompt: (lang, court, input) => `Explain this legal clause in simple ${lang}: 1) Meaning, 2) Obligations, 3) Risks. Clause: ${input}`
+  },
+  client: {
+    label: 'Describe update',
+    placeholder: 'Hearing results...',
+    prompt: (lang, court, input) => `Draft a client letter in ${lang} explaining current case status. Mark [BRACKETS]. Context: ${input}`
+  }
+};
+
+let currentTool = 'petition';
+
+function selectTool(btn) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTool = btn.dataset.tool;
+  document.getElementById('inputLabel').textContent = tools[currentTool].label;
+  document.getElementById('userInput').placeholder = tools[currentTool].placeholder;
+  document.getElementById('userInput').value = '';
+}
+
+async function generate() {
+  const input = document.getElementById('userInput').value.trim();
+  if (!input) { document.getElementById('userInput').focus(); return; }
+
+  const lang = document.getElementById('langSelect').value;
+  const court = document.getElementById('courtSelect').value;
+  const fullPrompt = tools[currentTool].prompt(lang, court, input);
+
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('outputText').style.display = 'none';
+  document.getElementById('copyBtn').style.display = 'none';
+  document.getElementById('loaderLang').textContent = lang;
+  document.getElementById('loaderEl').style.display = 'flex';
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fullPrompt: fullPrompt })
+    });
+
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || data.text || 'No output.';
+
+    document.getElementById('loaderEl').style.display = 'none';
+    document.getElementById('outputText').textContent = text;
+    document.getElementById('outputText').style.display = 'block';
+    document.getElementById('copyBtn').style.display = 'block';
+  } catch (e) {
+    document.getElementById('loaderEl').style.display = 'none';
+    document.getElementById('outputText').textContent = 'Error: ' + e.message;
+    document.getElementById('outputText').style.display = 'block';
+  }
+  document.getElementById('genBtn').disabled = false;
+}
+
+function copyOutput() {
+  const text = document.getElementById('outputText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+</script>
+</body>
+</html>
