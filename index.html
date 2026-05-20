@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
     --green: #1D9E75;
     --green-dark: #0F6E56;
@@ -23,9 +22,7 @@
     --radius: 10px;
     --radius-lg: 16px;
   }
-
   body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; }
-
   nav {
     position: sticky; top: 0; z-index: 100;
     background: rgba(249,253,249,0.92);
@@ -40,34 +37,12 @@
   .nav-name { font-family: 'Lora', serif; font-size: 18px; font-weight: 600; color: var(--ink); }
   .nav-name span { color: var(--green); }
   .nav-badge { font-size: 11px; padding: 3px 8px; background: var(--green-light); color: var(--green-dark); border-radius: 20px; font-weight: 500; }
-
-  .hero { text-align: center; padding: 5rem 1.5rem 3rem; max-width: 680px; margin: 0 auto; }
+  .hero { text-align: center; padding: 4rem 1.5rem 2rem; max-width: 680px; margin: 0 auto; }
   .hero-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green-dark); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px; margin-bottom: 1.5rem; }
   h1 { font-family: 'Lora', serif; font-size: clamp(28px, 5vw, 42px); font-weight: 600; line-height: 1.2; color: var(--ink); margin-bottom: 1rem; }
   h1 em { color: var(--green); font-style: normal; }
-  .hero-sub { font-size: 16px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 2.5rem; max-width: 500px; margin-left: auto; margin-right: auto; }
-
+  .hero-sub { font-size: 16px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
   .app-container { max-width: 680px; margin: 0 auto; padding: 0 1.5rem 4rem; }
-
-  .api-setup { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
-  .api-setup-header { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--ink-mid); margin-bottom: 10px; }
-  .api-row { display: flex; gap: 8px; }
-  .api-row input { flex: 1; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 9px 14px; font-size: 13px; font-family: monospace; background: var(--surface); color: var(--ink); outline: none; }
-  .api-row input:focus { border-color: var(--green); }
-  .api-save-btn { background: var(--ink); color: var(--white); border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
-  .api-save-btn:hover { background: var(--green-dark); }
-  .api-hint { font-size: 11px; color: var(--ink-light); margin-top: 6px; line-height: 1.6; }
-  .api-hint a { color: var(--green); text-decoration: none; }
-  .api-status { font-size: 12px; margin-top: 6px; }
-  .api-status.ok { color: var(--green); }
-  .api-status.err { color: #c0392b; }
-
-  .how-to { background: var(--green-light); border: 0.5px solid var(--green-mid); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
-  .how-to-title { font-size: 12px; font-weight: 500; color: var(--green-dark); margin-bottom: 8px; }
-  .how-to ol { padding-left: 1.2rem; }
-  .how-to ol li { font-size: 12px; color: var(--green-dark); line-height: 1.8; }
-  .how-to ol li a { color: var(--green-dark); font-weight: 500; }
-
   .tool-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 1.25rem; }
   @media (min-width: 480px) { .tool-tabs { grid-template-columns: repeat(4, 1fr); } }
   .tab { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 10px; cursor: pointer; text-align: left; transition: border-color 0.15s, background 0.15s; }
@@ -76,21 +51,17 @@
   .tab-icon { font-size: 18px; margin-bottom: 6px; display: block; }
   .tab-name { font-size: 12px; font-weight: 500; color: var(--ink); display: block; }
   .tab-desc { font-size: 10px; color: var(--ink-light); display: block; margin-top: 1px; }
-
-  .form-card { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1rem; }
+  .form-card { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
   label { display: block; font-size: 12px; color: var(--ink-light); font-weight: 500; margin-bottom: 5px; }
   select, textarea { width: 100%; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 9px 12px; font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); outline: none; transition: border-color 0.15s; }
   select:focus, textarea:focus { border-color: var(--green); }
-  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
-  .form-row { margin-bottom: 14px; }
-
-  .gen-btn { width: 100%; background: var(--green); color: white; border: none; border-radius: var(--radius); padding: 12px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+  .gen-btn { width: 100%; background: var(--green); color: white; border: none; border-radius: var(--radius); padding: 14px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .gen-btn:hover { background: var(--green-dark); }
   .gen-btn:active { transform: scale(0.99); }
   .gen-btn:disabled { background: #b0c8bf; cursor: not-allowed; }
-
-  .output-card { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .output-card { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-top: 1rem; }
   .output-topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 1.5rem; border-bottom: 0.5px solid var(--border); background: var(--surface); }
   .output-label { font-size: 12px; font-weight: 500; color: var(--ink-mid); }
   .copy-btn { font-size: 12px; color: var(--green); background: none; border: 0.5px solid var(--green); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
@@ -98,7 +69,6 @@
   .output-body { padding: 1.5rem; min-height: 140px; }
   .output-placeholder { font-size: 13px; color: var(--ink-light); font-style: italic; line-height: 1.7; }
   .output-text { font-size: 13px; color: var(--ink); line-height: 1.8; white-space: pre-wrap; }
-
   .loader { display: flex; align-items: center; gap: 8px; padding: 1rem 0; }
   .loader-dots { display: flex; gap: 5px; }
   .loader-dots span { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: pulse 1.1s infinite ease-in-out; }
@@ -106,9 +76,7 @@
   .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
   @keyframes pulse { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
   .loader-text { font-size: 13px; color: var(--ink-light); }
-
-  .disclaimer { margin-top: 1.5rem; padding: 1rem 1.25rem; background: #fffdf0; border: 0.5px solid #e8d97a; border-radius: var(--radius); font-size: 11px; color: #7a6a10; line-height: 1.7; display: flex; gap: 8px; }
-
+  .disclaimer-box { font-size: 11px; color: #721c24; background: #f8d7da; border: 0.5px solid #f5c6cb; padding: 15px; border-radius: 10px; margin-bottom: 1.5rem; line-height: 1.6; }
   footer { text-align: center; padding: 2rem; font-size: 12px; color: var(--ink-light); border-top: 0.5px solid var(--border); margin-top: 2rem; }
 </style>
 </head>
@@ -125,31 +93,16 @@
 </nav>
 
 <div class="hero">
-  <div class="hero-pill">⚖️ AI legal drafting for Kerala advocates</div>
+  <div class="hero-pill">⚖️ Vectrasource Legal Suite</div>
   <h1>Draft legal documents in <em>Malayalam</em> — in seconds</h1>
-  <p class="hero-sub">Petitions, legal notices, client letters, clause explanations. Built for Kerala courts. Human review always required.</p>
+  <p class="hero-sub">AI drafting assistant for Kerala Advocates. Instant structure, professional language.</p>
 </div>
 
 <div class="app-container">
 
-  <div class="how-to">
-    <div class="how-to-title">🔑 How to get your FREE Gemini API key (2 minutes)</div>
-    <ol>
-      <li>Go to <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></li>
-      <li>Sign in with your Google account</li>
-      <li>Click <strong>"Create API key"</strong> → Copy it</li>
-      <li>Paste it below and click Save — you're done!</li>
-    </ol>
-  </div>
-
-  <div class="api-setup">
-    <div class="api-setup-header">🔑 Your Gemini API key (free, no card needed)</div>
-    <div class="api-row">
-      <input type="password" id="apiKeyInput" placeholder="AIza..." autocomplete="off" />
-      <button class="api-save-btn" onclick="saveKey()">Save key</button>
-    </div>
-    <div class="api-hint">Your key is stored only in your browser — never sent to anyone except Google's API directly.</div>
-    <div class="api-status" id="apiStatus"></div>
+  <div class="disclaimer-box">
+    <strong>⚠️ MANDATORY LEGAL DISCLAIMER (BETA V1.0)</strong><br>
+    Vakeel AI is a drafting aid, not a lawyer. Per 2026 guidelines, the Advocate is solely responsible for verifying all facts, citations, and law. Use of this tool constitutes agreement that Vectrasource/Vakeel AI is not liable for AI-generated errors or professional misconduct.
   </div>
 
   <div class="tool-tabs">
@@ -198,9 +151,9 @@
     </div>
     <div class="form-row">
       <label id="inputLabel">Describe the case facts briefly</label>
-      <textarea id="userInput" placeholder="E.g. My client is a tenant in Kollam who has not received deposit back after 3 years. Landlord refuses to respond..."></textarea>
+      <textarea id="userInput" placeholder="E.g. Property dispute in Thrissur..."></textarea>
     </div>
-    <button class="gen-btn" id="genBtn" onclick="generate()">✦ Generate draft</button>
+    <button class="gen-btn" id="genBtn" onclick="generate()">✦ Generate Draft</button>
   </div>
 
   <div class="output-card">
@@ -213,96 +166,52 @@
         <div class="loader-dots"><span></span><span></span><span></span></div>
         <span class="loader-text">Drafting in <span id="loaderLang">Malayalam</span>...</span>
       </div>
-      <div class="output-placeholder" id="placeholder">Your draft will appear here. Always review before filing or sending.</div>
+      <div class="output-placeholder" id="placeholder">Your draft will appear here. Always review before filing.</div>
       <div class="output-text" id="outputText" style="display:none"></div>
     </div>
   </div>
 
-  <div class="disclaimer">
-    <span>⚠️</span>
-    <span>AI outputs may contain errors. All drafts must be reviewed and verified by a qualified advocate before filing or sending. This tool follows Kerala High Court AI guidelines — AI output must never be used directly in any filing without independent verification.</span>
-  </div>
-
 </div>
 
-<footer>VakeelAI — Built for Kerala advocates &nbsp;·&nbsp; Powered by Google Gemini (free tier)</footer>
+<footer>VakeelAI — Part of Vectrasource Digital Product Suite</footer>
 
 <script>
 const tools = {
   petition: {
     label: 'Describe the case facts briefly',
-    placeholder: 'E.g. My client is a tenant in Kollam who has not received deposit back after 3 years. Landlord refuses to respond...',
-    prompt: (lang, court, input) => `You are Vakeel AI, an expert legal drafting assistant for Kerala lawyers. Draft a formal legal petition for ${court}. Output in ${lang}. If Malayalam, use proper legal Malayalam (not just translated English). Structure: heading, court name placeholder, petitioner/respondent placeholders, statement of facts, legal grounds, prayer clause. Mark all variable fields with [BRACKETS]. Be professional and thorough. Follow Kerala HC AI guidelines — this is for human review only.\n\nCase facts: ${input}`
+    placeholder: 'E.g. Property dispute in Thrissur...',
+    prompt: (lang, court, input) => `As Vakeel AI for Kerala lawyers, draft a petition for ${court} in ${lang}. Use proper legal terminology. [BRACKETS] for parties and dates. Facts: ${input}`
   },
   notice: {
     label: 'Who is sending to whom, and why',
-    placeholder: 'E.g. Client in Thrissur wants to send notice to contractor who abandoned construction after taking advance payment...',
-    prompt: (lang, court, input) => `You are Vakeel AI, an expert legal drafting assistant for Kerala lawyers. Draft a formal legal notice. Output in ${lang}. If Malayalam, use proper formal legal Malayalam. Include: date placeholder, sender/recipient details placeholders, subject, statement of facts, legal basis under relevant Indian law, demand with clear timeline, consequence of non-compliance, advocate details placeholder. Mark variable fields with [BRACKETS].\n\nDetails: ${input}`
+    placeholder: 'Cheque bounce or recovery notice...',
+    prompt: (lang, court, input) => `Draft a legal notice in ${lang}. Include facts, legal grounds, 15-day demand, and consequences. Mark [BRACKETS]. Details: ${input}`
   },
   explain: {
-    label: 'Paste the clause or contract text you want explained',
-    placeholder: 'E.g. "The lessee shall not sublet or part with possession of the demised premises or any part thereof without prior written consent of the lessor..."',
-    prompt: (lang, court, input) => `You are Vakeel AI, helping Kerala lawyers explain legal clauses to clients. Explain the following legal text in simple ${lang}. Structure: 1) What this means in plain language, 2) Rights it gives, 3) Obligations it creates, 4) Risks to watch out for. Use language a non-lawyer client can understand.\n\nClause: ${input}`
+    label: 'Paste clause text',
+    placeholder: 'Paste text from contract...',
+    prompt: (lang, court, input) => `Explain this legal clause in simple ${lang}: 1) Meaning, 2) Obligations, 3) Risks. Clause: ${input}`
   },
   client: {
-    label: 'Describe the case update you want to communicate',
-    placeholder: 'E.g. Case posted to next month, want to explain delay and ask client to bring documents for next hearing...',
-    prompt: (lang, court, input) => `You are Vakeel AI, helping Kerala advocates write professional client communication letters. Output in ${lang}. If Malayalam, use respectful, formal Malayalam for legal correspondence. Include: date placeholder, client name/address placeholders, subject line, clear body with update, any action required from client, warm closing, advocate signature placeholder.\n\nContext: ${input}`
+    label: 'Describe update',
+    placeholder: 'Hearing results...',
+    prompt: (lang, court, input) => `Draft a client letter in ${lang} explaining current case status. Mark [BRACKETS]. Context: ${input}`
   }
 };
 
 let currentTool = 'petition';
 
-function saveKey() {
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if (!key.startsWith('AIza')) {
-    document.getElementById('apiStatus').textContent = 'Invalid key — Gemini keys start with AIza...';
-    document.getElementById('apiStatus').className = 'api-status err';
-    return;
-  }
-  localStorage.setItem('vakeel_gemini_key', key);
-  document.getElementById('apiStatus').textContent = '✓ Key saved — ready to use!';
-  document.getElementById('apiStatus').className = 'api-status ok';
-}
-
-function getKey() { return localStorage.getItem('vakeel_gemini_key') || ''; }
-
-window.addEventListener('load', () => {
-  const saved = getKey();
-  if (saved) {
-    document.getElementById('apiKeyInput').value = saved;
-    document.getElementById('apiStatus').textContent = '✓ Key loaded — ready to use!';
-    document.getElementById('apiStatus').className = 'api-status ok';
-  }
-});
-
 function selectTool(btn) {
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   currentTool = btn.dataset.tool;
-  const t = tools[currentTool];
-  document.getElementById('inputLabel').textContent = t.label;
-  document.getElementById('userInput').placeholder = t.placeholder;
+  document.getElementById('inputLabel').textContent = tools[currentTool].label;
+  document.getElementById('userInput').placeholder = tools[currentTool].placeholder;
   document.getElementById('userInput').value = '';
-  resetOutput();
-}
-
-function resetOutput() {
-  document.getElementById('outputText').style.display = 'none';
-  document.getElementById('outputText').textContent = '';
-  document.getElementById('placeholder').style.display = 'block';
-  document.getElementById('copyBtn').style.display = 'none';
-  document.getElementById('loaderEl').style.display = 'none';
 }
 
 async function generate() {
   if (!checkPaywall()) return;
-  const apiKey = getKey();
-  if (!apiKey) {
-    alert('Please enter and save your Gemini API key first.');
-    document.getElementById('apiKeyInput').focus();
-    return;
-  }
   const input = document.getElementById('userInput').value.trim();
   if (!input) { document.getElementById('userInput').focus(); return; }
 
@@ -318,21 +227,16 @@ async function generate() {
   document.getElementById('loaderEl').style.display = 'flex';
 
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: fullPrompt }] }],
-          generationConfig: { maxOutputTokens: 1200, temperature: 0.4 }
-        })
-      }
-    );
+    const res = await fetch('/.netlify/functions/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fullPrompt: fullPrompt })
+    });
 
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No output received. Please try again.';
+    
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || data.text || 'No output.';
 
     document.getElementById('loaderEl').style.display = 'none';
     document.getElementById('outputText').textContent = text;
@@ -343,7 +247,6 @@ async function generate() {
     document.getElementById('outputText').textContent = 'Error: ' + e.message;
     document.getElementById('outputText').style.display = 'block';
   }
-
   document.getElementById('genBtn').disabled = false;
 }
 
