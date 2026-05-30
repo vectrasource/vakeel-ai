@@ -19,14 +19,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-thumb{background:rgba(212,160,23,0.3);border-radius:2px;}
 
-/* BG */
 #bg-glow{position:fixed;inset:0;pointer-events:none;z-index:0;
   background:radial-gradient(ellipse at 15% 10%,rgba(212,160,23,0.07) 0%,transparent 55%),
              radial-gradient(ellipse at 85% 90%,rgba(140,90,10,0.09) 0%,transparent 55%);}
 #grain{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0.022;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 
-/* NAV */
 nav{position:sticky;top:0;z-index:100;background:rgba(7,7,14,0.95);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--gold-border);padding:0 2rem;height:60px;
   display:flex;align-items:center;justify-content:space-between;}
@@ -42,7 +40,6 @@ nav{position:sticky;top:0;z-index:100;background:rgba(7,7,14,0.95);backdrop-filt
 .nav-right{display:flex;align-items:center;gap:10px;}
 .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);}
 
-/* HERO */
 .hero{text-align:center;padding:3.5rem 1.5rem 2rem;max-width:680px;margin:0 auto;position:relative;z-index:2;}
 .hero-pill{display:inline-flex;align-items:center;gap:6px;background:var(--gold-dim);
   border:1px solid rgba(212,160,23,0.3);color:var(--gold);font-size:12px;font-weight:600;
@@ -53,10 +50,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(7,7,14,0.95);backdrop-filt
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal;}
 .hero-sub{font-size:15px;color:var(--text-dim);line-height:1.75;max-width:480px;margin:0 auto;}
 
-/* APP CONTAINER */
 .app-container{max-width:680px;margin:0 auto;padding:0 1.5rem 4rem;position:relative;z-index:2;}
 
-/* MAIN TABS (Chat / Draft / Upload / Rights) */
 .main-tabs{display:flex;background:var(--surface);border:1px solid var(--gold-border);
   border-radius:var(--radius-lg);padding:4px;gap:4px;margin-bottom:1.5rem;}
 .main-tab{flex:1;padding:9px 8px;border-radius:var(--radius);border:none;
@@ -68,16 +63,13 @@ nav{position:sticky;top:0;z-index:100;background:rgba(7,7,14,0.95);backdrop-filt
 .main-tab.active{background:var(--gold-dim);border:1px solid rgba(212,160,23,0.4);
   color:var(--gold);font-weight:600;}
 
-/* PANEL */
 .panel{display:none;animation:fadeUp 0.3s ease;}
 .panel.active{display:block;}
 
-/* DISCLAIMER */
 .disclaimer-box{font-size:11px;color:rgba(237,100,100,0.9);background:rgba(220,50,50,0.08);
   border:1px solid rgba(220,50,50,0.25);padding:14px;border-radius:var(--radius);
   margin-bottom:1.5rem;line-height:1.65;}
 
-/* TOOL TABS (old version style, dark theme) */
 .tool-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
 @media(min-width:480px){.tool-tabs{grid-template-columns:repeat(4,1fr);}}
 .tool-tab{background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius);
@@ -89,7 +81,6 @@ nav{position:sticky;top:0;z-index:100;background:rgba(7,7,14,0.95);backdrop-filt
 .tool-tab .t-desc{font-size:10px;color:var(--text-faint);display:block;margin-top:1px;}
 .tool-tab.active .t-name{color:var(--gold);}
 
-/* FORM CARD */
 .form-card{background:var(--surface);border:1px solid var(--gold-border);
   border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
@@ -111,7 +102,6 @@ textarea{resize:vertical;min-height:120px;line-height:1.65;}
 .gen-btn:disabled{background:rgba(212,160,23,0.2);color:var(--text-faint);
   cursor:not-allowed;transform:none;box-shadow:none;}
 
-/* OUTPUT CARD */
 .output-card{background:var(--surface);border:1px solid var(--gold-border);
   border-radius:var(--radius-lg);overflow:hidden;margin-top:1rem;}
 .output-topbar{display:flex;align-items:center;justify-content:space-between;
@@ -134,7 +124,6 @@ textarea{resize:vertical;min-height:120px;line-height:1.65;}
 @keyframes dotPulse{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
 .loader-text{font-size:13px;color:var(--text-dim);}
 
-/* CHAT PANEL */
 .chat-wrap{background:var(--surface);border:1px solid var(--gold-border);
   border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;
   height:500px;}
@@ -194,7 +183,6 @@ textarea{resize:vertical;min-height:120px;line-height:1.65;}
 .send-btn:hover{transform:scale(1.07);}
 .send-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
 
-/* UPLOAD PANEL */
 .upload-zone{border:2px dashed rgba(212,160,23,0.3);border-radius:var(--radius-lg);
   padding:40px 20px;text-align:center;cursor:pointer;background:rgba(212,160,23,0.03);
   transition:all 0.25s;margin-bottom:16px;}
@@ -223,7 +211,6 @@ textarea{resize:vertical;min-height:120px;line-height:1.65;}
 .what-item{font-size:13px;color:rgba(237,232,220,0.65);padding:7px 0;
   border-bottom:1px solid rgba(212,160,23,0.08);line-height:1.5;}
 
-/* RIGHTS PANEL */
 .rights-card{background:var(--surface);border:1px solid var(--gold-border);
   border-radius:var(--radius-lg);padding:15px;margin-bottom:10px;
   transition:all 0.25s;cursor:pointer;}
@@ -242,16 +229,13 @@ textarea{resize:vertical;min-height:120px;line-height:1.65;}
 .rights-footer p{font-size:12px;color:var(--text-dim);line-height:1.7;}
 .rights-footer span{color:var(--gold);font-weight:600;}
 
-/* SECTION TITLE */
 .sec-title{font-family:'Cormorant Garamond',serif;color:var(--gold);font-size:20px;
   font-weight:700;margin-bottom:4px;}
 .sec-sub{font-size:12.5px;color:var(--text-dim);margin-bottom:18px;line-height:1.7;}
 
-/* FOOTER */
 footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
   border-top:1px solid var(--gold-border);margin-top:2rem;position:relative;z-index:2;}
 
-/* ANIMATIONS */
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
 .shimmer{background:linear-gradient(90deg,var(--gold),var(--gold-light),#b8860b,var(--gold));
@@ -263,7 +247,6 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
 <div id="bg-glow"></div>
 <div id="grain"></div>
 
-<!-- NAV -->
 <nav>
   <div class="nav-brand">
     <div class="nav-logo">⚖️</div>
@@ -275,17 +258,14 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
   </div>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-pill">⚖️ Kerala's AI Legal Assistant</div>
   <h1>Legal help in <em>Malayalam</em> — in seconds</h1>
   <p class="hero-sub">Chat, draft documents, upload legal notices — all powered by AI. Free to try.</p>
 </div>
 
-<!-- APP -->
 <div class="app-container">
 
-  <!-- MAIN TABS -->
   <div class="main-tabs">
     <button class="main-tab active" onclick="switchMain('chat',this)">
       <span class="t-icon">💬</span>Chat
@@ -301,7 +281,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
     </button>
   </div>
 
-  <!-- ===== CHAT PANEL ===== -->
+  <!-- CHAT PANEL -->
   <div class="panel active" id="panel-chat">
     <div class="chat-wrap">
       <div class="chat-messages" id="chat-messages">
@@ -339,7 +319,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
     <div style="text-align:center;font-size:10px;color:var(--text-faint);margin-top:8px;">Legal information only • Serious matters-nu oru lawyer-e contact cheyyuk</div>
   </div>
 
-  <!-- ===== DRAFT PANEL ===== -->
+  <!-- DRAFT PANEL -->
   <div class="panel" id="panel-draft">
     <div class="disclaimer-box">
       <strong>⚠️ DISCLAIMER (BETA V3)</strong><br>
@@ -410,23 +390,22 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
     </div>
   </div>
 
-  <!-- ===== UPLOAD PANEL ===== -->
+  <!-- UPLOAD PANEL -->
   <div class="panel" id="panel-upload">
     <div class="sec-title">📁 Document Analyze Cheyyaam</div>
     <div class="sec-sub">Legal notice, agreement, court order — upload cheyyу. Vakeel AI explain cheyyum ninte rights enthaanu.</div>
     <div id="upload-zone" class="upload-zone" onclick="document.getElementById('file-input').click()">
       <div class="upload-icon">📄</div>
       <div class="upload-title">Tap to upload document</div>
-      <div class="upload-hint">JPG, PNG, PDF supported<br/>Legal notices, agreements, court orders</div>
+      <div class="upload-hint">JPG, PNG supported<br/>Legal notices, agreements, court orders</div>
     </div>
-    <input type="file" id="file-input" accept="image/*,.pdf" style="display:none" onchange="handleFile(event)"/>
+    <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(event)"/>
     <div id="file-preview" style="display:none;">
       <div class="file-card" id="file-card-inner"></div>
       <div class="btn-row">
         <button class="gold-btn" id="analyze-btn" onclick="analyzeDoc()">⚖️ Analyze Document</button>
         <button class="cancel-btn" onclick="clearFile()">✕</button>
       </div>
-      <p id="pdf-note" style="font-size:11px;color:var(--text-faint);margin-top:10px;text-align:center;line-height:1.6;"></p>
     </div>
     <div class="what-list">
       <div class="what-lbl">What Vakeel AI can analyze:</div>
@@ -439,7 +418,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
     </div>
   </div>
 
-  <!-- ===== RIGHTS PANEL ===== -->
+  <!-- RIGHTS PANEL -->
   <div class="panel" id="panel-rights">
     <div class="sec-title">📚 Know Your Rights</div>
     <div class="sec-sub">Kerala-ile common legal rights — simple Manglish-il.</div>
@@ -506,6 +485,7 @@ let chatHistory = [];
 let uploadedFile = null;
 let recognition = null;
 let isRecording = false;
+
 const draftTools = {
   petition:{label:'Describe the case facts briefly',placeholder:'E.g. Property dispute in Thrissur, tenant refusing to vacate...',prompt:(l,c,i)=>`Draft a petition for ${c} in ${l}. Use proper legal terminology. Mark parties/dates as [BRACKETS]. Facts: ${i}`},
   notice:{label:'Who is sending to whom, and why',placeholder:'E.g. Cheque bounce recovery notice from Arun to Suresh...',prompt:(l,c,i)=>`Draft a legal notice in ${l}. Include facts, legal grounds, 15-day demand, consequences. Mark [BRACKETS]. Details: ${i}`},
@@ -520,6 +500,18 @@ function switchMain(tab, el) {
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('panel-'+tab).classList.add('active');
+}
+
+// ===== SHARED API CALL — uses your /api/generate backend =====
+async function callAPI(fullPrompt) {
+  const res = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fullPrompt })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.text;
 }
 
 // ===== CHAT =====
@@ -560,25 +552,25 @@ function fmtBot(text) {
   }).join('');
 }
 function scrollChatBottom() { setTimeout(()=>document.getElementById('chat-bottom').scrollIntoView({behavior:'smooth'}),50); }
-async function doChat(text, imgContent) {
-  const content = imgContent || text;
-  chatHistory.push({role:'user',content:imgContent||text});
-  appendMsg('user', text);
-  document.getElementById('typing-ind').style.display='block';
+
+async function doChat(userText) {
+  chatHistory.push({ role: 'user', content: userText });
+  appendMsg('user', userText);
+  document.getElementById('typing-ind').style.display = 'block';
   scrollChatBottom();
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:CHAT_SYSTEM,messages:chatHistory})
-    });
-    const data = await res.json();
-    const reply = data.content?.[0]?.text||'Oru problem undaayi. Veedum try cheyyу.';
-    chatHistory.push({role:'assistant',content:reply});
-    document.getElementById('typing-ind').style.display='none';
-    appendMsg('assistant',reply);
-  } catch {
-    document.getElementById('typing-ind').style.display='none';
-    appendMsg('assistant','Network error. Please try again.');
+    // Build full prompt: system + conversation history
+    const historyText = chatHistory
+      .map(m => m.role.toUpperCase() + ': ' + (typeof m.content === 'string' ? m.content : '[image uploaded]'))
+      .join('\n');
+    const fullPrompt = CHAT_SYSTEM + '\n\n--- CONVERSATION ---\n' + historyText + '\n\nASSISTANT:';
+    const reply = await callAPI(fullPrompt);
+    chatHistory.push({ role: 'assistant', content: reply });
+    document.getElementById('typing-ind').style.display = 'none';
+    appendMsg('assistant', reply);
+  } catch(e) {
+    document.getElementById('typing-ind').style.display = 'none';
+    appendMsg('assistant', 'Network error: ' + e.message + '. Please try again.');
   }
 }
 
@@ -621,26 +613,24 @@ function selectTool(btn) {
   document.getElementById('draftInput').placeholder = t.placeholder;
   document.getElementById('draftInput').value='';
 }
+
 async function generateDraft() {
   const input = document.getElementById('draftInput').value.trim();
   if(!input){document.getElementById('draftInput').focus();return;}
   const lang = document.getElementById('langSelect').value;
   const court = document.getElementById('courtSelect').value;
-  const prompt = draftTools[currentTool].prompt(lang,court,input);
+  const userPrompt = draftTools[currentTool].prompt(lang, court, input);
+  const fullPrompt = DRAFT_SYSTEM + '\n\n' + userPrompt;
+
   document.getElementById('genBtn').disabled=true;
   document.getElementById('draftPlaceholder').style.display='none';
   document.getElementById('outputText').style.display='none';
   document.getElementById('copyBtn').style.display='none';
   document.getElementById('loaderLang').textContent=lang;
   document.getElementById('loaderEl').style.display='flex';
+
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:DRAFT_SYSTEM,
-        messages:[{role:'user',content:prompt}]})
-    });
-    const data = await res.json();
-    const text = data.content?.[0]?.text||'Error generating draft.';
+    const text = await callAPI(fullPrompt);
     document.getElementById('loaderEl').style.display='none';
     document.getElementById('outputText').textContent=text;
     document.getElementById('outputText').style.display='block';
@@ -653,6 +643,7 @@ async function generateDraft() {
   }
   document.getElementById('genBtn').disabled=false;
 }
+
 function copyOutput() {
   const text = document.getElementById('outputText').textContent;
   navigator.clipboard.writeText(text);
@@ -666,66 +657,51 @@ function handleFile(e) {
   const file = e.target.files[0]; if(!file) return;
   uploadedFile = file;
   const inner = document.getElementById('file-card-inner');
-  const isPdf = file.type==='application/pdf';
-  if(isPdf) {
-    inner.innerHTML=`<div style="text-align:center;font-size:40px;padding:16px 0">📄</div><div class="file-name">✅ ${file.name}</div><div class="file-meta">${(file.size/1024).toFixed(1)} KB • PDF</div>`;
-    document.getElementById('pdf-note').innerText='Note: PDF text extraction limited in browser. Best results with image uploads.';
-    uploadedFile.isPdf=true;
-  } else {
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      inner.innerHTML=`<img class="file-img" src="${ev.target.result}"/><div class="file-name">✅ ${file.name}</div><div class="file-meta">${(file.size/1024).toFixed(1)} KB</div>`;
-      uploadedFile.b64=ev.target.result.split(',')[1];
-      uploadedFile.mime=file.type;
-    };
-    reader.readAsDataURL(file);
-    document.getElementById('pdf-note').innerText='';
-  }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    inner.innerHTML=`<img class="file-img" src="${ev.target.result}"/><div class="file-name">✅ ${file.name}</div><div class="file-meta">${(file.size/1024).toFixed(1)} KB</div>`;
+    uploadedFile.b64 = ev.target.result.split(',')[1];
+    uploadedFile.mime = file.type;
+    uploadedFile.dataUrl = ev.target.result;
+  };
+  reader.readAsDataURL(file);
   document.getElementById('upload-zone').style.display='none';
   document.getElementById('file-preview').style.display='block';
 }
+
 function clearFile() {
   uploadedFile=null;
   document.getElementById('upload-zone').style.display='block';
   document.getElementById('file-preview').style.display='none';
   document.getElementById('file-input').value='';
 }
+
 async function analyzeDoc() {
   if(!uploadedFile) return;
-  const btn=document.getElementById('analyze-btn');
+  const btn = document.getElementById('analyze-btn');
   btn.disabled=true; btn.innerText='⏳ Analyzing...';
-  let content;
-  if(uploadedFile.b64) {
-    content=[
-      {type:'image',source:{type:'base64',media_type:uploadedFile.mime,data:uploadedFile.b64}},
-      {type:'text',text:'Analyze this legal document. Explain what it is, key clauses, my rights and what I should do — all in friendly Manglish.'}
-    ];
-  } else {
-    content=`PDF: ${uploadedFile.name} — Analyze and explain rights/options in Manglish.`;
-  }
   const fname = uploadedFile.name;
+  // Build prompt — describe image in text since our backend is text-only
+  const fullPrompt = CHAT_SYSTEM + '\n\nUser uploaded a legal document image: ' + fname + '\n\nPlease ask the user to describe the contents of the document so you can help analyze it, or tell them to type out key sections. Respond in Manglish.';
+
   clearFile();
-  switchMain('chat',document.querySelectorAll('.main-tab')[0]);
+  switchMain('chat', document.querySelectorAll('.main-tab')[0]);
   document.getElementById('welcome-screen').style.display='none';
   btn.disabled=false; btn.innerText='⚖️ Analyze Document';
-  const msgs=[{role:'user',content:Array.isArray(content)?content:content}];
-  chatHistory.push(msgs[0]);
-  appendMsg('user',`[Document uploaded: ${fname}] Analyze cheytu paranju`);
+
+  appendMsg('user', `[Document uploaded: ${fname}] Analyze cheytu paranju`);
+  chatHistory.push({ role: 'user', content: `Document uploaded: ${fname}. Please help analyze it.` });
   document.getElementById('typing-ind').style.display='block';
   scrollChatBottom();
+
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:CHAT_SYSTEM,messages:chatHistory})
-    });
-    const data=await res.json();
-    const reply=data.content?.[0]?.text||'Document analyze cheyyaan problem. Try again.';
-    chatHistory.push({role:'assistant',content:reply});
+    const reply = await callAPI(fullPrompt);
+    chatHistory.push({ role: 'assistant', content: reply });
     document.getElementById('typing-ind').style.display='none';
-    appendMsg('assistant',reply);
-  } catch {
+    appendMsg('assistant', reply);
+  } catch(e) {
     document.getElementById('typing-ind').style.display='none';
-    appendMsg('assistant','Network error. Please try again.');
+    appendMsg('assistant', 'Network error: ' + e.message);
   }
 }
 
