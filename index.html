@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ml">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Vakeel AI — Kerala's AI Legal Assistant</title>
+<title>വക്കീൽ AI — കേരളത്തിന്റെ AI നിയമ സഹായി</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
@@ -288,12 +288,12 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
         <div class="welcome-chat" id="welcome-screen">
           <span class="w-emoji">🏛️</span>
           <h3>Namaskaram!</h3>
-          <p>Ninte legal problem paranju — Indian law, Kerala rules, ninte rights — Manglish-il explain cheyyaam!</p>
+          <p>നിങ്ങളുടെ legal problem പറയൂ — Indian law, Kerala rules, നിങ്ങളുടെ rights — Malayalam-ൽ explain ചെയ്യാം!</p>
           <div class="quick-grid">
-            <button class="quick-btn" onclick="quickSend('Landlord deposit return cheyyunilla, enthu cheyynam?')"><span class="q-icon">🏠</span><span class="q-label">Landlord Issue</span></button>
-            <button class="quick-btn" onclick="quickSend('Employer salary kodutilla this month, enthu cheyynam?')"><span class="q-icon">💼</span><span class="q-label">Salary Problem</span></button>
-            <button class="quick-btn" onclick="quickSend('Online-il vangiya product defective aayirunnu, enthu cheyynam?')"><span class="q-icon">🛒</span><span class="q-label">Consumer Case</span></button>
-            <button class="quick-btn" onclick="quickSend('Legal notice draft cheyyanam landlord-nu deposit tharaan')"><span class="q-icon">📋</span><span class="q-label">Draft Notice</span></button>
+            <button class="quick-btn" onclick="quickSend('വീട്ടുടമ deposit തിരിച്ചു തരുന്നില്ല, എന്ത് ചെയ്യണം?')"><span class="q-icon">🏠</span><span class="q-label">Landlord Issue</span></button>
+            <button class="quick-btn" onclick="quickSend('ഈ മാസം ശമ്പളം കിട്ടിയില്ല, എന്ത് ചെയ്യണം?')"><span class="q-icon">💼</span><span class="q-label">Salary Problem</span></button>
+            <button class="quick-btn" onclick="quickSend('Online-ൽ വാങ്ങിയ product defective ആണ്, എന്ത് ചെയ്യണം?')"><span class="q-icon">🛒</span><span class="q-label">Consumer Case</span></button>
+            <button class="quick-btn" onclick="quickSend('Deposit തിരിച്ചു നൽകാൻ landlord-ന് legal notice draft ചെയ്യണം')"><span class="q-icon">📋</span><span class="q-label">Draft Notice</span></button>
           </div>
         </div>
         <div id="msg-list"></div>
@@ -311,7 +311,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
         </div>
         <div class="input-row">
           <button class="mic-btn" id="mic-btn" onclick="toggleVoice()">🎙️</button>
-          <div id="chat-input" contenteditable="true" data-ph="Ninte problem paranju... (Manglish or English okay!)" onkeydown="chatKey(event)" oninput="toggleSendBtn()"></div>
+          <div id="chat-input" contenteditable="true" data-ph="Ninte problem paranju... (Malayalam or English okay!)" onkeydown="chatKey(event)" oninput="toggleSendBtn()"></div>
           <button class="send-btn" id="send-btn" onclick="sendChat()" disabled>➤</button>
         </div>
       </div>
@@ -455,28 +455,28 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
 // ===== SYSTEM PROMPTS =====
 const CHAT_SYSTEM = `You are Vakeel AI — Kerala's most trusted AI legal assistant. You specialize in Indian law with deep knowledge of Kerala-specific regulations.
 
-LANGUAGE: Always respond in warm, friendly Manglish (Malayalam written in English letters, mixed with English legal terms).
+LANGUAGE: Always respond in proper Malayalam script (മലയാളം). Use simple, clear Malayalam that common people can easily understand. Legal terms can remain in English but all explanations must be in Malayalam script.
 
 FORMAT:
-🔍 Situation Manasilaayi:
-[Summary]
+🔍 സ്ഥിതി മനസ്സിലായി:
+[Summary in Malayalam]
 
-⚖️ Ninte Rights:
-[Legal rights simply explained]
+⚖️ നിങ്ങളുടെ അവകാശങ്ങൾ:
+[Legal rights explained simply in Malayalam]
 
-📖 Relevant Law:
+📖 ബന്ധപ്പെട്ട നിയമം:
 [Act name + Section number]
 
-✅ Enthu Cheyynam:
-[Numbered steps]
+✅ എന്ത് ചെയ്യണം:
+[Numbered steps in Malayalam]
 
-📄 Document Draft Cheyyaam:
-[Offer relevant drafts. Say "Ethenkilum draft cheyyano? Paranju!"]
+📄 Document Draft ചെയ്യാം:
+[Offer relevant drafts in Malayalam. Say "എന്തെങ്കിലും draft ചെയ്യണോ? പറയൂ!"]
 
-⚠️ Important:
-[Warnings, when to see a real lawyer]
+⚠️ പ്രധാനപ്പെട്ടത്:
+[Warnings, when to see a real lawyer — in Malayalam]
 
-End with: "Vakeel AI always with you! 💪"`;
+End with: "വക്കീൽ AI എപ്പോഴും നിങ്ങളോടൊപ്പം! 💪"`;
 
 const DRAFT_SYSTEM = `You are Vakeel AI's document drafting engine for Kerala/India legal documents. Generate complete, professional documents. Use [NAME], [ADDRESS], [DATE], [AMOUNT] as placeholders. Write in the requested language. Always include proper legal language appropriate for Kerala courts.`;
 
@@ -682,7 +682,7 @@ async function analyzeDoc() {
   btn.disabled=true; btn.innerText='⏳ Analyzing...';
   const fname = uploadedFile.name;
   // Build prompt — describe image in text since our backend is text-only
-  const fullPrompt = CHAT_SYSTEM + '\n\nUser uploaded a legal document image: ' + fname + '\n\nPlease ask the user to describe the contents of the document so you can help analyze it, or tell them to type out key sections. Respond in Manglish.';
+  const fullPrompt = CHAT_SYSTEM + '\n\nUser uploaded a legal document image: ' + fname + '\n\nPlease ask the user to describe the contents of the document so you can help analyze it, or tell them to type out key sections. Respond in proper Malayalam script.';
 
   clearFile();
   switchMain('chat', document.querySelectorAll('.main-tab')[0]);
