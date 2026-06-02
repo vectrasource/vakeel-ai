@@ -5,8 +5,8 @@ export default async function handler(req, res) {
 
   try {
     const { fullPrompt } = req.body;
-    const apiKey = process.env.OPENROUTER_API_KEY;
 
+    const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
       return res.status(500).json({ error: { message: 'OPENROUTER_API_KEY not set in Vercel environment variables.' } });
     }
@@ -16,13 +16,13 @@ export default async function handler(req, res) {
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://vakeel-ai-eta.vercel.app',
-        'X-Title': 'Vakeel AI'
+        'HTTP-Referer': 'https://vectrasource.com',
+        'X-Title': 'Vectrasource AI Suite'
       },
       body: JSON.stringify({
-        model: 'openrouter/auto',
+        model: 'google/gemini-flash-1.5',
         messages: [{ role: 'user', content: fullPrompt }],
-        max_tokens: 1200,
+        max_tokens: 4000,
         temperature: 0.4
       })
     });
