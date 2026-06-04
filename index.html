@@ -1111,7 +1111,12 @@ async function doChat(userText) {
 
 // ===== VOICE =====
 function setupVoice() {
-  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)) return;
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)) {
+    // Hide mic button silently if speech recognition not supported
+    const micBtn = document.getElementById('mic-btn');
+    if (micBtn) { micBtn.style.display = 'none'; }
+    return;
+  }
   const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
   recognition = new SR();
   recognition.lang='ml-IN'; recognition.continuous=false; recognition.interimResults=true;
@@ -1127,7 +1132,7 @@ function setupVoice() {
   };
 }
 function toggleVoice() {
-  if(!recognition){alert('Voice input not supported. Chrome use cheyyuk!');return;}
+  if(!recognition){ return; }
   if(isRecording){recognition.stop();}
   else {
     document.getElementById('chat-input').innerText='';
@@ -1278,7 +1283,6 @@ function showPaywallModal(){
   document.body.appendChild(o);
 }
 
-
 // ============================================
 // REAL TOKEN-BASED PAYWALL
 // ============================================
@@ -1360,10 +1364,10 @@ function showExpiredModal() {
   document.body.appendChild(o);
 }
 
-
 document.addEventListener('DOMContentLoaded', async () => {
   injectPaywallStyles();
   renderHistory();
+  setupVoice(); // ← FIXED: initialise speech recognition on load
   const saved = getToken();
   if (saved) {
     const r = await verifyToken(saved);
@@ -1371,7 +1375,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     else { clearToken(); showTrialBar(); }
   } else { showTrialBar(); }
 });
-
 </script>
 </body>
 </html>
