@@ -1110,36 +1110,55 @@ async function doChat(userText) {
 }
 
 // ===== VOICE =====
+function resetMicUI() {
+  isRecording = false;
+  const micBtn = document.getElementById('mic-btn');
+  micBtn.classList.remove('rec');
+  micBtn.innerText = '🎙️';
+  document.getElementById('rec-banner').style.display = 'none';
+}
 function setupVoice() {
   if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)) {
-    // Hide mic button silently if speech recognition not supported
     const micBtn = document.getElementById('mic-btn');
     if (micBtn) { micBtn.style.display = 'none'; }
     return;
   }
   const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
   recognition = new SR();
-  recognition.lang='ml-IN'; recognition.continuous=false; recognition.interimResults=true;
+  recognition.lang='ml-IN';
+  recognition.continuous=false;
+  recognition.interimResults=true;
   recognition.onresult=e=>{
     const t=Array.from(e.results).map(r=>r[0].transcript).join('');
-    document.getElementById('chat-input').innerText=t; toggleSendBtn();
+    document.getElementById('chat-input').innerText=t;
+    toggleSendBtn();
+  };
+  recognition.onspeechend=()=>{
+    recognition.stop();
   };
   recognition.onend=()=>{
-    isRecording=false;
-    document.getElementById('mic-btn').classList.remove('rec');
-    document.getElementById('mic-btn').innerText='🎙️';
-    document.getElementById('rec-banner').style.display='none';
+    resetMicUI();
+  };
+  recognition.onerror=()=>{
+    resetMicUI();
   };
 }
 function toggleVoice() {
   if(!recognition){ return; }
-  if(isRecording){recognition.stop();}
-  else {
+  if(isRecording){
+    recognition.stop();
+    resetMicUI(); // force reset UI immediately, don't wait for onend
+  } else {
     document.getElementById('chat-input').innerText='';
-    recognition.start(); isRecording=true;
-    document.getElementById('mic-btn').classList.add('rec');
-    document.getElementById('mic-btn').innerText='⏹️';
-    document.getElementById('rec-banner').style.display='flex';
+    try {
+      recognition.start();
+      isRecording=true;
+      document.getElementById('mic-btn').classList.add('rec');
+      document.getElementById('mic-btn').innerText='⏹️';
+      document.getElementById('rec-banner').style.display='flex';
+    } catch(e) {
+      resetMicUI();
+    }
   }
 }
 
