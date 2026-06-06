@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: 'anthropic/claude-haiku-4-5',
         messages: [{ role: 'user', content: fullPrompt }],
-        max_tokens: 4000,
+        max_tokens: 2000,
         temperature: 0.4
       })
     });
