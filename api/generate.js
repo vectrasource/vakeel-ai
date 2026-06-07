@@ -24,9 +24,16 @@ export default async function handler(req, res) {
       })
     });
     const data = await response.json();
-    if (data.error) {
-      return res.status(400).json({ error: { message: data.error.message } });
-    }
+if (data.error) {
+  if (data.error.code === 429 || 
+      data.error.message?.includes('credits') ||
+      data.error.message?.includes('billing')) {
+    return res.status(200).json({ 
+      text: '⚠️ High demand right now! Please try again in a few minutes. Need unlimited access? Subscribe at vectrasource.com 🌴' 
+    });
+  }
+  return res.status(400).json({ error: { message: data.error.message } });
+}
     const text = data.choices?.[0]?.message?.content || 'No output received.';
     return res.status(200).json({ text });
   } catch (err) {
