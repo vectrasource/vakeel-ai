@@ -463,20 +463,21 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
         <div class="form-grid-3">
           <div>
             <label>Notice Type</label>
-            <select id="not-type">
+            <select id="not-type" onchange="updateNoticeFields()">
               <option>Demand / Recovery</option>
               <option>Cheque Bounce (138 NI Act)</option>
               <option>Property / Eviction</option>
               <option>Employment Dispute</option>
               <option>Consumer Complaint</option>
               <option>Defamation</option>
+              <option>Reply to Notice</option>
             </select>
           </div>
-          <div>
+          <div id="not-amount-wrap">
             <label>Demand Amount (₹)</label>
             <input type="text" id="not-amount" placeholder="e.g. 50,000" />
           </div>
-          <div>
+          <div id="not-days-wrap">
             <label>Reply Deadline (days)</label>
             <select id="not-days">
               <option value="7">7 days</option>
@@ -847,6 +848,36 @@ Apply all general style rules from MALAYALAM_LEGAL_STYLE above. If the document 
 `
 };
 
+const REPLY_TO_NOTICE_TEMPLATE = `
+REFERENCE FORMAT — REPLY TO NOTICE (follow this structure):
+
+LETTERHEAD/OPENING:
+"[Advocate name, qualifications, roll number, address, phone - use [PLACEHOLDER] if not provided]
+
+NOTICE
+
+To,
+[Recipient — opposing advocate name, firm, address]
+
+ഈ നോട്ടീസ് താങ്കൾ എന്റെ കക്ഷിയായ [client full address block] [client name] [date] തീയതി വച്ച് അയച്ച നോട്ടീസിന് താഴെ പറയും പ്രകാരം മറുപടി അയക്കുവാൻ എന്നോട് ആവശ്യപ്പെട്ടിട്ടുള്ളതാണ്."
+
+CORE BODY — point-by-point response pattern:
+For each claim in the original notice that needs denial:
+"താങ്കളുടെ നോട്ടീസിൽ പറഞ്ഞിരിക്കുന്ന [restate their claim concisely] എന്നുള്ളത് ശുദ്ധ കളവാണ്. യഥാർത്ഥ വസ്തുത [state the true facts as per client's instructions]."
+
+For any point that is partially true:
+"[claim] എന്നുള്ള കാര്യം സമ്മതിക്കുന്നു. എന്നാൽ ആയതിനുള്ള കാരണം [explain context/justification]."
+
+Structure the body to mirror the numbered points of the original notice if the user provides them — respond to each point in sequence.
+
+CLOSING:
+"ആയതിനാൽ ടി വിഷയത്തിന്റെ ഗൗരവം കണക്കിലെടുത്ത് താങ്കൾ എന്റെ കക്ഷിയ്ക്ക് [date] തീയതി വച്ച് അയച്ച നോട്ടീസ് പ്രകാരം യാതൊരു തരത്തിലുമുള്ള നിയമ നടപടികൾക്കും മുതിരരുതെന്ന് താങ്കളുടെ കക്ഷിയെ ഉപദേശിക്കണമെന്ന് അറിയിച്ചുകൊള്ളുന്നു. എന്തെങ്കിലും കാരണവശാൽ ഇതിനെ സംബന്ധിച്ച് താങ്കളുടെ കക്ഷി എന്റെ കക്ഷിയ്ക്കെതിരെ വല്ല നിയമനടപടികളും സ്വീകരിച്ചാൽ ആയതിൽ വച്ച് എന്റെ കക്ഷിക്കുണ്ടാകുന്ന സകല ചിലവുകൾക്കും, നഷ്ടപരിഹാരത്തിനും താങ്കളുടെ കക്ഷി ഉത്തരവാദിയായിത്തീരുന്നതാണ് എന്നുകൂടി ഇതിനാൽ അറിയിച്ചുകൊള്ളുന്നു.
+
+[date]"
+
+CRITICAL: Do NOT fabricate facts, dates, amounts, or events not provided by the user. The "യഥാർത്ഥ വസ്തുത" (true facts) section must be based ONLY on what the user states in their input — if details are missing, use [PLACEHOLDER], do not invent a counter-narrative.
+`;
+
 const AGREEMENT_MAX_TOKENS = {
   rent_lease: 8000,
   sale_deed: 8000,
@@ -974,9 +1005,21 @@ Use formal registration/court Malayalam register throughout, similar to language
     }
     case 'notice': {
       const type = document.getElementById('not-type').value;
+      const facts = document.getElementById('not-facts').value || '';
+      if (type === 'Reply to Notice') {
+        const styleGuide = (lang === 'Malayalam' || lang === 'bilingual Malayalam and English')
+          ? MALAYALAM_LEGAL_STYLE + '\n\n' + REPLY_TO_NOTICE_TEMPLATE
+          : REPLY_TO_NOTICE_TEMPLATE;
+        return `You are an expert Kerala advocate drafting a formal reply to a legal notice in ${lang}.
+${styleGuide}
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, or _. Write plain text only. Use numbered points like '1.' and '1.1' for structure.
+
+Client details and original notice claims / counter-facts: ${facts}
+
+Draft the complete Reply to Notice now. Mark all missing details as [PLACEHOLDER]. Write all content in ${lang}.`;
+      }
       const amount = document.getElementById('not-amount').value || '[Amount]';
       const days = document.getElementById('not-days').value;
-      const facts = document.getElementById('not-facts').value || '';
       return `You are Vakeel AI's document drafting engine. Draft a formal ${type} legal notice in ${lang}.
 
 Amount: ₹${amount}
@@ -1635,6 +1678,16 @@ function updateFactsPlaceholder() {
   } else {
     ta.placeholder = 'e.g. Property dispute in Thrissur, tenant refusing to vacate since 3 years despite court notice. Petitioner is the owner with registered title deed...';
   }
+}
+
+function updateNoticeFields() {
+  const type = document.getElementById('not-type').value;
+  const isReply = type === 'Reply to Notice';
+  document.getElementById('not-amount-wrap').style.display = isReply ? 'none' : '';
+  document.getElementById('not-days-wrap').style.display = isReply ? 'none' : '';
+  document.getElementById('not-facts').placeholder = isReply
+    ? 'Original notice claims (summarise each point) + your client\'s counter-facts for each...'
+    : 'e.g. Cheque of ₹50,000 issued by Suresh Kumar bounced on 12 May 2026. Presented twice, both dishonoured. Demand for payment before legal action...';
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
