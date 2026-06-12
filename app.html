@@ -733,6 +733,149 @@ const toolLoaders = {
   agreement: 'Drafting agreement... (10-15 sec)'
 };
 
+// ===== MALAYALAM LEGAL STYLE GUIDE =====
+const MALAYALAM_LEGAL_STYLE = `
+നിങ്ങൾ കേരളത്തിലെ ഒരു അഭിഭാഷകന്റെ ഓഫീസിൽ ഡ്രാഫ്റ്റ് ചെയ്യുന്ന ഔപചാരിക നിയമരേഖകൾ തയ്യാറാക്കുന്നു. ഇനിപ്പറയുന്ന ഫോർമൽ ലീഗൽ മലയാളം ശൈലി കർശനമായി പിന്തുടരുക:
+
+PARTY REFERENCES:
+- Use "ടി കക്ഷി / ടി വസ്തു / ടി ഉത്തരവ്" (the said ___) instead of repeating names/nouns
+- Agreements: "ഒന്നാംകക്ഷി / രണ്ടാംകക്ഷി"
+- Petitions: "ഹർജിക്കാരി / എതിർകക്ഷി"
+
+ADDRESS BLOCK FORMAT (always use this structure for party descriptions):
+"[വില്ലേജ്], [കര]യിൽ, [സ്ഥലം] ഭാഗത്ത്, [house name] വീട്ടിൽ, [name], [father's/husband's name] [relation], [age] വയസ്സ്"
+
+NUMBERS: Always spell in Malayalam words followed by figures in brackets:
+e.g. "പത്ത് ലക്ഷം (Rs.10,00,000/-) രൂപ", "നൂറ്റി അൻപത് (Rs.150/-) രൂപ"
+
+LEGAL GROUNDING PHRASES (use naturally where applicable):
+- "...നിയമപരമായ അവകാശമുള്ളതാണ്" (has the legal right to)
+- "...ബാധ്യസ്ഥനാണ്" (is obligated to)
+- "...ഉത്തരവ് ഉണ്ടാകേണ്ടതാണ്" (an order ought to be made)
+
+DO NOT fabricate or misattribute case law citations (e.g. Maneka Gandhi, Gurbaksh Singh Sibbia, or any other judgment names) under any circumstance — if case law isn't explicitly provided by the user, do not invent any.
+`;
+
+// ===== AGREEMENT TEMPLATES =====
+const AGREEMENT_TEMPLATES = {
+
+  rent_lease: `
+REFERENCE FORMAT — RENT/LEASE AGREEMENT (follow this exact structure):
+
+OPENING:
+"[date spelled in Malayalam] രണ്ടായിരത്തി ഇരുപത്തി ആറാമാണ്ട് [month] മാസം [date] തീയതി [district] ജില്ല, [taluk] താലൂക്ക്, [village] വില്ലേജ് [കര]യിൽ, ([PO] പി.ഒ. - [PIN]), [house name] വീട്ടിൽ [Party 1 name] ഒന്നാംകക്ഷിയായും
+
+[Party 2 full address block including ആധാർ കാർഡ് നമ്പർ if available] [Party 2 name] രണ്ടാംകക്ഷിയായും പരസ്പരം ഉഭയസമ്മതപ്പെട്ട് എഴുതിയ വാടക കരാർ.
+
+ഒന്നാംകക്ഷിയുടെ ഉടമസ്ഥതയിലും, കൈവശാനുഭവത്തിലും ഇരിക്കുന്നതും [panchayath] ഗ്രാമപഞ്ചായത്തിൽ നിന്നും [building number] നൽകിയിട്ടുള്ള കെട്ടിടമുറി താമസാവശ്യത്തിന് വേണ്ടി പ്രതിദിനം [rate spelled] (Rs.___/-) രൂപ വാടക നിശ്ചയിച്ച് രണ്ടാംകക്ഷി വാടകയ്ക്ക് എടുക്കാമെന്നും, മേൽ പറഞ്ഞ വാടകയ്ക്ക് ഒന്നാംകക്ഷി വാടകയ്ക്ക് കൊടുക്കാമെന്നും സമ്മതിച്ചതിന്റെ അടിസ്ഥാനത്തിൽ ഇരുകക്ഷികളും തമ്മിൽ ഉഭയസമ്മതപ്പെട്ട് ഇന്നേ ദിവസം വ്യവസ്ഥകൾ രേഖപ്പെടുത്തുന്നതാകുന്നു."
+
+VYAVASTHAKAL (numbered terms — adapt to user's specifics, always include these categories):
+1. Tenure/duration of the agreement
+2. Monthly/periodic rent amount + penal interest on default (e.g., "കുടിശ്ശിഖ വരുത്തിയാൽ പന്ത്രണ്ട് ശതമാനം പലിശ കൂട്ടികൊടുത്തുകൊള്ളാവുന്നതാണ്")
+3. Restriction: tenant cannot sublet, transfer, or hand over possession to third parties
+4. Tenant cannot alter structure / cause damage to building or fittings
+5. Utility bills (electricity, water) — tenant's own responsibility, tenant liable for any electricity-related legal issues
+6. Tenant has no right to structurally alter, demolish, or sublet; cannot damage fittings/sanitary fixtures belonging to landlord
+7. Liability clause — losses to either party due to breach
+8. Default/eviction clause — "വാടക തുടർച്ചയായി കുടിശ്ശിഖ വരുത്തിയാൽ കാലാവധി പരിഗണിക്കാതെ രണ്ടാംകക്ഷിയെ ഒഴിവാക്കി മുറി ഏറ്റെടുക്കാൻ ഒന്നാംകക്ഷിക്ക് അധികാരമുള്ളതാണ്"
+
+CLOSING:
+"മേൽ വ്യവസ്ഥകളെല്ലാം ഇരുകക്ഷികളും പരിപൂർണ്ണമായി സമ്മതിച്ചും അവ പാലിക്കാമെന്ന് പരസ്പരം ഉറപ്പ് നൽകിയും ഇന്നേ ദിവസം ഈ വാടക കരാറിൽ ഒപ്പിട്ടിരിക്കുന്നു.
+
+ഒന്നാംകക്ഷി: [name]
+രണ്ടാംകക്ഷി: [name]
+
+സാക്ഷികൾ:
+1.
+2."
+`,
+
+  sale_deed: `
+REFERENCE FORMAT — SALE DEED / തീറാധാരം (follow this exact structure):
+
+OPENING:
+"[date] [district] ജില്ല കോടതിയിൽ ഫയൽ ചെയ്ത... [seller full address block with ആധാർ/പാൻ if available] എന്നയാൾ,
+
+[buyer full address block with ആധാർ/പാൻ] എന്നയാൾക്ക് വേണ്ടി എഴുതി കൊടുത്ത തീറാധാരം."
+
+BODY — must narrate chain of title:
+- How seller acquired the property (inheritance / prior registered document with book/volume/page/document number)
+- "...മരണപ്പെട്ട് പോയതിനെ തുടർന്ന് പട്ടിക വസ്തുക്കൾ നിയമാനുസൃത അവകാശികളായ... കൂട്ടായി കൈവശം കിട്ടി ക്രയവിക്രയ സർവ്വസ്വാതന്ത്ര്യമായി അനുഭവിച്ച് വരുന്നതാണ്"
+- Consideration amount: spelled + figure, payment mode (cheque number, bank, account)
+- Possession/title transfer declaration: "...പൂർണ്ണ അവകാശപ്പെടുത്തി കൈവശം തരികയും ചെയ്തിരിക്കുന്നു"
+- No-encumbrance declaration: "...യാതൊരു കടബാദ്ധ്യതകളോ അവകാശ ന്യൂനതയോ കോർട്ട് ജപ്തി ജാമ്യം മുതലായ തടങ്കലുകളോ ഇല്ലെന്നും"
+- Indemnity clause for future claims
+
+വസ്തു വിവരം TABLE (always include all 17 fields):
+1. ക്രമനമ്പർ
+2. ഡിസ്ട്രിക്ട്
+3. സബ് ഡിസ്ട്രിക്ട്
+4. താലൂക്ക്
+5. വില്ലേജ്
+6. കര
+7. പഞ്ചായത്ത്
+8. റീ സർവേ ബ്ലോക്ക് നമ്പർ
+9. റീ സർവേ നമ്പർ
+10. റീ സർവേ സബ്ഡിവിഷൻ നമ്പർ
+11. പഴയ സർവേ നമ്പർ
+12. പഴയ സർവേ സബ്ഡിവിഷൻ നമ്പർ
+13. വിസ്തീർണ്ണം/ആർ
+14. അവകാശത്തിന്റെ സ്വഭാവം/ഭൂമിയുടെ തരം
+15. വിൽക്കുന്നവരുടെ വില്ലേജിലുള്ള തണ്ടപ്പേര് നമ്പർ
+16. വാങ്ങുന്നവരുടെ വില്ലേജിലുള്ള തണ്ടപ്പേര് നമ്പർ
+17. വസ്തു വിവരണം (narrative description with survey details)
+
+NAALATHIRUKAL (four boundaries — mandatory):
+കിഴക്ക് (East): ___
+പടിഞ്ഞാറ് (West): ___
+തെക്ക് (South): ___
+വടക്ക് (North): ___
+
+CLOSING: witness section (സാക്ഷി: numbered) + drafting advocate's name/roll number + "ഈ പ്രമാണം കമ്പ്യൂട്ടർ പ്രിന്റ് ചെയ്തിരിക്കുന്നു, വെട്ടുതിരുത്തില്ല"
+`,
+
+  generic_other: `
+REFERENCE FORMAT — for Partnership Deed, Affidavit, POA, Will, Vakalath (no specific template available yet):
+
+Apply the general opening formula:
+"[date spelled] [district] ജില്ല, [taluk] താലൂക്ക്, [village] വില്ലേജ് [കര]യിൽ... [party address blocks] പരസ്പരം ഉഭയസമ്മതപ്പെട്ട് എഴുതിയ [document type]."
+
+Use numbered വ്യവസ്ഥകൾ for terms/conditions, formal closing with party names + സാക്ഷികൾ (witnesses) section.
+Apply all general style rules from MALAYALAM_LEGAL_STYLE above. If the document type has specialized statutory language the model is unsure of, prefer simpler accurate phrasing over fabricated formal terms.
+`
+};
+
+function buildAgreementPrompt(agrType, lang, party1, party2, details) {
+  let template;
+  switch (agrType) {
+    case 'Rent / Lease Agreement':
+      template = AGREEMENT_TEMPLATES.rent_lease;
+      break;
+    case 'Sale Agreement':
+    case 'Sale Deed':
+      template = AGREEMENT_TEMPLATES.sale_deed;
+      break;
+    default:
+      template = AGREEMENT_TEMPLATES.generic_other;
+  }
+
+  const styleGuide = (lang === 'Malayalam' || lang === 'bilingual Malayalam and English')
+    ? MALAYALAM_LEGAL_STYLE + '\n\n' + template
+    : '';
+
+  return `You are an expert Indian legal drafter specializing in Kerala-format legal agreements and deeds.
+${styleGuide}
+Now generate a complete, professional ${agrType} in ${lang}.
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, or _. Write plain text only. Use numbered headings like '1. Section Name' and numbered sub-points like '1.1'.
+
+Agreement Type: ${agrType}
+Party 1: ${party1}
+Party 2: ${party2}
+Key Details: ${details}
+
+Draft the full ${agrType} now. Mark all variable fields with [BRACKETS]. Write all content in ${lang}.`;
+}
+
 // ===== BUILD PROMPT PER TOOL =====
 function buildDraftPrompt(tool, lang, court) {
   switch(tool) {
@@ -945,14 +1088,7 @@ Mark variable fields [BRACKETS]. Write in ${lang}.`;
       const party1 = document.getElementById('agr-party1').value || '[First Party]';
       const party2 = document.getElementById('agr-party2').value || '[Second Party]';
       const details = document.getElementById('agr-details').value || '';
-      return `You are an expert Indian legal drafter specializing in Kerala-format legal agreements and deeds. Draft a complete, professional ${agrType} in ${lang} following Indian legal drafting conventions: title, date and place, parties clause with full descriptions (name, age if provided, address), recitals/preamble describing the transaction, numbered terms and conditions appropriate to this agreement type, and a closing with signature blocks for both parties plus a witnesses section (2 witnesses with name/address placeholders). Format using plain text only - no markdown symbols like #, **, ---. Use numbered headings like '1. Section Name' and numbered sub-points like '1.1'.
-
-Agreement Type: ${agrType}
-Party 1: ${party1}
-Party 2: ${party2}
-Key Details: ${details}
-
-Draft the full ${agrType} now. Mark all variable fields with [BRACKETS]. Write all content in ${lang}.`;
+      return buildAgreementPrompt(agrType, lang, party1, party2, details);
     }
   }
 }
