@@ -749,6 +749,9 @@ Mark all variable fields with [BRACKETS]. Write all content in ${lang}. Use prop
         prompt += `
 
 IMPORTANT MALAYALAM LEGAL TERMINOLOGY — use these exact terms:
+
+This document may be shown to advocates, court staff, or police officials. Accuracy and professional register are critical — incorrect terminology undermines credibility.
+
 - Theft (Section 379 IPC) = മോഷണം (NOT കള്ളൻ, which means 'thief' the person)
 - Bailable offence = ജാമ്യം ലഭിക്കാവുന്ന കുറ്റം (NOT ലഘു കുറ്റം)
 - Surety = ജാമ്യക്കാരൻ (NOT സ്ഥിരത്വ വ്യക്തി)
@@ -758,6 +761,11 @@ IMPORTANT MALAYALAM LEGAL TERMINOLOGY — use these exact terms:
 - Custody = കസ്റ്റഡി / കാരാഗൃഹം
 - FIR = എഫ്.ഐ.ആർ
 - Personal bond = വ്യക്തിഗത ജാമ്യപത്രം
+- Pre-trial custody / remand = റിമാൻഡിൽ / പോലീസ് കസ്റ്റഡിയിൽ (NOT കാരാഗൃഹത്തിൽ കൈദ്, which implies convicted prisoner in jail — only use കാരാഗൃഹം for convicted persons serving sentence)
+- Respondent in a bail application = always "സംസ്ഥാന സർക്കാർ, മുഖേന സ്റ്റേഷൻ ഹൗസ് ഓഫീസർ, [Police Station name]" (State of Kerala represented by Station House Officer) — NEVER name the police station alone as respondent
+- Court jurisdiction for Bail Application and Anticipatory Bail = use the COURT/FORUM field value selected by the user (Magistrate Court / Sessions Court / High Court) — do not default to High Court unless that's what was selected
+- Avoid repeating the same fact/argument across multiple numbered points — each point (1.1, 1.2, etc.) must add new information, not restate prior points in different words
+- Keep paragraphs concise — 2-3 sentences per point maximum
 Use formal registration/court Malayalam register throughout, similar to language used in Kerala sub-registrar documents and court petitions.`;
       }
       return prompt;
