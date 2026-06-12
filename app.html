@@ -947,7 +947,7 @@ async function generateDraft() {
     const text = await callAPI(fullPrompt);
     currentRawText = text;
     document.getElementById('loaderEl').style.display = 'none';
-    document.getElementById('outputText').innerHTML = marked.parse(text);
+    document.getElementById('outputText').innerText = text;
     document.getElementById('outputText').style.display = 'block';
     document.getElementById('outputActions').style.display = 'flex';
     document.getElementById('feedbackRow').style.display = 'flex';
@@ -986,8 +986,9 @@ function downloadPDF() {
       <div><div class="pdf-brand">⚖️ Vakeel AI</div><div style="font-size:11px;color:#6b7280;margin-top:4px">Vectrasource Digital Suite</div></div>
       <div class="pdf-meta"><div>${toolName} Draft</div><div>Language: ${lang}</div><div>Generated: ${now}</div><div style="color:#e05555;margin-top:4px;font-size:10px">⚠️ Review before filing</div></div>
     </div>
-    ${marked.parse(currentRawText)}
+    <div id="pdfTextBody" style="white-space:pre-wrap"></div>
   `;
+  document.getElementById('pdfTextBody').innerText = currentRawText;
   const opt = {
     margin: [15,15,15,15],
     filename: `VakeelAI_${toolName}_${now.replace(/\//g,'-')}.pdf`,
@@ -1041,7 +1042,7 @@ function loadFromHistory(i) {
   if (!item) return;
   currentRawText = item.text;
   document.getElementById('draftPlaceholder').style.display = 'none';
-  document.getElementById('outputText').innerHTML = marked.parse(item.text);
+  document.getElementById('outputText').innerText = item.text;
   document.getElementById('outputText').style.display = 'block';
   document.getElementById('outputActions').style.display = 'flex';
   document.getElementById('feedbackRow').style.display = 'flex';
