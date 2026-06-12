@@ -958,11 +958,11 @@ Draft the full ${agrType} now. Mark all variable fields with [BRACKETS]. Write a
 }
 
 // ===== SHARED API =====
-async function callAPI(fullPrompt, model) {
+async function callAPI(fullPrompt, model, maxTokens) {
   const res = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fullPrompt, model })
+    body: JSON.stringify({ fullPrompt, model, maxTokens })
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error.message);
@@ -1009,6 +1009,7 @@ async function generateDraft() {
   const model = (lang === 'Malayalam' || lang === 'bilingual Malayalam and English')
     ? 'anthropic/claude-sonnet-4-5'
     : 'anthropic/claude-haiku-4-5';
+  const maxTokens = currentTool === 'agreement' ? 6000 : 4000;
 
   document.getElementById('genBtn').disabled = true;
   document.getElementById('draftPlaceholder').style.display = 'none';
@@ -1019,7 +1020,7 @@ async function generateDraft() {
   document.getElementById('loaderEl').style.display = 'flex';
 
   try {
-    const text = await callAPI(fullPrompt, model);
+    const text = await callAPI(fullPrompt, model, maxTokens);
     currentRawText = text;
     document.getElementById('loaderEl').style.display = 'none';
     document.getElementById('outputText').innerText = text;
