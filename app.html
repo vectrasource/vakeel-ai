@@ -754,6 +754,8 @@ LEGAL GROUNDING PHRASES (use naturally where applicable):
 - "...ഉത്തരവ് ഉണ്ടാകേണ്ടതാണ്" (an order ought to be made)
 
 DO NOT fabricate or misattribute case law citations (e.g. Maneka Gandhi, Gurbaksh Singh Sibbia, or any other judgment names) under any circumstance — if case law isn't explicitly provided by the user, do not invent any.
+
+NEVER present alternative phrasings, options, or bracketed choices like '[അല്ലെങ്കിൽ: ...]' (OR alternatives) in the output. Commit to a single best phrasing based on the details provided. If information is missing, use a [PLACEHOLDER] for that specific missing detail only — do not offer multiple drafting options.
 `;
 
 // ===== AGREEMENT TEMPLATES =====
@@ -844,6 +846,24 @@ Use numbered വ്യവസ്ഥകൾ for terms/conditions, formal closing wi
 Apply all general style rules from MALAYALAM_LEGAL_STYLE above. If the document type has specialized statutory language the model is unsure of, prefer simpler accurate phrasing over fabricated formal terms.
 `
 };
+
+const AGREEMENT_MAX_TOKENS = {
+  rent_lease: 8000,
+  sale_deed: 8000,
+  generic_other: 3000
+};
+
+function getMaxTokens(agrType) {
+  switch (agrType) {
+    case 'Rent / Lease Agreement':
+      return AGREEMENT_MAX_TOKENS.rent_lease;
+    case 'Sale Agreement':
+    case 'Sale Deed':
+      return AGREEMENT_MAX_TOKENS.sale_deed;
+    default:
+      return AGREEMENT_MAX_TOKENS.generic_other;
+  }
+}
 
 function buildAgreementPrompt(agrType, lang, party1, party2, details) {
   let template;
@@ -1145,7 +1165,9 @@ async function generateDraft() {
   const model = (lang === 'Malayalam' || lang === 'bilingual Malayalam and English')
     ? 'anthropic/claude-sonnet-4-5'
     : 'anthropic/claude-haiku-4-5';
-  const maxTokens = currentTool === 'agreement' ? 6000 : 4000;
+  const maxTokens = currentTool === 'agreement'
+    ? getMaxTokens(document.getElementById('agr-type').value)
+    : 4000;
 
   document.getElementById('genBtn').disabled = true;
   document.getElementById('draftPlaceholder').style.display = 'none';
