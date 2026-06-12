@@ -701,56 +701,66 @@ function buildDraftPrompt(tool, lang, court) {
       const type = document.getElementById('pet-type').value;
       const subject = document.getElementById('pet-subject').value || 'Legal matter';
       const facts = document.getElementById('pet-facts').value || '';
-      return `You are Vakeel AI's document drafting engine for Kerala/India legal documents.
+      let prompt = `You are Vakeel AI's document drafting engine for Kerala/India legal documents.
 
 Draft a complete ${type} for ${court} in ${lang}.
 Subject: ${subject}
 Facts: ${facts}
 
-Format using markdown:
+Format using plain text with clear section headings and numbered points. Do not use markdown symbols like #, **, or ---.
 
-# ${type}
-**Court:** ${court}
-**Subject:** ${subject}
+${type}
+Court: ${court}
+Subject: ${subject}
 
----
+IN THE ${court.toUpperCase()}
 
-**IN THE ${court.toUpperCase()}**
+PETITION NO.: [To be filled]
 
-**PETITION NO.:** [To be filled]
-
-**IN THE MATTER OF:**
+IN THE MATTER OF:
 [Petitioner Name] ... Petitioner
 vs.
 [Respondent Name] ... Respondent
 
----
+PETITION
 
-## PETITION
+Most Respectfully Showeth:
 
-**Most Respectfully Showeth:**
-
-### 1. Facts of the Case
+1. Facts of the Case
 [Detailed facts based on: ${facts}]
 
-### 2. Grounds
+2. Grounds
 1. [Ground 1]
 2. [Ground 2]
 3. [Ground 3]
 
-### 3. Prayer
+3. Prayer
 [Clear prayer/relief sought]
 
----
-
-**[Advocate Name]**
+[Advocate Name]
 [Bar Council No.]
 Counsel for Petitioner
 
-**Date:**
-**Place:** Kerala
+Date:
+Place: Kerala
 
 Mark all variable fields with [BRACKETS]. Write all content in ${lang}. Use proper legal terminology.`;
+      if (lang === 'Malayalam') {
+        prompt += `
+
+IMPORTANT MALAYALAM LEGAL TERMINOLOGY — use these exact terms:
+- Theft (Section 379 IPC) = മോഷണം (NOT കള്ളൻ, which means 'thief' the person)
+- Bailable offence = ജാമ്യം ലഭിക്കാവുന്ന കുറ്റം (NOT ലഘു കുറ്റം)
+- Surety = ജാമ്യക്കാരൻ (NOT സ്ഥിരത്വ വ്യക്തി)
+- High Court = ഉന്നതന്യായാലയം / ഹൈക്കോടതി (NOT ഉച്ചന്യായാലയം)
+- Petitioner = പെറ്റീഷണർ (correct spelling, note the ർ ending, not പെറ്റീഷണരുടെ)
+- Accused = പ്രതി / പ്രതിയ്ക്ക്
+- Custody = കസ്റ്റഡി / കാരാഗൃഹം
+- FIR = എഫ്.ഐ.ആർ
+- Personal bond = വ്യക്തിഗത ജാമ്യപത്രം
+Use formal registration/court Malayalam register throughout, similar to language used in Kerala sub-registrar documents and court petitions.`;
+      }
+      return prompt;
     }
     case 'notice': {
       const type = document.getElementById('not-type').value;
@@ -764,7 +774,7 @@ Reply deadline: ${days} days
 Facts: ${facts}
 Context: ${court}
 
-Format using markdown:
+Format using plain text with clear section headings and numbered points. Do not use markdown symbols like #, **, or ---.
 
 # Legal Notice — ${type}
 **Date:** [Date]
@@ -813,7 +823,7 @@ Mark all variable fields [BRACKETS]. Write in ${lang}.`;
 Document type: ${docType}
 Clause: ${clause}
 
-Format using markdown:
+Format using plain text with clear section headings and numbered points. Do not use markdown symbols like #, **, or ---.
 
 # Clause Explanation — ${docType}
 
@@ -853,7 +863,7 @@ Purpose: ${purpose}
 Details: ${details}
 Court context: ${court}
 
-Format using markdown:
+Format using plain text with clear section headings and numbered points. Do not use markdown symbols like #, **, or ---.
 
 # Client Communication — ${purpose}
 
