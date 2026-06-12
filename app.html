@@ -729,7 +729,8 @@ const toolLoaders = {
   petition: 'Drafting petition in Malayalam... (10-15 sec)',
   notice: 'Drafting legal notice... (10-15 sec)',
   explain: 'Explaining the clause... (10-15 sec)',
-  client: 'Writing client letter... (10-15 sec)'
+  client: 'Writing client letter... (10-15 sec)',
+  agreement: 'Drafting agreement... (10-15 sec)'
 };
 
 // ===== BUILD PROMPT PER TOOL =====
@@ -938,6 +939,20 @@ Please feel free to contact us for any clarifications.
 [Bar Council No. | Phone | Email]
 
 Mark variable fields [BRACKETS]. Write in ${lang}.`;
+    }
+    case 'agreement': {
+      const agrType = document.getElementById('agr-type').value;
+      const party1 = document.getElementById('agr-party1').value || '[First Party]';
+      const party2 = document.getElementById('agr-party2').value || '[Second Party]';
+      const details = document.getElementById('agr-details').value || '';
+      return `You are an expert Indian legal drafter specializing in Kerala-format legal agreements and deeds. Draft a complete, professional ${agrType} in ${lang} following Indian legal drafting conventions: title, date and place, parties clause with full descriptions (name, age if provided, address), recitals/preamble describing the transaction, numbered terms and conditions appropriate to this agreement type, and a closing with signature blocks for both parties plus a witnesses section (2 witnesses with name/address placeholders). Format using plain text only - no markdown symbols like #, **, ---. Use numbered headings like '1. Section Name' and numbered sub-points like '1.1'.
+
+Agreement Type: ${agrType}
+Party 1: ${party1}
+Party 2: ${party2}
+Key Details: ${details}
+
+Draft the full ${agrType} now. Mark all variable fields with [BRACKETS]. Write all content in ${lang}.`;
     }
   }
 }
