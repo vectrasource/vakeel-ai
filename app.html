@@ -77,7 +77,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(7,7,14,0.95);backdrop-filt
 
 /* TOOL TABS */
 .tool-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
-@media(min-width:480px){.tool-tabs{grid-template-columns:repeat(4,1fr);}}
+@media(min-width:480px){.tool-tabs{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:640px){.tool-tabs{grid-template-columns:repeat(5,1fr);}}
 .tool-tab{background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius);
   padding:12px 10px;cursor:pointer;text-align:left;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
 .tool-tab:hover{border-color:rgba(212,160,23,0.5);background:var(--gold-dim);}
@@ -400,6 +401,9 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
       <button class="tool-tab" data-tool="client" onclick="selectTool(this)">
         <span class="t-icon">✉️</span><span class="t-name">Client Letter</span><span class="t-desc">Case updates</span>
       </button>
+      <button class="tool-tab" data-tool="agreement" onclick="selectTool(this)">
+        <span class="t-icon">📜</span><span class="t-name">Agreement / Deed</span><span class="t-desc">Rent, Sale, Affidavit, POA</span>
+      </button>
     </div>
 
     <div class="form-card">
@@ -412,7 +416,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
             <option value="bilingual Malayalam and English">Bilingual</option>
           </select>
         </div>
-        <div>
+        <div id="court-field-wrap">
           <label>Court / Forum</label>
           <select id="courtSelect">
             <option value="Kerala High Court">Kerala High Court</option>
@@ -547,6 +551,40 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
         <div class="form-row">
           <label>Case Update Details</label>
           <textarea id="cl-details" placeholder="e.g. Hearing postponed to 25 June 2026. Judge requested additional documents — original title deed and tax receipts from 2020-2024..." style="min-height:70px"></textarea>
+        </div>
+      </div>
+
+      <!-- SMART FIELDS: Agreement / Deed -->
+      <div class="smart-fields hidden" id="fields-agreement">
+        <div class="form-divider">Agreement Details</div>
+        <div class="form-row">
+          <label>Agreement Type</label>
+          <select id="agr-type">
+            <option>Rent / Lease Agreement</option>
+            <option>Sale Agreement</option>
+            <option>Sale Deed</option>
+            <option>Partnership Deed</option>
+            <option>Affidavit</option>
+            <option>Power of Attorney</option>
+            <option>Will</option>
+            <option>Vakalathnama</option>
+            <option>MOU</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-grid">
+          <div>
+            <label>Party 1</label>
+            <input type="text" id="agr-party1" placeholder="First Party - name, age, address" />
+          </div>
+          <div>
+            <label>Party 2</label>
+            <input type="text" id="agr-party2" placeholder="Second Party - name, age, address" />
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Key Details</label>
+          <textarea id="agr-details" placeholder="Property details, amount, duration, terms..." style="min-height:80px"></textarea>
         </div>
       </div>
 
@@ -686,7 +724,7 @@ let isRecording = false;
 let currentTool = 'petition';
 let currentRawText = '';
 
-const toolEmojis = { petition:'📄', notice:'📨', explain:'💬', client:'✉️' };
+const toolEmojis = { petition:'📄', notice:'📨', explain:'💬', client:'✉️', agreement:'📜' };
 const toolLoaders = {
   petition: 'Drafting petition in Malayalam... (10-15 sec)',
   notice: 'Drafting legal notice... (10-15 sec)',
@@ -932,6 +970,7 @@ function selectTool(btn) {
   document.querySelectorAll('.smart-fields').forEach(el => el.classList.add('hidden'));
   const fields = document.getElementById('fields-' + currentTool);
   if (fields) fields.classList.remove('hidden');
+  document.getElementById('court-field-wrap').style.display = currentTool === 'agreement' ? 'none' : '';
   resetOutput();
 }
 
