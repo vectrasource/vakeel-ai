@@ -1241,7 +1241,9 @@ async function generateDraft() {
     : 'anthropic/claude-haiku-4-5';
   const maxTokens = currentTool === 'agreement'
     ? getMaxTokens(document.getElementById('agr-type').value)
-    : 4000;
+    : (currentTool === 'client' && document.getElementById('cl-purpose').value === 'Legal Opinion')
+      ? 8000
+      : 4000;
 
   document.getElementById('genBtn').disabled = true;
   document.getElementById('draftPlaceholder').style.display = 'none';
