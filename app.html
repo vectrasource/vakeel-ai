@@ -531,13 +531,14 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
         <div class="form-grid">
           <div>
             <label>Letter Purpose</label>
-            <select id="cl-purpose">
+            <select id="cl-purpose" onchange="updateClientFields()">
               <option>Case status update</option>
               <option>Hearing date intimation</option>
               <option>Document request</option>
               <option>Settlement offer</option>
               <option>Fee payment reminder</option>
               <option>Case closure</option>
+              <option>Legal Opinion</option>
             </select>
           </div>
           <div>
@@ -1110,6 +1111,36 @@ Write in simple ${lang}.`;
       const purpose = document.getElementById('cl-purpose').value;
       const tone = document.getElementById('cl-tone').value;
       const details = document.getElementById('cl-details').value || '';
+      if (purpose === 'Legal Opinion') {
+        return `You are an expert Kerala advocate drafting a formal Legal Opinion in ${lang}.
+
+# Legal Opinion — [Subject/Matter]
+
+**[Law Firm Letterhead]**
+**Date:** [Date]
+
+**Re:** [Legal Question/Issue]
+
+## Question Presented
+[Restate the legal question clearly]
+
+## Brief Answer
+[Short direct answer to the question]
+
+## Facts
+[Facts as provided: ${details}]
+
+## Analysis / Applicable Law
+[Legal reasoning, relevant Acts/Sections for Kerala/India context]
+
+## Conclusion & Recommendation
+[Clear recommendation/next steps]
+
+**[Advocate Name]**
+[Bar Council No.]
+
+Mark variable fields [BRACKETS]. Write in ${lang}.`;
+      }
       return `You are Vakeel AI drafting a ${tone} client letter in ${lang} for an advocate.
 
 Purpose: ${purpose}
@@ -1677,6 +1708,19 @@ function updateFactsPlaceholder() {
     ta.placeholder = 'Plaint allegations to respond to, your client\'s defence/version of facts, documents relied upon...';
   } else {
     ta.placeholder = 'e.g. Property dispute in Thrissur, tenant refusing to vacate since 3 years despite court notice. Petitioner is the owner with registered title deed...';
+  }
+}
+
+function updateClientFields() {
+  const purpose = document.getElementById('cl-purpose').value;
+  const label = document.querySelector('label[for="cl-details"], #fields-client label');
+  const textarea = document.getElementById('cl-details');
+  if (purpose === 'Legal Opinion') {
+    textarea.previousElementSibling.textContent = 'Legal Question / Issue';
+    textarea.placeholder = 'e.g. Whether a tenant can be evicted without a court order if the rent agreement has expired and they refuse to vacate...';
+  } else {
+    textarea.previousElementSibling.textContent = 'Case Update Details';
+    textarea.placeholder = 'e.g. Hearing postponed to 25 June 2026. Judge requested additional documents — original title deed and tax receipts from 2020-2024...';
   }
 }
 
