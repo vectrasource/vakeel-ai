@@ -918,7 +918,7 @@ function buildAgreementPrompt(agrType, lang, party1, party2, details) {
   return `You are an expert Indian legal drafter specializing in Kerala-format legal agreements and deeds.
 ${styleGuide}
 Now generate a complete, professional ${agrType} in ${lang}.
-Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or ``` code fences. Write plain text only. Do not wrap the output in triple backticks or any code block. Use numbered points like '1.' and '1.1' for structure.
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Do not wrap the output in triple backtick characters or any code block. Use numbered points like '1.' and '1.1' for structure.
 
 Agreement Type: ${agrType}
 Party 1: ${party1}
@@ -941,7 +941,7 @@ Draft a complete ${type} for ${court} in ${lang}.
 Subject: ${subject}
 Facts: ${facts}
 
-Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or ``` code fences. Write plain text only. Do not wrap the output in triple backticks or any code block. Use numbered points like '1.' and '1.1' for structure.
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Do not wrap the output in triple backtick characters or any code block. Use numbered points like '1.' and '1.1' for structure.
 
 ${type}
 Court: ${court}
@@ -1013,7 +1013,7 @@ Use formal registration/court Malayalam register throughout, similar to language
           : REPLY_TO_NOTICE_TEMPLATE;
         return `You are an expert Kerala advocate drafting a formal reply to a legal notice in ${lang}.
 ${styleGuide}
-Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or ``` code fences. Write plain text only. Do not wrap the output in triple backticks or any code block. Use numbered points like '1.' and '1.1' for structure.
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Do not wrap the output in triple backtick characters or any code block. Use numbered points like '1.' and '1.1' for structure.
 
 Client details and original notice claims / counter-facts: ${facts}
 
@@ -1028,7 +1028,7 @@ Reply deadline: ${days} days
 Facts: ${facts}
 Context: ${court}
 
-Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or ``` code fences. Write plain text only. Do not wrap the output in triple backticks or any code block. Use numbered points like '1.' and '1.1' for structure.
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Do not wrap the output in triple backtick characters or any code block. Use numbered points like '1.' and '1.1' for structure.
 
 # Legal Notice — ${type}
 **Date:** [Date]
@@ -1077,7 +1077,7 @@ Mark all variable fields [BRACKETS]. Write in ${lang}.`;
 Document type: ${docType}
 Clause: ${clause}
 
-Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or ``` code fences. Write plain text only. Do not wrap the output in triple backticks or any code block. Use numbered points like '1.' and '1.1' for structure.
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Do not wrap the output in triple backtick characters or any code block. Use numbered points like '1.' and '1.1' for structure.
 
 # Clause Explanation — ${docType}
 
@@ -1147,7 +1147,7 @@ Purpose: ${purpose}
 Details: ${details}
 Court context: ${court}
 
-Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or ``` code fences. Write plain text only. Do not wrap the output in triple backticks or any code block. Use numbered points like '1.' and '1.1' for structure.
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Do not wrap the output in triple backtick characters or any code block. Use numbered points like '1.' and '1.1' for structure.
 
 # Client Communication — ${purpose}
 
