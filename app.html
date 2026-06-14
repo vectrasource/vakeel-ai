@@ -981,7 +981,7 @@ Date:
 Place: Kerala
 
 Mark all variable fields with [BRACKETS]. Write all content in ${lang}. Use proper legal terminology.`;
-      if (lang === 'Malayalam') {
+      if (lang === 'Malayalam' || lang === 'bilingual Malayalam and English') {
         prompt += `
 
 IMPORTANT MALAYALAM LEGAL TERMINOLOGY — use these exact terms:
@@ -992,6 +992,7 @@ This document may be shown to advocates, court staff, or police officials. Accur
 - Bailable offence = ജാമ്യം ലഭിക്കാവുന്ന കുറ്റം (NOT ലഘു കുറ്റം)
 - Surety = ജാമ്യക്കാരൻ (NOT സ്ഥിരത്വ വ്യക്തി)
 - High Court = ഉന്നതന്യായാലയം / ഹൈക്കോടതി (NOT ഉച്ചന്യായാലയം)
+- Addressing the court = ബഹുമാനപ്പെട്ട (NOT മാന്യപ്പെട്ട — correct: "ബഹുമാനപ്പെട്ട ന്യായാധിപന്മാരെ വിനയപൂർവ്വം സമർപ്പിക്കുന്നു", NEVER "മാന്യപ്പെട്ട ന്യായാധിപന്മാരെ")
 - Petitioner = പെറ്റീഷണർ (correct spelling, note the ർ ending, not പെറ്റീഷണരുടെ)
 - Accused = പ്രതി / പ്രതിയ്ക്ക്
 - Custody = കസ്റ്റഡി / കാരാഗൃഹം
@@ -1002,6 +1003,7 @@ This document may be shown to advocates, court staff, or police officials. Accur
 - Court jurisdiction for Bail Application and Anticipatory Bail = use the COURT/FORUM field value selected by the user (Magistrate Court / Sessions Court / High Court) — do not default to High Court unless that's what was selected
 - Avoid repeating the same fact/argument across multiple numbered points — each point (1.1, 1.2, etc.) must add new information, not restate prior points in different words
 - Keep paragraphs concise — 2-3 sentences per point maximum
+- DO NOT fabricate or misattribute case law citations (e.g. Maneka Gandhi, Gurbaksh Singh Sibbia, or any other judgment names) under any circumstance — if case law isn't explicitly provided by the user, do not invent any.
 Use formal registration/court Malayalam register throughout, similar to language used in Kerala sub-registrar documents and court petitions.`;
       }
       return prompt;
@@ -1245,7 +1247,9 @@ async function generateDraft() {
     ? getMaxTokens(document.getElementById('agr-type').value)
     : (currentTool === 'client' && document.getElementById('cl-purpose').value === 'Legal Opinion')
       ? 8000
-      : 4000;
+      : (currentTool === 'petition' && (lang === 'Malayalam' || lang === 'bilingual Malayalam and English'))
+        ? 8000
+        : 4000;
 
   document.getElementById('genBtn').disabled = true;
   document.getElementById('draftPlaceholder').style.display = 'none';
