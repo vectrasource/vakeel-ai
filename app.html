@@ -1296,35 +1296,49 @@ function copyOutput() {
   });
 }
 
-// ===== PDF (jsPDF direct) =====
-async function downloadPDF() {
-  const { jsPDF } = window.jspdf;
+// ===== PDF (native print) =====
+function downloadPDF() {
   const lang = document.getElementById('langSelect').value;
   const now = new Date().toLocaleDateString('en-IN');
   const toolName = currentTool.charAt(0).toUpperCase() + currentTool.slice(1);
-  const pdfEl = document.getElementById('pdfContent');
+  const safeText = currentRawText
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-  pdfEl.innerHTML = `
-    <div class="pdf-header">
-      <div><div class="pdf-brand">⚖️ Vakeel AI</div><div style="font-size:11px;color:#6b7280;margin-top:4px">Vectrasource Digital Suite</div></div>
-      <div class="pdf-meta"><div>${toolName} Draft</div><div>Language: ${lang}</div><div>Generated: ${now}</div><div style="color:#e05555;margin-top:4px;font-size:10px">⚠️ Review before filing</div></div>
-    </div>
-    <div id="pdfTextBody" style="white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;font-family:'Noto Sans Malayalam','DM Sans',sans-serif;"></div>
-  `;
-  document.getElementById('pdfTextBody').innerText = currentRawText;
-  pdfEl.style.display = 'block';
-
-  const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
-  await doc.html(pdfEl, {
-    callback: function(d) {
-      d.save(`VakeelAI_${toolName}_${now.replace(/\//g, '-')}.pdf`);
-      pdfEl.style.display = 'none';
-    },
-    margin: [40, 40, 40, 40],
-    autoPaging: 'text',
-    width: 515,
-    windowWidth: 794
-  });
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8"/>
+<title>VakeelAI_${toolName}_${now.replace(/\//g, '-')}</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;600&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans Malayalam','DM Sans',sans-serif;font-size:13px;line-height:1.9;color:#0f172a;padding:30mm 20mm;background:#fff;}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #d4a017;padding-bottom:10px;margin-bottom:18px;}
+  .brand{font-weight:800;font-size:17px;color:#b8860b;}
+  .brand-sub{font-size:11px;color:#6b7280;margin-top:3px;}
+  .meta{text-align:right;font-size:11px;color:#6b7280;line-height:1.7;}
+  .meta .tool{font-weight:700;font-size:13px;color:#374151;}
+  .warn{color:#e05555;font-size:10px;margin-top:4px;}
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;font-family:'Noto Sans Malayalam','DM Sans',sans-serif;font-size:13px;line-height:1.9;}
+  @media print{body{padding:0;}@page{margin:20mm 18mm;size:A4;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div><div class="brand">⚖️ Vakeel AI</div><div class="brand-sub">Vectrasource Digital Suite</div></div>
+  <div class="meta">
+    <div class="tool">${toolName} Draft</div>
+    <div>Language: ${lang}</div>
+    <div>Generated: ${now}</div>
+    <div class="warn">⚠️ Review before filing</div>
+  </div>
+</div>
+<pre>${safeText}</pre>
+<script>document.fonts.ready.then(function(){window.print();});<\/script>
+</body>
+</html>`);
+  win.document.close();
 }
 
 // ===== DOCX =====
