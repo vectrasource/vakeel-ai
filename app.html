@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>വക്കീൽ AI — കേരളത്തിന്റെ AI നിയമ സഹായി</title>
 <meta property="og:title" content="Vakeel AI — AI Legal Drafting for Kerala Advocates" /> <meta property="og:description" content="Draft petitions, legal notices, clauses & client letters in seconds — For advocates, businesses & every Kerala citizen who needs legal help." /> <meta property="og:image" content="https://vakeel-ai.vectrasource.com/og-image.png" /> <meta property="og:url" content="https://vakeel-ai.vectrasource.com/app.html" /> <meta property="og:type" content="website" /> <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;900&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Malayalam:wght@400;600&display=swap" rel="stylesheet"/>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M4WSNSHVHS"></script> <script>   window.dataLayer = window.dataLayer || [];   function gtag(){dataLayer.push(arguments);}   gtag('js', new Date());   gtag('config', 'G-M4WSNSHVHS'); </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 <style>
 :root {
   --gold:#d4a017;--gold-light:#f0c040;--gold-dim:rgba(212,160,23,0.15);--gold-border:rgba(212,160,23,0.22);
@@ -137,6 +139,8 @@ textarea{resize:vertical;min-height:80px;line-height:1.65;}
 .action-btn.whatsapp:hover{background:rgba(74,222,128,0.15);}
 .action-btn.pdf{color:#a78bfa;border-color:rgba(167,139,250,0.4);background:rgba(167,139,250,0.08);}
 .action-btn.pdf:hover{background:rgba(167,139,250,0.15);}
+.action-btn.docx{color:#34d399;border-color:rgba(52,211,153,0.4);background:rgba(52,211,153,0.08);}
+.action-btn.docx:hover{background:rgba(52,211,153,0.15);}
 
 .output-body{padding:1.5rem;min-height:140px;}
 .output-placeholder{font-size:13px;color:var(--text-faint);font-style:italic;line-height:1.7;}
@@ -292,7 +296,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.65;}
 .sec-sub{font-size:12.5px;color:var(--text-dim);margin-bottom:18px;line-height:1.7;}
 
 /* PDF hidden area */
-#pdfContent{display:none;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.8;color:#0f172a;padding:20px;}
+#pdfContent{display:none;font-family:'Noto Sans Malayalam','DM Sans',sans-serif;font-size:13px;line-height:1.8;color:#0f172a;padding:20px;}
 #pdfContent h1,#pdfContent h2,#pdfContent h3{font-weight:700;margin:1em 0 0.4em;}
 #pdfContent h1{font-size:18px;border-bottom:2px solid #d4a017;padding-bottom:6px;color:#b8860b;}
 #pdfContent h2{font-size:15px;color:#8b6914;}
@@ -599,6 +603,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
         <div class="output-actions" id="outputActions" style="display:none">
           <button class="action-btn" id="copyBtn" onclick="copyOutput()">📋 Copy</button>
           <button class="action-btn pdf" onclick="downloadPDF()">⬇ PDF</button>
+          <button class="action-btn docx" onclick="downloadDOCX()">⬇ Word</button>
           <a class="action-btn whatsapp" id="waBtn" href="#" target="_blank">💬 WhatsApp</a>
         </div>
       </div>
@@ -1291,29 +1296,69 @@ function copyOutput() {
   });
 }
 
-// ===== PDF =====
-function downloadPDF() {
+// ===== PDF (jsPDF direct) =====
+async function downloadPDF() {
+  const { jsPDF } = window.jspdf;
   const lang = document.getElementById('langSelect').value;
   const now = new Date().toLocaleDateString('en-IN');
   const toolName = currentTool.charAt(0).toUpperCase() + currentTool.slice(1);
   const pdfEl = document.getElementById('pdfContent');
+
   pdfEl.innerHTML = `
     <div class="pdf-header">
       <div><div class="pdf-brand">⚖️ Vakeel AI</div><div style="font-size:11px;color:#6b7280;margin-top:4px">Vectrasource Digital Suite</div></div>
       <div class="pdf-meta"><div>${toolName} Draft</div><div>Language: ${lang}</div><div>Generated: ${now}</div><div style="color:#e05555;margin-top:4px;font-size:10px">⚠️ Review before filing</div></div>
     </div>
-    <div id="pdfTextBody" style="white-space:pre-wrap"></div>
+    <div id="pdfTextBody" style="white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;font-family:'Noto Sans Malayalam','DM Sans',sans-serif;"></div>
   `;
   document.getElementById('pdfTextBody').innerText = currentRawText;
-  const opt = {
-    margin: [15,15,15,15],
-    filename: `VakeelAI_${toolName}_${now.replace(/\//g,'-')}.pdf`,
-    image: { type:'jpeg', quality:0.98 },
-    html2canvas: { scale:2, useCORS:true },
-    jsPDF: { unit:'mm', format:'a4', orientation:'portrait' }
-  };
   pdfEl.style.display = 'block';
-  html2pdf().set(opt).from(pdfEl).save().then(() => { pdfEl.style.display = 'none'; });
+
+  const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+  await doc.html(pdfEl, {
+    callback: function(d) {
+      d.save(`VakeelAI_${toolName}_${now.replace(/\//g, '-')}.pdf`);
+      pdfEl.style.display = 'none';
+    },
+    margin: [40, 40, 40, 40],
+    autoPaging: 'text',
+    width: 515,
+    windowWidth: 794
+  });
+}
+
+// ===== DOCX =====
+async function downloadDOCX() {
+  const lang = document.getElementById('langSelect').value;
+  const now = new Date().toLocaleDateString('en-IN');
+  const toolName = currentTool.charAt(0).toUpperCase() + currentTool.slice(1);
+
+  const { Document, Packer, Paragraph, TextRun } = docx;
+
+  const lines = currentRawText.split('\n');
+  const children = [
+    new Paragraph({
+      children: [new TextRun({ text: 'Vakeel AI — ' + toolName + ' Draft', bold: true, size: 32, color: 'B8860B' })]
+    }),
+    new Paragraph({
+      children: [new TextRun({ text: 'Language: ' + lang + '  |  Generated: ' + now, size: 20, color: '6B7280' })]
+    }),
+    new Paragraph({ text: '' }),
+    ...lines.map(line => new Paragraph({
+      children: [new TextRun({ text: line || ' ', size: 22 })]
+    }))
+  ];
+
+  const wordDoc = new Document({ sections: [{ properties: {}, children }] });
+  const blob = await Packer.toBlob(wordDoc);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `VakeelAI_${toolName}_${now.replace(/\//g, '-')}.docx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ===== FEEDBACK =====
