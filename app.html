@@ -1246,7 +1246,7 @@ async function generateDraft() {
   const court = document.getElementById('courtSelect').value;
   const fullPrompt = buildDraftPrompt(currentTool, lang, court);
   const model = (lang === 'Malayalam' || lang === 'bilingual Malayalam and English')
-    ? 'anthropic/claude-sonnet-4-5'
+    ? 'google/gemini-2.5-flash'
     : 'anthropic/claude-haiku-4-5';
   const maxTokens = currentTool === 'agreement'
     ? getMaxTokens(document.getElementById('agr-type').value)
