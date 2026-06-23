@@ -1302,7 +1302,9 @@ async function generateDraft() {
       ? 8000
       : (currentTool === 'petition' && (lang === 'Malayalam' || lang === 'bilingual Malayalam and English'))
         ? 8000
-        : 4000;
+        : (currentTool === 'notice')
+          ? 6000
+          : 4000;
 
   document.getElementById('genBtn').disabled = true;
   document.getElementById('draftPlaceholder').style.display = 'none';
@@ -1337,7 +1339,7 @@ async function generateDraft() {
 
 // ===== COPY =====
 function copyOutput() {
-  navigator.clipboard.writeText(currentRawText).then(() => {
+  navigator.clipboard.writeText(document.getElementById('outputText').innerText).then(() => {
     const btn = document.getElementById('copyBtn');
     btn.textContent = '✓ Copied!';
     setTimeout(() => btn.textContent = '📋 Copy', 2000);
