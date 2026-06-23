@@ -1030,8 +1030,16 @@ Draft the complete Reply to Notice now. Mark all missing details as [PLACEHOLDER
       }
       const amount = document.getElementById('not-amount').value || '[Amount]';
       const days = document.getElementById('not-days').value;
-      return `You are Vakeel AI's document drafting engine. Draft a formal ${type} legal notice in ${lang}.
+      const noticeStyleGuide = (lang === 'Malayalam' || lang === 'bilingual Malayalam and English')
+        ? MALAYALAM_LEGAL_STYLE + `
 
+KERALA COURT-SPECIFIC TERMS FOR LEGAL NOTICE (use these exactly):
+- Rent disputes: refer to the forum as 'വാടകനിയന്ത്രണ കോടതി (Rent Control Court)' — do not use any other term for this court
+- Communication references: use 'മൗഖികമായും രേഖാമൂലവും ബന്ധപ്പെട്ടിട്ടും' when describing prior oral and written communication with the noticee
+- Risk clauses: use 'നഷ്ടസാധ്യതയിലും' in consequence/risk sentences (e.g. "ടി കക്ഷിയുടെ നഷ്ടസാധ്യതയിലും ചെലവിലും...")`
+        : '';
+      return `You are Vakeel AI's document drafting engine. Draft a formal ${type} legal notice in ${lang}.
+${noticeStyleGuide}
 Amount: ₹${amount}
 Reply deadline: ${days} days
 Facts: ${facts}
