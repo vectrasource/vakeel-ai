@@ -1316,7 +1316,7 @@ async function generateDraft() {
     const text = await callAPI(fullPrompt, model, maxTokens);
     currentRawText = text;
     document.getElementById('loaderEl').style.display = 'none';
-    document.getElementById('outputText').innerText = text;
+    document.getElementById('outputText').innerHTML = text;
     document.getElementById('outputText').style.display = 'block';
     document.getElementById('outputActions').style.display = 'flex';
     document.getElementById('feedbackRow').style.display = 'flex';
@@ -1349,8 +1349,11 @@ function downloadPDF() {
   const lang = document.getElementById('langSelect').value;
   const now = new Date().toLocaleDateString('en-IN');
   const toolName = currentTool.charAt(0).toUpperCase() + currentTool.slice(1);
-  const safeText = currentRawText
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const isHTML = currentRawText.trim().startsWith('<');
+  const bodyContent = isHTML
+    ? currentRawText
+    : `<pre style="white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;">${currentRawText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>`;
 
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html>
@@ -1369,6 +1372,11 @@ function downloadPDF() {
   .meta .tool{font-weight:700;font-size:13px;color:#374151;}
   .warn{color:#e05555;font-size:10px;margin-top:4px;}
   pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;font-family:'Noto Sans Malayalam','DM Sans',sans-serif;font-size:13px;line-height:1.9;}
+  .legal-notice{font-family:'Noto Sans Malayalam','DM Sans',sans-serif;font-size:13px;line-height:1.9;}
+  .legal-notice h3{font-size:15px;font-weight:700;margin:1em 0 0.4em;color:#1e293b;}
+  .legal-notice p{margin:0.5em 0;}
+  .legal-notice ul,.legal-notice ol{padding-left:1.5em;margin:0.5em 0;}
+  .legal-notice li{margin:0.3em 0;}
   @media print{body{padding:0;}@page{margin:20mm 18mm;size:A4;}}
 </style>
 </head>
@@ -1382,7 +1390,7 @@ function downloadPDF() {
     <div class="warn">⚠️ Review before filing</div>
   </div>
 </div>
-<pre>${safeText}</pre>
+${bodyContent}
 <script>document.fonts.ready.then(function(){window.print();});<\/script>
 </body>
 </html>`);
@@ -1397,7 +1405,7 @@ async function downloadDOCX() {
 
   const { Document, Packer, Paragraph, TextRun } = docx;
 
-  const lines = currentRawText.split('\n');
+  const lines = document.getElementById('outputText').innerText.split('\n');
   const children = [
     new Paragraph({
       children: [new TextRun({ text: 'Vakeel AI — ' + toolName + ' Draft', bold: true, size: 32, color: 'B8860B' })]
@@ -1465,7 +1473,7 @@ function loadFromHistory(i) {
   if (!item) return;
   currentRawText = item.text;
   document.getElementById('draftPlaceholder').style.display = 'none';
-  document.getElementById('outputText').innerText = item.text;
+  document.getElementById('outputText').innerHTML = item.text;
   document.getElementById('outputText').style.display = 'block';
   document.getElementById('outputActions').style.display = 'flex';
   document.getElementById('feedbackRow').style.display = 'flex';
