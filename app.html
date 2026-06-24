@@ -915,17 +915,21 @@ function buildSaleDeedDocument(party1, party2, det) {
   function parsePerson(raw, detKey) {
     let src = raw && raw.trim();
     if (!src) {
-      // fall back to det: extract line after "Vendor:" / "Vendee:" etc.
       const m = det.match(new RegExp(detKey + '[:\\s]+([^\\n]+)', 'i'));
       src = m ? m[1].trim() : '';
     }
-    if (!src) return { name: D, address: D };
-    // split on S/o, W/o, D/o or first comma
-    const splitMatch = src.match(/^([^,S\/]+?)(?:\s+[SWD]\/[oO]\s+|\s*,\s*)(.+)$/);
-    if (splitMatch) {
-      return { name: splitMatch[1].trim() || D, address: splitMatch[2].trim() || D };
+    if (!src) return { name: D, father: D, address: D };
+    // Extract name, father (S/o W/o D/o), address
+    const soMatch = src.match(/^([^,]+?)\s+[SWD]\/[oO]\s+([^,]+),?\s*(.*)$/);
+    if (soMatch) {
+      return {
+        name:    soMatch[1].trim() || D,
+        father:  soMatch[2].trim() || D,
+        address: soMatch[3].trim() || D
+      };
     }
-    return { name: src.split(',')[0].trim() || D, address: src.split(',').slice(1).join(',').trim() || D };
+    const parts = src.split(',');
+    return { name: parts[0].trim() || D, father: D, address: parts.slice(1).join(',').trim() || D };
   }
 
   const p1 = parsePerson(party1, 'vendor');
@@ -935,16 +939,26 @@ function buildSaleDeedDocument(party1, party2, det) {
   function extractAmount(pattern) {
     const m = det.match(pattern);
     if (!m) return D;
-    // check if followed by ₹ figure
     const rupeeM = m[0].match(/₹([\d,]+)/);
     return rupeeM ? '₹' + rupeeM[1] : m[1].trim();
   }
+  // strip leading ₹ for use inside "Rs. .../-"
+  function amtNum(a) { return a === D ? D : a.replace(/^₹/, ''); }
 
   const total    = extractAmount(/(?:total|ആകെ വില|price|value)[:\s]+([^\n;]+)/i);
   const advance  = extractAmount(/(?:advance|അഡ്വാൻസ്|advance amount|മുൻകൂർ)[:\s]+([^\n;]+)/i);
   const balance  = extractAmount(/(?:balance|ബാക്കി)[:\s]+([^\n;]+)/i);
   const district = extract(/(?:district|ജില്ല)[:\s]+([^\n,;]+)/i);
-  const taluk    = extract(/(?:taluk|താലൂക്ക്)[:\s]+([^\n,;]+)/i);
+
+  // taluk: prefer "Taluk: value" keyword; fallback to word before "താലൂക്ക്"
+  const taluk = (() => {
+    const kwM = det.match(/taluk[:\s]+([^\n,;]+)/i);
+    if (kwM) return kwM[1].trim();
+    const mlM = det.match(/(\S+)\s+താലൂക്ക്/);
+    if (mlM) return mlM[1].trim();
+    return D;
+  })();
+
   const village  = extract(/(?:village|വില്ലേജ്)[:\s]+([^\n,;]+)/i);
   const survey   = extract(/(?:rs\.?\s*no|re-?survey no|survey no|സർവ്വേ നമ്പർ)[:\s#.]+([^\n,;]+)/i);
 
@@ -958,7 +972,7 @@ function buildSaleDeedDocument(party1, party2, det) {
 
 പേര്: ${p1.name}
 
-പിതാവ്/ഭർത്താവ്: ${D}
+പിതാവ്/ഭർത്താവ്: ${p1.father}
 
 പ്രായം: ${D}
 
@@ -970,7 +984,7 @@ function buildSaleDeedDocument(party1, party2, det) {
 
 പേര്: ${p2.name}
 
-പിതാവ്/ഭർത്താവ്: ${D}
+പിതാവ്/ഭർത്താവ്: ${p2.father}
 
 പ്രായം: ${D}
 
@@ -1024,9 +1038,9 @@ function buildSaleDeedDocument(party1, party2, det) {
 
 വ്യവസ്ഥകൾ:
 
-വില നിശ്ചയം: കരാർ വസ്തുവിന്റെ ആകെ വിലയായി ഇരുകക്ഷികളും ചേർന്ന് നിശ്ചയിച്ചിട്ടുള്ളതും സമ്മതിച്ചിട്ടുള്ളതുമായ തുക ${total} (Rs. ${total}/-) രൂപയാകുന്നു.
+വില നിശ്ചയം: കരാർ വസ്തുവിന്റെ ആകെ വിലയായി ഇരുകക്ഷികളും ചേർന്ന് നിശ്ചയിച്ചിട്ടുള്ളതും സമ്മതിച്ചിട്ടുള്ളതുമായ തുക ${total} (Rs. ${amtNum(total)}/-) രൂപയാകുന്നു.
 
-തുക കൈമാറ്റം: ടി ആകെ തുകയിൽ മുൻകൂറായി (അഡ്വാൻസ്) ${advance} (Rs. ${advance}/-) രൂപ രണ്ടാം കക്ഷി ഒന്നാം കക്ഷിക്ക് നൽകിയിട്ടുള്ളതും ഒന്നാം കക്ഷി അത് കൈപ്പറ്റി ബോധ്യപ്പെട്ടതുമാകുന്നു. ബാക്കി തുകയായ ${balance} (Rs. ${balance}/-) രൂപ ഈ ആധാരം സബ് രജിസ്ട്രാർ ഓഫീസിൽ രജിസ്റ്റർ ചെയ്യുന്ന ഇന്നേ ദിവസം രണ്ടാം കക്ഷി ഒന്നാം കക്ഷിക്ക് പൂർണ്ണമായി നൽകേണ്ടതാകുന്നു.
+തുക കൈമാറ്റം: ടി ആകെ തുകയിൽ മുൻകൂറായി (അഡ്വാൻസ്) ${advance} (Rs. ${amtNum(advance)}/-) രൂപ രണ്ടാം കക്ഷി ഒന്നാം കക്ഷിക്ക് നൽകിയിട്ടുള്ളതും ഒന്നാം കക്ഷി അത് കൈപ്പറ്റി ബോധ്യപ്പെട്ടതുമാകുന്നു. ബാക്കി തുകയായ ${balance} (Rs. ${amtNum(balance)}/-) രൂപ ഈ ആധാരം സബ് രജിസ്ട്രാർ ഓഫീസിൽ രജിസ്റ്റർ ചെയ്യുന്ന ഇന്നേ ദിവസം രണ്ടാം കക്ഷി ഒന്നാം കക്ഷിക്ക് പൂർണ്ണമായി നൽകേണ്ടതാകുന്നു.
 
 ബാധ്യതാരഹിത ബോധ്യപ്പെടുത്തൽ: കരാർ വസ്തുവിന്മേൽ യാതൊരുവിധ മുൻകടങ്ങളോ, ഗവൺമെന്റ് ബാധ്യതകളോ, കോടതി ജാമ്യങ്ങളോ, നികുതി കുടിശ്ശികകളോ, മറ്റ് നിയമപരമായ തടസ്സങ്ങളോ ഇല്ലെന്ന് ഒന്നാം കക്ഷി രണ്ടാം കക്ഷിയെ പൂർണ്ണമായി ബോധ്യപ്പെടുത്തുന്നു. ഭാവിയിൽ ഇതിൽ എന്തെങ്കിലും അവകാശവാദങ്ങളോ ബാധ്യതകളോ ബോധ്യപ്പെടുന്ന പക്ഷം അതിന്റെ പൂർണ്ണ ഉത്തരവാദിത്തവും ചിലവും ഒന്നാം കക്ഷിയുടേതായിരിക്കും.
 
