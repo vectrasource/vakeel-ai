@@ -904,58 +904,141 @@ function getMaxTokens(agrType) {
   }
 }
 
-function buildSaleDeedDocument(party1, party2, details, aiBody) {
-  const p1Parts = party1.split(',').map(s => s.trim());
-  const p1Name    = p1Parts[0] || '................';
-  const p1Address = p1Parts.slice(1).join(', ') || '................';
+function buildSaleDeedDocument(party1, party2, det) {
+  const D = '................';
 
-  const p2Parts = party2.split(',').map(s => s.trim());
-  const p2Name    = p2Parts[0] || '................';
-  const p2Address = p2Parts.slice(1).join(', ') || '................';
+  const p1Parts  = party1.split(',');
+  const p1Name   = p1Parts[0].trim() || D;
+  const p1Address = p1Parts.slice(1).join(',').trim() || D;
 
-  return `വില്പന ആധാരം
+  const p2Parts  = party2.split(',');
+  const p2Name   = p2Parts[0].trim() || D;
+  const p2Address = p2Parts.slice(1).join(',').trim() || D;
 
-തീയതി: ................
-സ്ഥലം: ................
+  function extract(pattern) {
+    const m = det.match(pattern);
+    return m ? m[1].trim() : D;
+  }
 
+  const total    = extract(/(?:total|ആകെ വില|price|value)[:\s]+([^\n,;]+)/i);
+  const advance  = extract(/(?:advance|അഡ്വാൻസ്|advance amount|മുൻകൂർ)[:\s]+([^\n,;]+)/i);
+  const balance  = extract(/(?:balance|ബാക്കി)[:\s]+([^\n,;]+)/i);
+  const district = extract(/(?:district|ജില്ല)[:\s]+([^\n,;]+)/i);
+  const taluk    = extract(/(?:taluk|താലൂക്ക്)[:\s]+([^\n,;]+)/i);
+  const village  = extract(/(?:village|വില്ലേജ്)[:\s]+([^\n,;]+)/i);
+  const survey   = extract(/(?:rs\.?\s*no|re-?survey no|survey no|സർവ്വേ നമ്പർ)[:\s#.]+([^\n,;]+)/i);
+
+  return `തീറാധാരം
+
+തീയതി: ${D}
+
+സ്ഥലം: ${D}
+
+ഒന്നാം കക്ഷി (വിൽക്കുന്ന കക്ഷി / അവകാശദാതാവ്):
+
+പേര്: ${p1Name}
+
+പിതാവ്/ഭർത്താവ്: ${D}
+
+പ്രായം: ${D}
+
+വിലാസം: ${p1Address}
+
+ആധാർ നമ്പർ: ${D}
+
+രണ്ടാം കക്ഷി (വാങ്ങുന്ന കക്ഷി / അവകാശഗ്രാഹകൻ):
+
+പേര്: ${p2Name}
+
+പിതാവ്/ഭർത്താവ്: ${D}
+
+പ്രായം: ${D}
+
+വിലാസം: ${p2Address}
+
+ആധാർ നമ്പർ: ${D}
+
+കരാർ വസ്തുവിൻ്റെ വിവരങ്ങൾ (ഷെഡ്യൂൾ):
+
+ജില്ല: ${district}
+
+താലൂക്ക്: ${taluk}
+
+വില്ലേജ്: ${village}
+
+മുറി/കര: ${D}
+
+റീ-സർവ്വേ ബ്ലോക്ക് നമ്പർ: ${D}
+
+റീ-സർവ്വേ നമ്പർ: ${survey}
+
+പഴയ സർവ്വേ നമ്പർ: ${D}
+
+ഭൂമിയുടെ തരം (പുരയിടം/നിലം): ${D}
+
+വിസ്തീർണ്ണം (സ്ഥലത്തിന്റെ അളവ്): ${D}
+
+കെട്ടിട നമ്പർ (ഉണ്ടെങ്കിൽ): ${D}
+
+മുൻ ആധാര വിവരങ്ങൾ:
+
+മുൻ ആധാര നമ്പർ: ${D}
+
+വർഷം: ${D}
+
+സബ് രജിസ്ട്രാർ ഓഫീസ്: ${D}
+
+വസ്തുവിന്റെ അതിരുകൾ:
+
+കിഴക്ക്: ${D}
+
+പടിഞ്ഞാറ്: ${D}
+
+വടക്ക്: ${D}
+
+തെക്ക്: ${D}
+
+ആമുഖം:
+
+മേൽ വിവരിച്ച ഒന്നാം കക്ഷിയുടെ പൂർണ്ണ ഉടമസ്ഥതയിലും സ്വതന്ത്രമായ കൈവശാനുഭവത്തിലും ഇരിക്കുന്നതും, മുൻ ആധാരപ്രകാരം ഒന്നാം കക്ഷിക്ക് സിദ്ധിച്ചിട്ടുള്ളതുമായ കരാർ വസ്തു രണ്ടാം കക്ഷിക്ക് വില്പന നടത്തുന്നതിനായി ഇരുകക്ഷികളും തമ്മിൽ പരസ്പരം സമ്മതിച്ച് താഴെ പറയുന്ന വ്യവസ്ഥകളോടെ ഈ വില്പന ആധാരം എഴുതി ഒപ്പിടുന്നു.
+
+വ്യവസ്ഥകൾ:
+
+വില നിശ്ചയം: കരാർ വസ്തുവിന്റെ ആകെ വിലയായി ഇരുകക്ഷികളും ചേർന്ന് നിശ്ചയിച്ചിട്ടുള്ളതും സമ്മതിച്ചിട്ടുള്ളതുമായ തുക ${total} (Rs. ${total}/-) രൂപയാകുന്നു.
+
+തുക കൈമാറ്റം: ടി ആകെ തുകയിൽ മുൻകൂറായി (അഡ്വാൻസ്) ${advance} (Rs. ${advance}/-) രൂപ രണ്ടാം കക്ഷി ഒന്നാം കക്ഷിക്ക് നൽകിയിട്ടുള്ളതും ഒന്നാം കക്ഷി അത് കൈപ്പറ്റി ബോധ്യപ്പെട്ടതുമാകുന്നു. ബാക്കി തുകയായ ${balance} (Rs. ${balance}/-) രൂപ ഈ ആധാരം സബ് രജിസ്ട്രാർ ഓഫീസിൽ രജിസ്റ്റർ ചെയ്യുന്ന ഇന്നേ ദിവസം രണ്ടാം കക്ഷി ഒന്നാം കക്ഷിക്ക് പൂർണ്ണമായി നൽകേണ്ടതാകുന്നു.
+
+ബാധ്യതാരഹിത ബോധ്യപ്പെടുത്തൽ: കരാർ വസ്തുവിന്മേൽ യാതൊരുവിധ മുൻകടങ്ങളോ, ഗവൺമെന്റ് ബാധ്യതകളോ, കോടതി ജാമ്യങ്ങളോ, നികുതി കുടിശ്ശികകളോ, മറ്റ് നിയമപരമായ തടസ്സങ്ങളോ ഇല്ലെന്ന് ഒന്നാം കക്ഷി രണ്ടാം കക്ഷിയെ പൂർണ്ണമായി ബോധ്യപ്പെടുത്തുന്നു. ഭാവിയിൽ ഇതിൽ എന്തെങ്കിലും അവകാശവാദങ്ങളോ ബാധ്യതകളോ ബോധ്യപ്പെടുന്ന പക്ഷം അതിന്റെ പൂർണ്ണ ഉത്തരവാദിത്തവും ചിലവും ഒന്നാം കക്ഷിയുടേതായിരിക്കും.
+
+കൈവശം ഒഴിഞ്ഞുതരൽ: ബാക്കി തുക കൈപ്പറ്റുന്ന ഇന്നേ ദിവസം തന്നെ വസ്തുവിന്റെ അതിരുകൾ തിരിച്ച് കൃത്യമായ കൈവശാവകാശം ഒന്നാം കക്ഷി രണ്ടാം കക്ഷിക്ക് ഒഴിഞ്ഞു കൊടുക്കേണ്ടതാണ്. ഇന്നേ ദിവസം വരെയുള്ള എല്ലാ ഗവൺമെന്റ് നികുതികളും ഒന്നാം കക്ഷി അടച്ചുതീർത്തിട്ടുള്ളതുമാകുന്നു.
+
+അവകാശ കൈമാറ്റം: ഈ ആധാരപ്രകാരം വസ്തു കൈമാറ്റം ചെയ്യപ്പെടുന്നതോടെ വസ്തുവിന്മേലുള്ള എല്ലാവിധ അവകാശങ്ങളും, മുൻ ആധാരങ്ങളും, മറ്റ് ഉടമസ്ഥതാ രേഖകളും രണ്ടാം കക്ഷിയുടെ പൂർണ്ണമായ ഉടമസ്ഥതയിലേക്ക് മാറുന്നതും, വസ്തു സ്വന്തം പേരിൽ പോക്കുവരവ് (Mutate) ചെയ്യുന്നതിനും നികുതി ഒടുക്കുന്നതിനും രണ്ടാം കക്ഷിക്ക് പൂർണ്ണ അവകാശമുണ്ടായിരിക്കുന്നതുമാണ്.
+
+സമ്മതപത്രം:
+
+മേൽ വിവരിച്ച വ്യവസ്ഥകളെല്ലാം ഇരുകക്ഷികളും പൂർണ്ണമായി വായിച്ചു മനസ്സിലാക്കി സമ്മതിച്ചും, സാക്ഷികളുടെ മുൻപാകെ ഇന്നേ ദിവസം ഈ വില്പന ആധാരത്തിൽ ഒപ്പിടുന്നു.
 
 ഒന്നാം കക്ഷി (വിൽക്കുന്ന കക്ഷി):
-പേര്        : ${p1Name}
-വിലാസം     : ${p1Address}
-പ്രായം      : ................
-ആധാർ നമ്പർ  : ................
 
+പേര്: ${p1Name}
 
-രണ്ടാം കക്ഷി (വാങ്ങുന്ന കക്ഷി):
-പേര്        : ${p2Name}
-വിലാസം     : ${p2Address}
-പ്രായം      : ................
-ആധാർ നമ്പർ  : ................
+ഒപ്പ്: ____________________________
 
-
-കരാർ വസ്തുവിൻ്റെ വിവരങ്ങൾ:
-${details}
-
-
-${aiBody}
-
-
-ഒന്നാം കക്ഷി (വിൽക്കുന്ന കക്ഷി):
-പേര്   : ____________________________
-ഒപ്പ്   : ____________________________
-തീയതി  : ____________________________
+തീയതി: ____________________________
 
 രണ്ടാം കക്ഷി (വാങ്ങുന്ന കക്ഷി):
-പേര്   : ____________________________
-ഒപ്പ്   : ____________________________
-തീയതി  : ____________________________
+
+പേര്: ${p2Name}
+
+ഒപ്പ്: ____________________________
+
+തീയതി: ____________________________
 
 സാക്ഷികൾ:
-1. പേര്: ____________________________
-   ഒപ്പ്: ____________________________
 
-2. പേര്: ____________________________
-   ഒപ്പ്: ____________________________`;
+പേര്: ____________________________   ഒപ്പ്: ____________________________
+
+പേര്: ____________________________   ഒപ്പ്: ____________________________`;
 }
 
 function buildAgreementPrompt(agrType, lang, party1, party2, details) {
@@ -1100,43 +1183,6 @@ User input:
 Party 1 (Landlord): ${party1}
 Party 2 (Tenant): ${party2}
 Details (property, rent, deposit, duration, notice period): ${details}`;
-  }
-
-  if (agrType === 'Sale Deed' || agrType === 'വില്പന ആധാരം') {
-    return `STRICT RULE: Never mention any court. Never invent age, Aadhaar, PAN, cheque number, bank details, or advocate name. Never write anything not explicitly provided in the inputs below. Use "................" for any missing value.
-
-You are a Malayalam legal drafter. Write ONLY two sections for this Sale Deed — the ആമുഖം paragraph and the വ്യവസ്ഥകൾ clauses (1 through 6). Do not write a title, party blocks, property schedule, or signature block — those are built separately and will be added around your output.
-
-Use the inputs below to write accurate amounts, property references, and legal obligations. Write all amounts in words AND figures. Plain text only — no markdown, no asterisks, no bold.
-
-Party 1 (Vendor): ${party1}
-Party 2 (Vendee): ${party2}
-Property & Transaction Details: ${details}
-
-Output EXACTLY this structure and nothing else:
-
-ആമുഖം:
-[Preamble paragraph in formal Malayalam referring to both parties, the property, and the agreement to sell under the terms below.]
-
-വ്യവസ്ഥകൾ:
-
-1. വില നിശ്ചയം:
-[Total agreed sale amount — amount in Malayalam words followed by figures in Rs.]
-
-2. മുൻകൂർ തുക:
-[Advance paid by vendee to vendor — amount in words and figures, vendor's acknowledgement of receipt.]
-
-3. ബാക്കി തുക കൈമാറ്റം:
-[Balance amount — in words and figures — to be paid at time of registration; title passes on receipt.]
-
-4. ബാധ്യതാരഹിത ബോധ്യപ്പെടുത്തൽ:
-[Vendor's declaration that the property is free from all encumbrances, court attachments, tax arrears, and legal impediments; full liability on vendor if any arise.]
-
-5. ഒഴിഞ്ഞുതരലും നികുതിയും:
-[Vendor to hand over physical possession on receipt of balance; all government taxes up to that date paid by vendor; taxes thereafter by vendee.]
-
-6. ഉടമസ്ഥാവകാശ കൈമാറ്റം:
-[On execution of this deed all rights, title deeds, and ownership documents transfer to vendee; vendor has no objection.]`;
   }
 
   let template;
@@ -1553,12 +1599,14 @@ async function generateDraft() {
   document.getElementById('loaderEl').style.display = 'flex';
 
   try {
-    let text = await callAPI(fullPrompt, model, maxTokens);
+    let text;
     if (currentTool === 'agreement' && document.getElementById('agr-type').value === 'Sale Deed') {
-      const p1 = document.getElementById('agr-party1').value || '[First Party]';
-      const p2 = document.getElementById('agr-party2').value || '[Second Party]';
+      const p1  = document.getElementById('agr-party1').value || '';
+      const p2  = document.getElementById('agr-party2').value || '';
       const det = document.getElementById('agr-details').value || '';
-      text = buildSaleDeedDocument(p1, p2, det, text);
+      text = buildSaleDeedDocument(p1, p2, det);
+    } else {
+      text = await callAPI(fullPrompt, model, maxTokens);
     }
     currentRawText = text;
     document.getElementById('loaderEl').style.display = 'none';
