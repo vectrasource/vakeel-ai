@@ -907,22 +907,42 @@ function getMaxTokens(agrType) {
 function buildSaleDeedDocument(party1, party2, det) {
   const D = '................';
 
-  const p1Parts  = party1.split(',');
-  const p1Name   = p1Parts[0].trim() || D;
-  const p1Address = p1Parts.slice(1).join(',').trim() || D;
-
-  const p2Parts  = party2.split(',');
-  const p2Name   = p2Parts[0].trim() || D;
-  const p2Address = p2Parts.slice(1).join(',').trim() || D;
-
   function extract(pattern) {
     const m = det.match(pattern);
     return m ? m[1].trim() : D;
   }
 
-  const total    = extract(/(?:total|ആകെ വില|price|value)[:\s]+([^\n,;]+)/i);
-  const advance  = extract(/(?:advance|അഡ്വാൻസ്|advance amount|മുൻകൂർ)[:\s]+([^\n,;]+)/i);
-  const balance  = extract(/(?:balance|ബാക്കി)[:\s]+([^\n,;]+)/i);
+  function parsePerson(raw, detKey) {
+    let src = raw && raw.trim();
+    if (!src) {
+      // fall back to det: extract line after "Vendor:" / "Vendee:" etc.
+      const m = det.match(new RegExp(detKey + '[:\\s]+([^\\n]+)', 'i'));
+      src = m ? m[1].trim() : '';
+    }
+    if (!src) return { name: D, address: D };
+    // split on S/o, W/o, D/o or first comma
+    const splitMatch = src.match(/^([^,S\/]+?)(?:\s+[SWD]\/[oO]\s+|\s*,\s*)(.+)$/);
+    if (splitMatch) {
+      return { name: splitMatch[1].trim() || D, address: splitMatch[2].trim() || D };
+    }
+    return { name: src.split(',')[0].trim() || D, address: src.split(',').slice(1).join(',').trim() || D };
+  }
+
+  const p1 = parsePerson(party1, 'vendor');
+  const p2 = parsePerson(party2, 'vendee');
+
+  // amounts: capture ₹ figures with commas (e.g. ₹25,00,000)
+  function extractAmount(pattern) {
+    const m = det.match(pattern);
+    if (!m) return D;
+    // check if followed by ₹ figure
+    const rupeeM = m[0].match(/₹([\d,]+)/);
+    return rupeeM ? '₹' + rupeeM[1] : m[1].trim();
+  }
+
+  const total    = extractAmount(/(?:total|ആകെ വില|price|value)[:\s]+([^\n;]+)/i);
+  const advance  = extractAmount(/(?:advance|അഡ്വാൻസ്|advance amount|മുൻകൂർ)[:\s]+([^\n;]+)/i);
+  const balance  = extractAmount(/(?:balance|ബാക്കി)[:\s]+([^\n;]+)/i);
   const district = extract(/(?:district|ജില്ല)[:\s]+([^\n,;]+)/i);
   const taluk    = extract(/(?:taluk|താലൂക്ക്)[:\s]+([^\n,;]+)/i);
   const village  = extract(/(?:village|വില്ലേജ്)[:\s]+([^\n,;]+)/i);
@@ -936,25 +956,25 @@ function buildSaleDeedDocument(party1, party2, det) {
 
 ഒന്നാം കക്ഷി (വിൽക്കുന്ന കക്ഷി / അവകാശദാതാവ്):
 
-പേര്: ${p1Name}
+പേര്: ${p1.name}
 
 പിതാവ്/ഭർത്താവ്: ${D}
 
 പ്രായം: ${D}
 
-വിലാസം: ${p1Address}
+വിലാസം: ${p1.address}
 
 ആധാർ നമ്പർ: ${D}
 
 രണ്ടാം കക്ഷി (വാങ്ങുന്ന കക്ഷി / അവകാശഗ്രാഹകൻ):
 
-പേര്: ${p2Name}
+പേര്: ${p2.name}
 
 പിതാവ്/ഭർത്താവ്: ${D}
 
 പ്രായം: ${D}
 
-വിലാസം: ${p2Address}
+വിലാസം: ${p2.address}
 
 ആധാർ നമ്പർ: ${D}
 
@@ -1020,7 +1040,7 @@ function buildSaleDeedDocument(party1, party2, det) {
 
 ഒന്നാം കക്ഷി (വിൽക്കുന്ന കക്ഷി):
 
-പേര്: ${p1Name}
+പേര്: ${p1.name}
 
 ഒപ്പ്: ____________________________
 
@@ -1028,7 +1048,7 @@ function buildSaleDeedDocument(party1, party2, det) {
 
 രണ്ടാം കക്ഷി (വാങ്ങുന്ന കക്ഷി):
 
-പേര്: ${p2Name}
+പേര്: ${p2.name}
 
 ഒപ്പ്: ____________________________
 
