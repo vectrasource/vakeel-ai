@@ -573,10 +573,12 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
             <option>Agricultural Lease</option>
             <option>Partnership Deed</option>
             <option>Affidavit</option>
+            <option>General POA</option>
+            <option>Special POA</option>
             <option>Power of Attorney</option>
             <option>Will</option>
             <option>Vakalathnama</option>
-            <option>MOU</option>
+            <option>MoU</option>
             <option>Other</option>
           </select>
         </div>
@@ -1415,7 +1417,404 @@ function buildSaleDeedDocument(party1, party2, det) {
 പേര്: ____________________________   ഒപ്പ്: ____________________________`;
 }
 
+function _parsePOAParty(text, prefix) {
+  const after = text.includes(prefix) ? text.split(prefix)[1].split('\n')[0].trim() : '';
+  const soParts = after.split(/\s+S\/o\s+|\s+W\/o\s+|\s+D\/o\s+/i);
+  const name = soParts[0].trim() || '................';
+  const rest = soParts[1] || '';
+  const commaParts = rest.split(',');
+  const father = commaParts[0].trim() || '................';
+  const address = commaParts.slice(1).join(',').trim() || '................';
+  return { name, father, address };
+}
+
+function _parseField(det, key) {
+  if (!det.includes(key)) return '................';
+  return det.split(key)[1].split('\n')[0].trim() || '................';
+}
+
+function buildGeneralPOADocument(party1, party2, det) {
+  const D = '................';
+  const combined = [party1, party2, det].join('\n');
+  const principal = _parsePOAParty(combined, 'Principal:');
+  const agent     = _parsePOAParty(combined, 'Agent:');
+  return `ജനറൽ മുക്ത്യാർ നാമപത്രം
+
+ഞാൻ, ${principal.name}, പിതാവ്/ഭർത്താവ്: ${principal.father},
+പ്രായം ${D} , വിലാസം: ${principal.address} എന്നയാൾ:
+
+എന്റെ വ്യക്തിപരമായ തിരക്കുകൾ കാരണവും ഞാൻ ഇപ്പോൾ
+${D} (രാജ്യം/സ്ഥലം) താമസിക്കുന്നതിനാലും
+എനിക്ക് നേരിട്ട് നാട്ടിൽ വന്ന് കാര്യങ്ങൾ നടത്താൻ
+സാധിക്കാത്തതിനാലും, എനിക്ക് പൂർണ്ണ വിശ്വാസമുള്ള
+${agent.name}, പിതാവ്/ഭർത്താവ്: ${agent.father},
+പ്രായം ${D} , വിലാസം: ${agent.address}
+എന്നയാളെ എന്റെ നിയമാനുസൃതമായ പൊതുമുക്ത്യാർ
+(General Power of Attorney Agent) ആയി നിശ്ചയിച്ച്
+താഴെ പറയുന്ന വിപുലമായ അധികാരങ്ങൾ കൈമാറുന്നു:
+
+അധികാരങ്ങൾ:
+
+1. എന്റെ പേരിൽ നിലവിലുള്ളതും ഇനിമേൽ എനിക്ക്
+സിദ്ധിക്കാൻ പോകുന്നതുമായ എല്ലാവിധ ചരവും
+അചരവുമായ വസ്തുവകകൾ എന്റെ താല്പര്യപ്രകാരം
+നോക്കിനടത്തുന്നതിനും സംരക്ഷിക്കുന്നതിനും.
+
+2. എന്റെ ഉടമസ്ഥതയിലുള്ള വസ്തുക്കൾ മറ്റൊരാൾക്ക്
+വിൽക്കുന്നതിനോ, പണയപ്പെടുത്തുന്നതിനോ, വാടകയ്ക്ക്
+നൽകുന്നതിനോ ഉള്ള കരാറുകളിലും ഉടമ്പടികളിലും
+എനിക്ക് വേണ്ടി ഒപ്പുവെക്കുന്നതിനും സബ് രജിസ്ട്രാർ
+ഓഫീസുകളിൽ ഹാജരായി രജിസ്ട്രേഷൻ നടപടികൾ
+പൂർത്തിയാക്കുന്നതിനും.
+
+3. വിവിധ ബാങ്കുകളിൽ എന്റെ പേരിലുള്ള അക്കൗണ്ടുകൾ
+കൈകാര്യം ചെയ്യുന്നതിനും, തുക പിൻവലിക്കുന്നതിനും
+നിക്ഷേപിക്കുന്നതിനും, എനിക്ക് വേണ്ടി ചെക്കുകളിലും
+മറ്റ് രേഖകളിലും ഒപ്പുവെക്കുന്നതിനും.
+
+4. ബഹുമാനപ്പെട്ട വിവിധ കോടതികൾ മുൻപാകെ എനിക്ക്
+വേണ്ടി ഹാജരാകുന്നതിനും, വക്കാലത്തുകളിലും
+ഹർജികളിലും സത്യവാങ്മൂലങ്ങളിലും ഒപ്പുവെക്കുന്നതിനും.
+
+5. റവന്യൂ ഓഫീസുകൾ, വില്ലേജ് ഓഫീസുകൾ, കെ.എസ്.ഇ.ബി,
+വാട്ടർ അതോറിറ്റി, തദ്ദേശ സ്വയംഭരണ സ്ഥാപനങ്ങൾ
+തുടങ്ങിയ എല്ലാ സർക്കാർ ഓഫീസുകളിലും എനിക്ക്
+വേണ്ടി അപേക്ഷകൾ സമർപ്പിക്കുന്നതിനും നികുതികളും
+ബില്ലുകളും ഒടുക്കി രസീതുകൾ കൈപ്പറ്റുന്നതിനും.
+
+6. എന്റെ ബിസിനസ്സ് സ്ഥാപനങ്ങളുടെ ദൈനംദിന
+പ്രവർത്തനങ്ങൾ നടത്തുന്നതിനും, ലൈസൻസുകൾ
+പുതുക്കുന്നതിനും, തൊഴിലാളികളെ നിയമിക്കുന്നതിനും.
+
+മേൽ പറഞ്ഞ കാര്യങ്ങൾക്കെല്ലാം എന്റെ ഈ പൊതുമുക്ത്യാർ
+എനിക്ക് വേണ്ടി ചെയ്യുന്ന എല്ലാ നിയമപരമായ
+പ്രവർത്തനങ്ങളും ഞാൻ നേരിട്ട് ചെയ്തതായി
+കണക്കാക്കുന്നതും അതിന് പൂർണ്ണ നിയമസാധുത
+ഉണ്ടായിരിക്കുന്നതുമാണ്. ഞാൻ ഇത് രേഖാമൂലം
+റദ്ദാക്കുന്നത് വരെ ഈ മുക്ത്യാറിന് പൂർണ്ണ കാലാവധി
+ഉണ്ടായിരിക്കുന്നതാണ്.
+
+ഇതിനായി ഞാൻ ${D} (തീയതി) ഒപ്പിട്ടു നൽകുന്നു.
+
+മുക്ത്യാർ നൽകുന്നയാൾ (Principal):
+പേര്   : ${principal.name}
+ഒപ്പ്   : ____________________________
+
+മുക്ത്യാർ സ്വീകരിക്കുന്നയാൾ (Agent):
+പേര്   : ${agent.name}
+ഒപ്പ്   : ____________________________
+
+സാക്ഷികൾ:
+1. പേര്: ____________________________
+   ഒപ്പ്: ____________________________
+2. പേര്: ____________________________
+   ഒപ്പ്: ____________________________`;
+}
+
+function buildSpecialPOADocument(party1, party2, det) {
+  const D = '................';
+  const combined = [party1, party2, det].join('\n');
+  const principal = _parsePOAParty(combined, 'Principal:');
+  const agent     = _parsePOAParty(combined, 'Agent:');
+  const village   = _parseField(combined, 'Property:').split(/[,;]/)[0].trim() || D;
+  const surveyNo  = (() => { const p = _parseField(combined, 'Property:'); const m = p.match(/Survey\s*No[.:]\s*(\S+)/i); return m ? m[1] : D; })();
+  const buyer     = _parseField(combined, 'Buyer:');
+  return `സ്പെഷ്യൽ മുക്ത്യാർ നാമപത്രം
+
+ഞാൻ, ${principal.name}, പിതാവ്/ഭർത്താവ്: ${principal.father},
+പ്രായം ${D} , വിലാസം: ${principal.address} എന്നയാൾ:
+
+എനിക്ക് പൂർണ്ണ വിശ്വാസമുള്ള ${agent.name},
+പിതാവ്/ഭർത്താവ്: ${agent.father},
+പ്രായം ${D} , വിലാസം: ${agent.address}
+എന്നയാളെ എന്റെ നിയമാനുസൃതമായ പ്രത്യേക മുക്ത്യാർ
+(Special Power of Attorney Agent) ആയി നിശ്ചയിച്ച്
+താഴെ പറയുന്ന നിർദ്ദിഷ്ട അധികാരങ്ങൾ മാത്രം
+കൈമാറുന്നു:
+
+അധികാരങ്ങൾ:
+
+1. എനിക്ക് പൂർണ്ണ ഉടമസ്ഥാവകാശമുള്ള ${village}
+വില്ലേജിലെ ${surveyNo} സർവ്വേ നമ്പറിലുള്ള
+വസ്തു ${buyer} എന്ന വ്യക്തിക്ക് വിൽക്കുന്നതിനായുള്ള
+കരാറുകളിലും തീറാധാരത്തിലും എനിക്ക് വേണ്ടി
+ഒപ്പുവെക്കുന്നതിനും.
+
+2. മേൽ പറഞ്ഞ വസ്തു ഇടപാടുമായി ബന്ധപ്പെട്ട്
+സബ് രജിസ്ട്രാർ ഓഫീസിൽ ഹാജരാകുന്നതിനും,
+രജിസ്ട്രേഷൻ നടപടികൾ പൂർത്തിയാക്കുന്നതിനും,
+എനിക്ക് വേണ്ടിയുള്ള തുക കൈപ്പറ്റി രസീത്
+ഒപ്പിട്ടു നൽകുന്നതിനും.
+
+3. ഈ നിർദ്ദിഷ്ട ആവശ്യത്തിനായി മാത്രം ബന്ധപ്പെട്ട
+ഗവൺമെന്റ് ഓഫീസുകളിലോ തദ്ദേശ സ്വയംഭരണ
+സ്ഥാപനങ്ങളിലോ അപേക്ഷകൾ സമർപ്പിക്കുന്നതിനും
+ഫീസുകൾ ഒടുക്കുന്നതിനും.
+
+മേൽ പറഞ്ഞ പ്രത്യേക ആവശ്യങ്ങൾ പൂർത്തിയാകുന്നതോടെ
+ഈ മുക്ത്യാറിന്റെ കാലാവധി അവസാനിക്കുന്നതുമായിരിക്കും.
+
+ഇതിനായി ഞാൻ ${D} (തീയതി) ഒപ്പിട്ടു നൽകുന്നു.
+
+മുക്ത്യാർ നൽകുന്നയാൾ (Principal):
+പേര്   : ${principal.name}
+ഒപ്പ്   : ____________________________
+
+മുക്ത്യാർ സ്വീകരിക്കുന്നയാൾ (Agent):
+പേര്   : ${agent.name}
+ഒപ്പ്   : ____________________________
+
+സാക്ഷികൾ:
+1. പേര്: ____________________________
+   ഒപ്പ്: ____________________________
+2. പേര്: ____________________________
+   ഒപ്പ്: ____________________________`;
+}
+
+function buildPartnershipDeedDocument(party1, party2, det) {
+  const D = '................';
+  const combined = [party1, party2, det].join('\n');
+  const p1 = _parsePOAParty(combined, 'Partner1:');
+  const p2 = _parsePOAParty(combined, 'Partner2:');
+  const firmName     = _parseField(combined, 'Firm Name:');
+  const business     = _parseField(combined, 'Business:');
+  const officeAddr   = _parseField(combined, 'Address:');
+  const capital1     = _parseField(combined, 'Capital1:');
+  const capital2     = _parseField(combined, 'Capital2:');
+  const profitRatio  = _parseField(combined, 'Profit Ratio:');
+  const noticePeriod = _parseField(combined, 'Notice Period:');
+  return `പങ്കാളിത്ത കരാർ
+
+തീയതി: ${D}
+സ്ഥലം: ${D}
+
+ഒന്നാം കക്ഷി (പങ്കാളി):
+പേര്        : ${p1.name}
+പിതാവ്/ഭർത്താവ് : ${p1.father}
+പ്രായം      : ${D}
+വിലാസം     : ${p1.address}
+ആധാർ നമ്പർ  : ${D}
+
+രണ്ടാം കക്ഷി (പങ്കാളി):
+പേര്        : ${p2.name}
+പിതാവ്/ഭർത്താവ് : ${p2.father}
+പ്രായം      : ${D}
+വിലാസം     : ${p2.address}
+ആധാർ നമ്പർ  : ${D}
+
+ബിസിനസ്സ് വിവരങ്ങൾ:
+സ്ഥാപനത്തിന്റെ പേര്    : ${firmName}
+പ്രവർത്തന മേഖല         : ${business}
+പ്രധാന ഓഫീസ് വിലാസം   : ${officeAddr}
+
+ആമുഖം:
+മേൽ വിവരിച്ച ഇരുകക്ഷികളും ചേർന്ന് ഒരു
+പങ്കാളിത്ത സ്ഥാപനം (Partnership Firm) തുടങ്ങി
+നടത്തുന്നതിനായി പരസ്പരം സമ്മതിച്ച് താഴെ പറയുന്ന
+നിബന്ധനകളോടെ ഈ പങ്കാളിത്ത കരാർ ഏർപ്പെടുന്നു.
+
+വ്യവസ്ഥകൾ:
+
+1. മൂലധന നിക്ഷേപം:
+ഈ ബിസിനസ്സ് നടത്തുന്നതിനായി ഒന്നാം കക്ഷി
+${capital1} രൂപയും
+രണ്ടാം കക്ഷി ${capital2}
+രൂപയും മൂലധനമായി നിക്ഷേപിക്കാൻ
+സമ്മതിച്ചിരിക്കുന്നു.
+
+2. ലാഭനഷ്ട വിഹിതം:
+ബിസിനസ്സിൽ നിന്നും ഉണ്ടാകുന്ന എല്ലാവിധ
+ലാഭങ്ങളും നഷ്ടങ്ങളും ഇരുകക്ഷികളും
+${profitRatio} എന്ന അനുപാതത്തിൽ
+പങ്കിട്ടെടുക്കാൻ ബാധ്യസ്ഥരാണ്.
+
+3. ബാങ്ക് അക്കൗണ്ട് കൈകാര്യം ചെയ്യൽ:
+സ്ഥാപനത്തിന്റെ പേരിൽ ഒരു ഷെഡ്യൂൾഡ് ബാങ്കിൽ
+കറന്റ് അക്കൗണ്ട് ആരംഭിക്കേണ്ടതാണ്. ടി അക്കൗണ്ട്
+ഇരുകക്ഷികളും സംയുക്തമായിട്ടായിരിക്കും (Jointly)
+കൈകാര്യം ചെയ്യുക.
+
+4. ബിസിനസ്സ് നിർവ്വഹണവും ചുമതലകളും:
+ഇരുകക്ഷികളും സ്ഥാപനത്തിന്റെ ദൈനംദിന
+പ്രവർത്തനങ്ങളിൽ കൃത്യമായ ശ്രദ്ധ ചെലുത്തേണ്ടതാണ്.
+സ്ഥാപനത്തിന്റെ പേരിൽ എടുക്കുന്ന എല്ലാ
+സുപ്രധാന തീരുമാനങ്ങളും ഇരുകക്ഷികളുടെയും
+പരസ്പര സമ്മതത്തോടെ മാത്രമായിരിക്കണം.
+
+5. കണക്കുപുസ്തകങ്ങൾ:
+സ്ഥാപനത്തിന്റെ എല്ലാവിധ വരവ് ചിലവ്
+കണക്കുകളും രസീതുകളും പ്രധാന ഓഫീസിൽ
+സൂക്ഷിക്കേണ്ടതും ഇരുകക്ഷികൾക്കും എപ്പോൾ
+വേണമെങ്കിലും അത് പരിശോധിക്കാനുള്ള അവകാശം
+ഉണ്ടായിരിക്കുന്നതുമാണ്.
+
+6. പിരിഞ്ഞുപോകൽ / റദ്ദാക്കൽ (Dissolution):
+ഏതെങ്കിലും ഒരു പങ്കാളിക്ക് ഈ സ്ഥാപനത്തിൽ
+നിന്നും പിരിഞ്ഞുപോകാൻ താല്പര്യമുണ്ടെങ്കിൽ
+${noticePeriod} മാസം മുൻപ് മറ്റേ കക്ഷിക്ക്
+രേഖാമൂലം നോട്ടീസ് നൽകേണ്ടതാണ്.
+
+സമ്മതപത്രം:
+മേൽ വിവരിച്ച വ്യവസ്ഥകളെല്ലാം ഇരുകക്ഷികളും
+പൂർണ്ണമായി വായിച്ചു മനസ്സിലാക്കി സമ്മതിച്ചും
+സാക്ഷികളുടെ മുൻപാകെ ഇന്നേ ദിവസം ഈ
+പങ്കാളിത്ത കരാറിൽ ഒപ്പിടുന്നു.
+
+ഒന്നാം കക്ഷി:
+പേര്   : ${p1.name}
+ഒപ്പ്   : ____________________________
+തീയതി  : ____________________________
+
+രണ്ടാം കക്ഷി:
+പേര്   : ${p2.name}
+ഒപ്പ്   : ____________________________
+തീയതി  : ____________________________
+
+സാക്ഷികൾ:
+1. പേര്: ____________________________
+   ഒപ്പ്: ____________________________
+2. പേര്: ____________________________
+   ഒപ്പ്: ____________________________`;
+}
+
+function buildMoUDocument(party1, party2, det) {
+  const D = '................';
+  const combined = [party1, party2, det].join('\n');
+  const p1name   = _parseField(combined, 'Party1:') !== D ? _parseField(combined, 'Party1:') : (party1 || D);
+  const p2name   = _parseField(combined, 'Party2:') !== D ? _parseField(combined, 'Party2:') : (party2 || D);
+  const rep1     = _parseField(combined, 'Representative1:');
+  const rep2     = _parseField(combined, 'Representative2:');
+  const project  = _parseField(combined, 'Project:');
+  const duration = _parseField(combined, 'Duration:');
+  const noticeDays = _parseField(combined, 'Notice Days:');
+  return `ധാരണാ പത്രം
+
+തീയതി: ${D}
+സ്ഥലം: ${D}
+
+ഒന്നാം കക്ഷി:
+പേര്/സ്ഥാപനം          : ${p1name}
+പ്രതിനിധി              : ${rep1}
+വിലാസം                : ${D}
+ആധാർ/രജിസ്ട്രേഷൻ നമ്പർ : ${D}
+
+രണ്ടാം കക്ഷി:
+പേര്/സ്ഥാപനം          : ${p2name}
+പ്രതിനിധി              : ${rep2}
+വിലാസം                : ${D}
+ആധാർ/രജിസ്ട്രേഷൻ നമ്പർ : ${D}
+
+ധാരണയുടെ വിഷയം:
+പ്രവർത്തനം/പ്രോജക്ട്    : ${project}
+
+ആമുഖം:
+മേൽ വിവരിച്ച ഒന്നാം കക്ഷിയും രണ്ടാം കക്ഷിയും
+ചേർന്ന് സംയുക്തമായി മേൽ പറഞ്ഞ പ്രോജക്ട്
+നടപ്പിലാക്കുന്നതിനായി പരസ്പരം സഹകരിക്കാമെന്ന്
+ഏൽക്കുകയും അതിന്റെ അടിസ്ഥാന തത്വങ്ങൾ
+രേഖപ്പെടുത്തുന്നതിനായി ഈ ധാരണാ പത്രം
+(Memorandum of Understanding) ഒപ്പിടുന്നു.
+
+വ്യവസ്ഥകൾ:
+
+1. സഹകരണത്തിന്റെ ലക്ഷ്യം:
+ഈ ധാരണാ പത്രത്തിലൂടെ ഇരുകക്ഷികളും
+സംയുക്തമായി ലക്ഷ്യമിടുന്നത് ${project} എന്ന
+കാര്യത്തിന്റെ വിജയകരമായ നടത്തിപ്പാണ്.
+
+2. ഒന്നാം കക്ഷിയുടെ ചുമതലകൾ:
+ഈ ധാരണ പ്രകാരം ഒന്നാം കക്ഷി
+${D} തുടങ്ങിയ
+ഉത്തരവാദിത്തങ്ങൾ സമയബന്ധിതമായി
+നിർവ്വഹിക്കാൻ ബാധ്യസ്ഥനാണ്.
+
+3. രണ്ടാം കക്ഷിയുടെ ചുമതലകൾ:
+ഈ ധാരണ പ്രകാരം രണ്ടാം കക്ഷി
+${D} തുടങ്ങിയ
+ഉത്തരവാദിത്തങ്ങൾ സമയബന്ധിതമായി
+നിർവ്വഹിക്കാൻ ബാധ്യസ്ഥനാണ്.
+
+4. രഹസ്യസ്വഭാവം (Confidentiality):
+ഈ പ്രോജക്ടുമായി ബന്ധപ്പെട്ട് കൈമാറുന്ന
+യാതൊരുവിധ വിവരങ്ങളും മറ്റേ കക്ഷിയുടെ
+അനുവാദമില്ലാതെ മൂന്നാമതൊരു വ്യക്തിക്കോ
+സ്ഥാപനത്തിനോ കൈമാറാൻ പാടുള്ളതല്ല.
+
+5. കാലാവധിയും റദ്ദാക്കലും:
+ഈ ധാരണാ പത്രത്തിന് തീയതി മുതൽ
+${duration} കാലാവധി ഉണ്ടായിരിക്കുന്നതാണ്.
+ഏതെങ്കിലും കക്ഷിക്ക് ഈ ധാരണയിൽ നിന്നും
+പിന്മാറണമെങ്കിൽ ${noticeDays} ദിവസത്തെ
+മുൻകൂർ നോട്ടീസ് നൽകി ഈ പത്രം
+റദ്ദാക്കാവുന്നതാണ്.
+
+സമ്മതപത്രം:
+മേൽ വിവരിച്ച വ്യവസ്ഥകളെല്ലാം ഇരുകക്ഷികളും
+പൂർണ്ണമായി മനസ്സിലാക്കി സമ്മതിച്ചും
+സാക്ഷികളുടെ മുൻപാകെ ഇന്നേ ദിവസം ഈ
+ധാരണാ പത്രത്തിൽ ഒപ്പിടുന്നു.
+
+ഒന്നാം കക്ഷി:
+പേര്   : ${p1name}
+ഒപ്പ്   : ____________________________
+
+രണ്ടാം കക്ഷി:
+പേര്   : ${p2name}
+ഒപ്പ്   : ____________________________
+
+സാക്ഷികൾ:
+1. പേര്: ____________________________
+   ഒപ്പ്: ____________________________
+2. പേര്: ____________________________
+   ഒപ്പ്: ____________________________`;
+}
+
 function buildAgreementPrompt(agrType, lang, party1, party2, details) {
+  if (agrType === 'Affidavit') {
+    return `You are a Kerala legal document writer. Generate a formal Affidavit (സത്യവാങ്മൂലം) using the details below.
+
+STRICT RULES:
+- Never invent any facts, names, dates, or details not provided in the input
+- Use ................ for any missing value
+- Plain text only, no markdown, no asterisks
+- Include Verification section at the end
+
+OUTPUT THIS EXACT STRUCTURE:
+
+സത്യവാങ്മൂലം
+
+ബഹുമാനപ്പെട്ട ${party1 || '[AUTHORITY]'} മുൻപാകെ സമർപ്പിക്കുന്ന സത്യവാങ്മൂലം
+
+ഞാൻ, ${party2 || '[DEPONENT NAME]'}, ................ മകൻ/ഭാര്യ,
+പ്രായം ................ , വിലാസം: ................ എന്നയാൾ
+താഴെ പറയുന്ന കാര്യങ്ങൾ സത്യപ്രസ്താവനയായി
+ബോധിപ്പിച്ചു കൊള്ളുന്നു:
+
+ഞാൻ മേൽ വിലാസത്തിൽ താമസിക്കുന്ന ആളാണെന്നും
+ഈ സത്യവാങ്മൂലത്തിൽ പറയുന്ന കാര്യങ്ങൾ എനിക്ക്
+വ്യക്തിപരമായി അറിവുള്ളതുമാകുന്നു.
+
+${details || '[NUMBERED STATEMENTS FROM USER INPUT - each on new line]'}
+
+സത്യപ്രസ്താവന (Verification):
+
+മേൽ പ്രസ്താവിച്ച കാര്യങ്ങളെല്ലാം എന്റെ അറിവിലും
+വിശ്വാസത്തിലും പെട്ടിടത്തോളം പൂർണ്ണമായും
+സത്യമാണെന്നും ഇതിൽ യാതൊരു വിവരങ്ങളും
+മറച്ചുവെച്ചിട്ടില്ലെന്നും ഞാൻ ഇതിനാൽ സത്യം
+ചെയ്തു ബോധിപ്പിക്കുന്നു.
+
+ഇന്നേ ദിവസം ................ (സ്ഥലം) വെച്ച്
+ഞാൻ ഇതിൽ ഒപ്പിടുന്നു.
+
+ബോധിപ്പുകാരൻ (Deponent):
+പേര്: ${party2 || '[DEPONENT NAME]'}
+ഒപ്പ്: ____________________________
+
+എന്റെ മുൻപാകെ ഒപ്പിട്ടു (Attestation):
+____________________________ (Advocate / Notary Public)`;
+  }
+
   if (agrType === 'Rent / Lease Agreement') {
     return `You are a Kerala legal document writer. Your ONLY job is to fill in the skeleton template below with the user's input. Do not change the structure, do not add sections, do not remove sections. Fill every [PLACEHOLDER] with the correct information from user input.
 
@@ -1975,13 +2374,19 @@ async function generateDraft() {
   try {
     let text;
     const _agrType = currentTool === 'agreement' ? document.getElementById('agr-type').value : null;
-    if (_agrType === 'Sale Deed' || _agrType === 'Commercial Lease' || _agrType === 'Agricultural Lease') {
+    if (_agrType === 'Sale Deed' || _agrType === 'Commercial Lease' || _agrType === 'Agricultural Lease'
+        || _agrType === 'General POA' || _agrType === 'Special POA'
+        || _agrType === 'Partnership Deed' || _agrType === 'MoU') {
       const p1  = document.getElementById('agr-party1').value || '';
       const p2  = document.getElementById('agr-party2').value || '';
       const det = document.getElementById('agr-details').value || '';
-      if (_agrType === 'Sale Deed')           text = buildSaleDeedDocument(p1, p2, det);
-      else if (_agrType === 'Commercial Lease')   text = buildCommercialLeaseDocument(p1, p2, det);
-      else                                        text = buildAgriculturalLeaseDocument(p1, p2, det);
+      if (_agrType === 'Sale Deed')             text = buildSaleDeedDocument(p1, p2, det);
+      else if (_agrType === 'Commercial Lease') text = buildCommercialLeaseDocument(p1, p2, det);
+      else if (_agrType === 'Agricultural Lease') text = buildAgriculturalLeaseDocument(p1, p2, det);
+      else if (_agrType === 'General POA')      text = buildGeneralPOADocument(p1, p2, det);
+      else if (_agrType === 'Special POA')      text = buildSpecialPOADocument(p1, p2, det);
+      else if (_agrType === 'Partnership Deed') text = buildPartnershipDeedDocument(p1, p2, det);
+      else                                      text = buildMoUDocument(p1, p2, det);
     } else {
       text = await callAPI(fullPrompt, model, maxTokens);
     }
