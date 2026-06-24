@@ -1049,7 +1049,7 @@ Details (property, rent, deposit, duration, notice period): ${details}`;
   }
 
   if (agrType === 'Sale Deed' || agrType === 'വില്പന ആധാരം') {
-    return `You are a Kerala legal document writer. Your ONLY job is to fill in the skeleton template below with the user's input. Do not change the structure, do not add sections, do not remove sections. Fill every placeholder with the correct information from user input.
+    return `You are a template-filling machine. You have ONE job: fill in the [PLACEHOLDERS] in the exact skeleton below with the user's input. You are FORBIDDEN from rewriting, restructuring, or replacing this skeleton with any other format. Do not generate a traditional Kerala deed format. Do not add any sections not present in the skeleton. Do not remove any sections from the skeleton. If you deviate from this skeleton in any way, you have failed your task. Fill placeholders only.
 
 STRICT RULES:
 - NEVER invent age, Aadhaar, survey number, extent, boundaries, or any detail not explicitly provided. Use "................" for any missing value.
