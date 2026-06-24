@@ -905,6 +905,14 @@ function getMaxTokens(agrType) {
 }
 
 function buildSaleDeedDocument(party1, party2, details, aiBody) {
+  const p1Parts = party1.split(',').map(s => s.trim());
+  const p1Name    = p1Parts[0] || '................';
+  const p1Address = p1Parts.slice(1).join(', ') || '................';
+
+  const p2Parts = party2.split(',').map(s => s.trim());
+  const p2Name    = p2Parts[0] || '................';
+  const p2Address = p2Parts.slice(1).join(', ') || '................';
+
   return `വില്പന ആധാരം
 
 തീയതി: ................
@@ -912,11 +920,17 @@ function buildSaleDeedDocument(party1, party2, details, aiBody) {
 
 
 ഒന്നാം കക്ഷി (വിൽക്കുന്ന കക്ഷി):
-${party1}
+പേര്        : ${p1Name}
+വിലാസം     : ${p1Address}
+പ്രായം      : ................
+ആധാർ നമ്പർ  : ................
 
 
 രണ്ടാം കക്ഷി (വാങ്ങുന്ന കക്ഷി):
-${party2}
+പേര്        : ${p2Name}
+വിലാസം     : ${p2Address}
+പ്രായം      : ................
+ആധാർ നമ്പർ  : ................
 
 
 കരാർ വസ്തുവിൻ്റെ വിവരങ്ങൾ:
@@ -1089,7 +1103,9 @@ Details (property, rent, deposit, duration, notice period): ${details}`;
   }
 
   if (agrType === 'Sale Deed' || agrType === 'വില്പന ആധാരം') {
-    return `You are a Malayalam legal drafter. Write ONLY two sections for this Sale Deed — the ആമുഖം paragraph and the വ്യവസ്ഥകൾ clauses (1 through 6). Do not write a title, party blocks, property schedule, or signature block — those are built separately and will be added around your output.
+    return `STRICT RULE: Never mention any court. Never invent age, Aadhaar, PAN, cheque number, bank details, or advocate name. Never write anything not explicitly provided in the inputs below. Use "................" for any missing value.
+
+You are a Malayalam legal drafter. Write ONLY two sections for this Sale Deed — the ആമുഖം paragraph and the വ്യവസ്ഥകൾ clauses (1 through 6). Do not write a title, party blocks, property schedule, or signature block — those are built separately and will be added around your output.
 
 Use the inputs below to write accurate amounts, property references, and legal obligations. Write all amounts in words AND figures. Plain text only — no markdown, no asterisks, no bold.
 
