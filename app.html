@@ -1680,28 +1680,36 @@ ${noticePeriod} മാസം മുൻപ് മറ്റേ കക്ഷിക�
 function buildMoUDocument(party1, party2, det) {
   const D = '................';
   const combined = [party1, party2, det].join('\n');
-  const p1name   = _parseField(combined, 'Party1:') !== D ? _parseField(combined, 'Party1:') : (party1 || D);
-  const p2name   = _parseField(combined, 'Party2:') !== D ? _parseField(combined, 'Party2:') : (party2 || D);
-  const rep1     = _parseField(combined, 'Representative1:');
-  const rep2     = _parseField(combined, 'Representative2:');
-  const project  = _parseField(combined, 'Project:');
-  const duration = _parseField(combined, 'Duration:');
+  function parseMoUParty(keyword, fallback) {
+    const raw = _parseField(combined, keyword) !== D ? _parseField(combined, keyword) : (fallback || D);
+    const idx = raw.indexOf(',');
+    if (idx === -1) return { org: raw.trim(), address: D };
+    return { org: raw.slice(0, idx).trim(), address: raw.slice(idx + 1).trim() || D };
+  }
+  const p1 = parseMoUParty('Party1:', party1);
+  const p2 = parseMoUParty('Party2:', party2);
+  const rep1       = _parseField(combined, 'Representative1:');
+  const rep2       = _parseField(combined, 'Representative2:');
+  const project    = _parseField(combined, 'Project:');
+  const duration   = _parseField(combined, 'Duration:');
   const noticeDays = _parseField(combined, 'Notice Days:');
+  const oblig1     = _parseField(combined, 'Party1 Obligations:');
+  const oblig2     = _parseField(combined, 'Party2 Obligations:');
   return `ധാരണാ പത്രം
 
 തീയതി: ${D}
 സ്ഥലം: ${D}
 
 ഒന്നാം കക്ഷി:
-പേര്/സ്ഥാപനം          : ${p1name}
+പേര്/സ്ഥാപനം          : ${p1.org}
 പ്രതിനിധി              : ${rep1}
-വിലാസം                : ${D}
+വിലാസം                : ${p1.address}
 ആധാർ/രജിസ്ട്രേഷൻ നമ്പർ : ${D}
 
 രണ്ടാം കക്ഷി:
-പേര്/സ്ഥാപനം          : ${p2name}
+പേര്/സ്ഥാപനം          : ${p2.org}
 പ്രതിനിധി              : ${rep2}
-വിലാസം                : ${D}
+വിലാസം                : ${p2.address}
 ആധാർ/രജിസ്ട്രേഷൻ നമ്പർ : ${D}
 
 ധാരണയുടെ വിഷയം:
@@ -1724,13 +1732,13 @@ function buildMoUDocument(party1, party2, det) {
 
 2. ഒന്നാം കക്ഷിയുടെ ചുമതലകൾ:
 ഈ ധാരണ പ്രകാരം ഒന്നാം കക്ഷി
-${D} തുടങ്ങിയ
+${oblig1} തുടങ്ങിയ
 ഉത്തരവാദിത്തങ്ങൾ സമയബന്ധിതമായി
 നിർവ്വഹിക്കാൻ ബാധ്യസ്ഥനാണ്.
 
 3. രണ്ടാം കക്ഷിയുടെ ചുമതലകൾ:
 ഈ ധാരണ പ്രകാരം രണ്ടാം കക്ഷി
-${D} തുടങ്ങിയ
+${oblig2} തുടങ്ങിയ
 ഉത്തരവാദിത്തങ്ങൾ സമയബന്ധിതമായി
 നിർവ്വഹിക്കാൻ ബാധ്യസ്ഥനാണ്.
 
@@ -1755,11 +1763,11 @@ ${duration} കാലാവധി ഉണ്ടായിരിക്കുന്�
 ധാരണാ പത്രത്തിൽ ഒപ്പിടുന്നു.
 
 ഒന്നാം കക്ഷി:
-പേര്   : ${p1name}
+പേര്   : ${p1.org}
 ഒപ്പ്   : ____________________________
 
 രണ്ടാം കക്ഷി:
-പേര്   : ${p2name}
+പേര്   : ${p2.org}
 ഒപ്പ്   : ____________________________
 
 സാക്ഷികൾ:
