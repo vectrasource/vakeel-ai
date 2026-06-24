@@ -1516,9 +1516,9 @@ function buildSpecialPOADocument(party1, party2, det) {
   const combined = [party1, party2, det].join('\n');
   const principal = _parsePOAParty(combined, 'Principal:');
   const agent     = _parsePOAParty(combined, 'Agent:');
-  const village   = _parseField(combined, 'Property:').split(/[,;]/)[0].trim() || D;
-  const surveyNo  = (() => { const p = _parseField(combined, 'Property:'); const m = p.match(/Survey\s*No[.:]\s*(\S+)/i); return m ? m[1] : D; })();
-  const buyer     = _parseField(combined, 'Buyer:');
+  const village  = _parseField(combined, 'Village:');
+  const surveyNo = _parseField(combined, 'Survey No:');
+  const buyer    = _parseField(combined, 'Buyer:');
   return `സ്പെഷ്യൽ മുക്ത്യാർ നാമപത്രം
 
 ഞാൻ, ${principal.name}, പിതാവ്/ഭർത്താവ്: ${principal.father},
