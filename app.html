@@ -1419,6 +1419,10 @@ function selectTool(btn) {
   resetOutput();
 }
 
+function renderOutput(text) {
+  return /<[a-z][\s\S]*>/i.test(text) ? text : text.replace(/\n/g, '<br>');
+}
+
 function resetOutput() {
   document.getElementById('outputText').style.display = 'none';
   document.getElementById('outputText').innerHTML = '';
@@ -1461,7 +1465,7 @@ async function generateDraft() {
     const text = await callAPI(fullPrompt, model, maxTokens);
     currentRawText = text;
     document.getElementById('loaderEl').style.display = 'none';
-    document.getElementById('outputText').innerHTML = text;
+    document.getElementById('outputText').innerHTML = renderOutput(text);
     document.getElementById('outputText').style.display = 'block';
     document.getElementById('outputActions').style.display = 'flex';
     document.getElementById('feedbackRow').style.display = 'flex';
@@ -1618,7 +1622,7 @@ function loadFromHistory(i) {
   if (!item) return;
   currentRawText = item.text;
   document.getElementById('draftPlaceholder').style.display = 'none';
-  document.getElementById('outputText').innerHTML = item.text;
+  document.getElementById('outputText').innerHTML = renderOutput(item.text);
   document.getElementById('outputText').style.display = 'block';
   document.getElementById('outputActions').style.display = 'flex';
   document.getElementById('feedbackRow').style.display = 'flex';
