@@ -1420,7 +1420,7 @@ function buildSaleDeedDocument(party1, party2, det) {
 function _parsePOAParty(text, prefix) {
   const after = text.includes(prefix) ? text.split(prefix)[1].split('\n')[0].trim() : '';
   const soParts = after.split(/\s+S\/o\s+|\s+W\/o\s+|\s+D\/o\s+/i);
-  const name = soParts[0].trim() || '................';
+  const name = (soParts[0].trim().replace(/,\s*$/, '').trim()) || '................';
   const rest = soParts[1] || '';
   const commaParts = rest.split(',');
   const father = commaParts[0].trim() || '................';
