@@ -919,14 +919,15 @@ function buildSaleDeedDocument(party1, party2, det) {
       src = m ? m[1].trim() : '';
     }
     if (!src) return { name: D, father: D, address: D };
-    // Extract name, father (S/o W/o D/o), address
-    const soMatch = src.match(/^([^,]+?)\s+[SWD]\/[oO]\s+([^,]+),?\s*(.*)$/);
-    if (soMatch) {
-      return {
-        name:    soMatch[1].trim() || D,
-        father:  soMatch[2].trim() || D,
-        address: soMatch[3].trim() || D
-      };
+    // Find S/o, W/o, D/o and split cleanly
+    const soIdx = src.search(/\bS\/o\b|\bW\/o\b|\bD\/o\b/i);
+    if (soIdx !== -1) {
+      const name    = src.slice(0, soIdx).replace(/,\s*$/, '').trim() || D;
+      const afterSo = src.slice(soIdx).replace(/^[SWD]\/[oO]\s*/i, '');
+      const ci      = afterSo.indexOf(',');
+      const father  = (ci !== -1 ? afterSo.slice(0, ci) : afterSo).trim() || D;
+      const address = ci !== -1 ? afterSo.slice(ci + 1).trim() || D : D;
+      return { name, father, address };
     }
     const parts = src.split(',');
     return { name: parts[0].trim() || D, father: D, address: parts.slice(1).join(',').trim() || D };
@@ -945,22 +946,33 @@ function buildSaleDeedDocument(party1, party2, det) {
   // strip leading ₹ for use inside "Rs. .../-"
   function amtNum(a) { return a === D ? D : a.replace(/^₹/, ''); }
 
-  const total    = extractAmount(/(?:total|ആകെ വില|price|value)[:\s]+([^\n;]+)/i);
-  const advance  = extractAmount(/(?:advance|അഡ്വാൻസ്|advance amount|മുൻകൂർ)[:\s]+([^\n;]+)/i);
-  const balance  = extractAmount(/(?:balance|ബാക്കി)[:\s]+([^\n;]+)/i);
-  const district = extract(/(?:district|ജില്ല)[:\s]+([^\n,;]+)/i);
+  const kl = (kw) => extract(new RegExp(kw + '\\s*:\\s*([^\\n]+)', 'i'));
 
-  // taluk: prefer "Taluk: value" keyword; fallback to word before "താലൂക്ക്"
-  const taluk = (() => {
-    const kwM = det.match(/taluk[:\s]+([^\n,;]+)/i);
+  const total        = extractAmount(/(?:sale amount|total|ആകെ വില|price|value)\s*:\s*([^\n]+)/i);
+  const advance      = extractAmount(/advance\s*:\s*([^\n]+)/i);
+  const balance      = extractAmount(/balance\s*:\s*([^\n]+)/i);
+  const district     = kl('District');
+  const taluk        = (() => {
+    const kwM = det.match(/taluk\s*:\s*([^\n]+)/i);
     if (kwM) return kwM[1].trim();
     const mlM = det.match(/(\S+)\s+താലൂക്ക്/);
     if (mlM) return mlM[1].trim();
     return D;
   })();
-
-  const village  = extract(/(?:village|വില്ലേജ്)[:\s]+([^\n,;]+)/i);
-  const survey   = extract(/(?:rs\.?\s*no|re-?survey no|survey no|സർവ്വേ നമ്പർ)[:\s#.]+([^\n,;]+)/i);
+  const village      = kl('Village');
+  const survey       = kl('Survey No');
+  const kara         = kl('Kara');
+  const oldSurvey    = kl('Old Survey No');
+  const landType     = kl('Land Type');
+  const extent       = kl('Extent');
+  const buildingNo   = kl('Building No');
+  const priorDeedNo  = kl('Prior Deed No');
+  const priorYear    = kl('Prior Deed Year');
+  const subReg       = kl('Sub Registrar Office');
+  const east         = kl('East');
+  const west         = kl('West');
+  const north        = kl('North');
+  const south        = kl('South');
 
   return `തീറാധാരം
 
@@ -1000,37 +1012,37 @@ function buildSaleDeedDocument(party1, party2, det) {
 
 വില്ലേജ്: ${village}
 
-മുറി/കര: ${D}
+മുറി/കര: ${kara}
 
 റീ-സർവ്വേ ബ്ലോക്ക് നമ്പർ: ${D}
 
 റീ-സർവ്വേ നമ്പർ: ${survey}
 
-പഴയ സർവ്വേ നമ്പർ: ${D}
+പഴയ സർവ്വേ നമ്പർ: ${oldSurvey}
 
-ഭൂമിയുടെ തരം (പുരയിടം/നിലം): ${D}
+ഭൂമിയുടെ തരം (പുരയിടം/നിലം): ${landType}
 
-വിസ്തീർണ്ണം (സ്ഥലത്തിന്റെ അളവ്): ${D}
+വിസ്തീർണ്ണം (സ്ഥലത്തിന്റെ അളവ്): ${extent}
 
-കെട്ടിട നമ്പർ (ഉണ്ടെങ്കിൽ): ${D}
+കെട്ടിട നമ്പർ (ഉണ്ടെങ്കിൽ): ${buildingNo}
 
 മുൻ ആധാര വിവരങ്ങൾ:
 
-മുൻ ആധാര നമ്പർ: ${D}
+മുൻ ആധാര നമ്പർ: ${priorDeedNo}
 
-വർഷം: ${D}
+വർഷം: ${priorYear}
 
-സബ് രജിസ്ട്രാർ ഓഫീസ്: ${D}
+സബ് രജിസ്ട്രാർ ഓഫീസ്: ${subReg}
 
 വസ്തുവിന്റെ അതിരുകൾ:
 
-കിഴക്ക്: ${D}
+കിഴക്ക്: ${east}
 
-പടിഞ്ഞാറ്: ${D}
+പടിഞ്ഞാറ്: ${west}
 
-വടക്ക്: ${D}
+വടക്ക്: ${north}
 
-തെക്ക്: ${D}
+തെക്ക്: ${south}
 
 ആമുഖം:
 
