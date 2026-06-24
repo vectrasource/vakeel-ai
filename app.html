@@ -569,6 +569,8 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
             <option>Rent / Lease Agreement</option>
             <option>Sale Agreement</option>
             <option>Sale Deed</option>
+            <option>Commercial Lease</option>
+            <option>Agricultural Lease</option>
             <option>Partnership Deed</option>
             <option>Affidavit</option>
             <option>Power of Attorney</option>
@@ -902,6 +904,332 @@ function getMaxTokens(agrType) {
     default:
       return AGREEMENT_MAX_TOKENS.generic_other;
   }
+}
+
+function _parseLeaseParty(raw, detKey, det) {
+  const D = '................';
+  let src = raw && raw.trim();
+  if (!src) {
+    const m = det.match(new RegExp(detKey + '[:\\s]+([^\\n]+)', 'i'));
+    src = m ? m[1].trim() : '';
+  }
+  if (!src) return { name: D, father: D, address: D };
+  const soIdx = src.search(/\bS\/o\b|\bW\/o\b|\bD\/o\b/i);
+  if (soIdx !== -1) {
+    const name    = src.slice(0, soIdx).replace(/,\s*$/, '').trim() || D;
+    const afterSo = src.slice(soIdx).replace(/^[SWD]\/[oO]\s*/i, '');
+    const ci      = afterSo.indexOf(',');
+    const father  = (ci !== -1 ? afterSo.slice(0, ci) : afterSo).trim() || D;
+    const address = ci !== -1 ? afterSo.slice(ci + 1).trim() || D : D;
+    return { name, father, address };
+  }
+  const parts = src.split(',');
+  return { name: parts[0].trim() || D, father: D, address: parts.slice(1).join(',').trim() || D };
+}
+
+function buildCommercialLeaseDocument(party1, party2, det) {
+  const D  = '................';
+  const kl = (kw) => { const m = det.match(new RegExp(kw + '\\s*:\\s*([^\\n]+)', 'i')); return m ? m[1].trim() : D; };
+  function extractAmount(pattern) {
+    const m = det.match(pattern);
+    if (!m) return D;
+    const r = m[0].match(/₹([\d,]+)/);
+    return r ? '₹' + r[1] : m[1].trim();
+  }
+  function amtNum(a) { return a === D ? D : a.replace(/^₹/, ''); }
+
+  const p1 = _parseLeaseParty(party1, 'lessor', det);
+  const p2 = _parseLeaseParty(party2, 'lessee', det);
+
+  const district     = kl('District');
+  const taluk        = kl('Taluk');
+  const village      = kl('Village');
+  const kara         = kl('Kara');
+  const buildingNo   = kl('Building No');
+  const localBody    = kl('Local Body');
+  const extent       = kl('Extent');
+  const east         = kl('East');
+  const west         = kl('West');
+  const north        = kl('North');
+  const south        = kl('South');
+  const rent         = extractAmount(/Rent\s*:\s*([^\n]+)/i);
+  const advance      = extractAmount(/Advance\s*:\s*([^\n]+)/i);
+  const duration     = kl('Duration');
+  const escalation   = kl('Escalation');
+  const noticePeriod = kl('Notice Period');
+  const defaultMonths= kl('Default Months');
+
+  return `വാണിജ്യ ആവശ്യങ്ങൾക്കുള്ള പാട്ട കരാർ
+
+തീയതി: ${D}
+സ്ഥലം: ${D}
+
+ഒന്നാം കക്ഷി (കെട്ടിട ഉടമസ്ഥൻ / ലൈസൻസർ):
+പേര്        : ${p1.name}
+പിതാവ്/ഭർത്താവ് : ${p1.father}
+പ്രായം      : ${D}
+വിലാസം     : ${p1.address}
+ആധാർ നമ്പർ  : ${D}
+
+രണ്ടാം കക്ഷി (വ്യാപാരി / പാട്ടക്കാരൻ / ലൈസൻസി):
+പേര്        : ${p2.name}
+പിതാവ്/ഭർത്താവ് : ${p2.father}
+പ്രായം      : ${D}
+വിലാസം     : ${p2.address}
+ആധാർ നമ്പർ  : ${D}
+
+കരാർ വസ്തുവിൻ്റെ വിവരങ്ങൾ (മുറി/കെട്ടിടം):
+ജില്ല                          : ${district}
+താലൂക്ക്                       : ${taluk}
+വില്ലേജ്                       : ${village}
+മുറി/കര                       : ${kara}
+കെട്ടിട നമ്പർ / മുറി നമ്പർ      : ${buildingNo}
+തദ്ദേശ സ്ഥാപനം                 : ${localBody}
+വിസ്തീർണ്ണം (ചതുരശ്ര അടി)      : ${extent}
+
+വസ്തുവിന്റെ അതിരുകൾ:
+കിഴക്ക്  : ${east}
+പടിഞ്ഞാറ് : ${west}
+വടക്ക്   : ${north}
+തെക്ക്   : ${south}
+
+ആമുഖം:
+മേൽ വിവരിച്ച ഒന്നാം കക്ഷിയുടെ ഉടമസ്ഥതയിലുള്ളതും
+നിർമ്മാണത്തിലുള്ളതുമായ വാണിജ്യ കെട്ടിടമുറി രണ്ടാം
+കക്ഷിക്ക് ബിസിനസ്സ് ആവശ്യങ്ങൾക്കായി മാത്രം
+ഉപയോഗിക്കുന്നതിന് താഴെ പറയുന്ന കർശനമായ
+വ്യവസ്ഥകളോടെ ഈ വാണിജ്യ പാട്ട കരാർ എഴുതി ഒപ്പിടുന്നു.
+
+വ്യവസ്ഥകൾ:
+
+1. കാലാവധി:
+ഈ വാണിജ്യ പാട്ട കരാറിന്റെ കാലാവധി തീയതി മുതൽ
+${duration} വർഷക്കാലത്തേക്കാണ്. ഈ കാലാവധിക്ക്
+ശേഷം ഇരുകക്ഷികളും പരസ്പരം സംസാരിച്ച് പുതിയ
+വ്യവസ്ഥകളോടെ കരാർ പുതുക്കാവുന്നതാണ്.
+
+2. പ്രതിമാസ വാടകയും വർദ്ധനവും:
+രണ്ടാം കക്ഷി ഒന്നാം കക്ഷിക്ക് പ്രതിമാസ വാടകയായി
+${rent} (Rs. ${amtNum(rent)}/-) രൂപ നൽകാൻ
+ബാധ്യസ്ഥനാണ്. ടി വാടക തുക ഓരോ ഇംഗ്ലീഷ് കലണ്ടർ
+മാസവും അഞ്ചാം തീയതിക്ക് മുൻപായി നൽകേണ്ടതാകുന്നു.
+ഓരോ വർഷം പൂർത്തിയാകുമ്പോഴും വാടക തുകയിൽ
+${escalation} ശതമാനം വർദ്ധനവ് ഉണ്ടായിരിക്കുന്നതാണ്.
+
+3. സെക്യൂരിറ്റി ഡിപ്പോസിറ്റ്:
+ഈ കരാറിന്റെ സുരക്ഷിതത്വത്തിനായി രണ്ടാം കക്ഷി
+ഒന്നാം കക്ഷിക്ക് പലിശരഹിത അഡ്വാൻസായി
+${advance} (Rs. ${amtNum(advance)}/-) രൂപ
+നൽകിയിട്ടുള്ളതാണ്. കരാർ കാലാവധി പൂർത്തിയാകുമ്പോൾ
+വാടക കുടിശ്ശികയോ കെട്ടിടത്തിനുള്ള കേടുപാടുകളോ
+ഉണ്ടെങ്കിൽ അത് കിഴിച്ച് ബാക്കി തുക പൂർണ്ണമായി
+മടക്കി നൽകാൻ ഒന്നാം കക്ഷി ബാധ്യസ്ഥനാണ്.
+
+4. ഇന്റീരിയർ വർക്കുകളും ഘടനയും:
+രണ്ടാം കക്ഷിക്ക് തന്റെ ബിസിനസ്സ് ആവശ്യങ്ങൾക്കായി
+കെട്ടിടത്തിനുള്ളിൽ താൽക്കാലികമായ ഫിക്സ്ചറുകളും
+ഇന്റീരിയർ വർക്കുകളും ചെയ്യാവുന്നതാണ്. എന്നാൽ
+കെട്ടിടത്തിന്റെ പ്രധാന കോൺക്രീറ്റ് ഘടനയ്ക്കോ
+ഭിത്തികൾക്കോ യാതൊരുവിധ മാറ്റങ്ങളും വരുത്താൻ
+പാടുള്ളതല്ല.
+
+5. ലൈസൻസും ബില്ലുകളും:
+ബിസിനസ്സ് നടത്തുന്നതിന് ആവശ്യമായ ലൈസൻസുകൾ,
+ജി.എസ്.ടി, മറ്റ് സർക്കാർ അനുമതികൾ എന്നിവ സ്വന്തം
+ചിലവിൽ വാങ്ങേണ്ടത് രണ്ടാം കക്ഷിയുടെ
+ഉത്തരവാദിത്തമാണ്. കൂടാതെ പ്രതിമാസ വൈദ്യുതി
+ബില്ലും വെള്ളക്കരവും രണ്ടാം കക്ഷി കൃത്യമായി
+അടച്ചുതീർക്കേണ്ടതാണ്.
+
+6. സബ് ലീസ് പൂർണ്ണ വിലക്ക്:
+പാട്ടത്തിന് ലഭിച്ച കെട്ടിടമുറിയോ അതിന്റെ ഏതെങ്കിലും
+ഭാഗമോ ഒന്നാം കക്ഷിയുടെ മുൻകൂട്ടിയുള്ള രേഖാമൂലമുള്ള
+അനുവാദമില്ലാതെ മറ്റൊരാൾക്കോ മൂന്നാമതൊരു കക്ഷിക്കോ
+മറിച്ച് വാടകയ്ക്ക് നൽകാനോ സബ് ലീസ് ചെയ്യാനോ
+രണ്ടാം കക്ഷിക്ക് പാടുള്ളതല്ല.
+
+7. കരാർ റദ്ദാക്കലും ഒഴിഞ്ഞുതരലും:
+കരാർ കാലാവധി അവസാനിക്കുന്നതിന് മുൻപ് ഏതെങ്കിലും
+ഒരു കക്ഷിക്ക് കരാർ അവസാനിപ്പിക്കണമെന്നുണ്ടെങ്കിൽ
+${noticePeriod} മാസം മുൻപ് രേഖാമൂലം നോട്ടീസ്
+നൽകേണ്ടതാണ്. വാടക തുടർച്ചയായി ${defaultMonths}
+മാസം കുടിശ്ശിക വരുത്തിയാൽ നോട്ടീസ് കാലാവധി
+പരിഗണിക്കാതെ രണ്ടാം കക്ഷിയെ ഒഴിപ്പിക്കാൻ
+ഒന്നാം കക്ഷിക്ക് അവകാശമുണ്ടായിരിക്കും.
+
+സമ്മതപത്രം:
+മേൽ വിവരിച്ച വ്യവസ്ഥകളെല്ലാം ഇരുകക്ഷികളും
+പൂർണ്ണമായി വായിച്ചു മനസ്സിലാക്കി സമ്മതിച്ചും
+സാക്ഷികളുടെ മുൻപാകെ ഇന്നേ ദിവസം ഈ വാണിജ്യ
+പാട്ട കരാറിൽ ഒപ്പിടുന്നു.
+
+ഒന്നാം കക്ഷി (കെട്ടിട ഉടമസ്ഥൻ):
+പേര്   : ${p1.name}
+ഒപ്പ്   : ____________________________
+തീയതി  : ____________________________
+
+രണ്ടാം കക്ഷി (പാട്ടക്കാരൻ):
+പേര്   : ${p2.name}
+ഒപ്പ്   : ____________________________
+തീയതി  : ____________________________
+
+സാക്ഷികൾ:
+1. പേര്: ____________________________
+   ഒപ്പ്: ____________________________
+2. പേര്: ____________________________
+   ഒപ്പ്: ____________________________`;
+}
+
+function buildAgriculturalLeaseDocument(party1, party2, det) {
+  const D  = '................';
+  const kl = (kw) => { const m = det.match(new RegExp(kw + '\\s*:\\s*([^\\n]+)', 'i')); return m ? m[1].trim() : D; };
+  function extractAmount(pattern) {
+    const m = det.match(pattern);
+    if (!m) return D;
+    const r = m[0].match(/₹([\d,]+)/);
+    return r ? '₹' + r[1] : m[1].trim();
+  }
+  function amtNum(a) { return a === D ? D : a.replace(/^₹/, ''); }
+
+  const p1 = _parseLeaseParty(party1, 'lessor', det);
+  const p2 = _parseLeaseParty(party2, 'lessee', det);
+
+  const district     = kl('District');
+  const taluk        = kl('Taluk');
+  const village      = kl('Village');
+  const kara         = kl('Kara');
+  const survey       = kl('Survey No');
+  const oldSurvey    = kl('Old Survey No');
+  const landType     = kl('Land Type');
+  const extent       = kl('Extent');
+  const east         = kl('East');
+  const west         = kl('West');
+  const north        = kl('North');
+  const south        = kl('South');
+  const rent         = extractAmount(/Rent\s*:\s*([^\n]+)/i);
+  const cropShare    = kl('Crop Share');
+  const advance      = extractAmount(/Advance\s*:\s*([^\n]+)/i);
+  const duration     = kl('Duration');
+  const noticePeriod = kl('Notice Period');
+
+  const cropShareLine = cropShare !== D
+    ? `കൂടാതെ ഓരോ വർഷവും വിളവിന്റെ ${cropShare} ഭാഗം ഒന്നാം കക്ഷിക്ക് നൽകേണ്ടതാണ്.`
+    : '';
+
+  return `കാർഷിക പാട്ട കരാർ
+
+തീയതി: ${D}
+സ്ഥലം: ${D}
+
+ഒന്നാം കക്ഷി (ഭൂവുടമ / പാട്ടത്തിന് നൽകുന്നയാൾ):
+പേര്        : ${p1.name}
+പിതാവ്/ഭർത്താവ് : ${p1.father}
+പ്രായം      : ${D}
+വിലാസം     : ${p1.address}
+ആധാർ നമ്പർ  : ${D}
+
+രണ്ടാം കക്ഷി (കർഷകൻ / പാട്ടക്കാരൻ):
+പേര്        : ${p2.name}
+പിതാവ്/ഭർത്താവ് : ${p2.father}
+പ്രായം      : ${D}
+വിലാസം     : ${p2.address}
+ആധാർ നമ്പർ  : ${D}
+
+കരാർ വസ്തുവിൻ്റെ വിവരങ്ങൾ:
+ജില്ല           : ${district}
+താലൂക്ക്         : ${taluk}
+വില്ലേജ്         : ${village}
+മുറി/കര         : ${kara}
+റീ-സർവ്വേ നമ്പർ  : ${survey}
+പഴയ സർവ്വേ നമ്പർ : ${oldSurvey}
+ഭൂമിയുടെ തരം    : ${landType}
+വിസ്തീർണ്ണം      : ${extent}
+
+വസ്തുവിന്റെ അതിരുകൾ:
+കിഴക്ക്  : ${east}
+പടിഞ്ഞാറ് : ${west}
+വടക്ക്   : ${north}
+തെക്ക്   : ${south}
+
+ആമുഖം:
+മേൽ വിവരിച്ച ഒന്നാം കക്ഷിയുടെ പൂർണ്ണ ഉടമസ്ഥതയിലും
+കൈവശാനുഭവത്തിലും ഇരിക്കുന്ന കരാർ ഭൂമി കൃഷി
+ആവശ്യങ്ങൾക്കായി മാത്രം ഉപയോഗിക്കുന്നതിന് താഴെ
+പറയുന്ന നിബന്ധനകൾക്ക് വിധേയമായി രണ്ടാം കക്ഷിക്ക്
+പാട്ടത്തിന് നൽകാൻ ഇരുകക്ഷികളും തമ്മിൽ പരസ്പരം
+സമ്മതിച്ച് ഈ കാർഷിക പാട്ട കരാർ എഴുതി ഒപ്പിടുന്നു.
+
+വ്യവസ്ഥകൾ:
+
+1. കാലാവധി:
+ഈ കാർഷിക പാട്ട കരാറിന്റെ കാലാവധി തീയതി മുതൽ
+${duration} വർഷക്കാലത്തേക്കാണ്. ഈ കാലാവധിക്ക്
+ശേഷം ഇരുകക്ഷികളും പരസ്പരം സംസാരിച്ച് കരാർ
+പുതുക്കാവുന്നതാണ്.
+
+2. പാട്ടത്തുക:
+രണ്ടാം കക്ഷി ഒന്നാം കക്ഷിക്ക് പ്രതിവർഷം
+${rent} (Rs. ${amtNum(rent)}/-) രൂപ പാട്ടത്തുകയായി
+നൽകാൻ ബാധ്യസ്ഥനാണ്.
+${cropShareLine}
+
+3. സെക്യൂരിറ്റി അഡ്വാൻസ്:
+ഈ കരാറിന്റെ സുരക്ഷിതത്വത്തിനായി രണ്ടാം കക്ഷി
+ഒന്നാം കക്ഷിക്ക് ${advance} (Rs. ${amtNum(advance)}/-)
+രൂപ മുൻകൂറായി നൽകിയിട്ടുള്ളതാണ്. കരാർ കാലാവധി
+പൂർത്തിയാകുമ്പോൾ യാതൊരുവിധ കുടിശ്ശികകളും
+ഇല്ലെന്ന് ബോധ്യപ്പെടുത്തി ഈ തുക പൂർണ്ണമായി
+മടക്കി നൽകാൻ ഒന്നാം കക്ഷി ബാധ്യസ്ഥനാണ്.
+
+4. കാർഷികാവശ്യം മാത്രം:
+കരാർ ഭൂമി കൃഷി ആവശ്യങ്ങൾക്ക് മാത്രമേ ഉപയോഗിക്കാൻ
+പാടുള്ളൂ. ഭൂമിയുടെ മുകളിലുള്ള വലിയ മരങ്ങൾ
+മുറിക്കാനോ, മണ്ണ് അടിച്ചു മാറ്റാനോ, വസ്തുവിന്റെ
+സ്വഭാവ വ്യതിയാനം വരുത്താനോ രണ്ടാം കക്ഷിക്ക്
+യാതൊരു അവകാശവും ഉണ്ടായിരിക്കുന്നതല്ല.
+
+5. കൃഷിനാശവും ഇളവുകളും:
+പ്രകൃതിക്ഷോഭം, വെള്ളപ്പൊക്കം, വന്യമൃഗശല്യം
+എന്നിവ മൂലം പൂർണ്ണമായ കൃഷിനാശം ഉണ്ടാകുന്ന
+പക്ഷം ആ വർഷത്തെ പാട്ടത്തുകയിൽ ഇളവ് നൽകുന്ന
+കാര്യത്തിൽ ഇരുകക്ഷികളും പരസ്പര ധാരണയോടെ
+തീരുമാനമെടുക്കേണ്ടതാണ്.
+
+6. സബ് ലീസ് വിലക്ക്:
+പാട്ടത്തിന് ലഭിച്ച കൃഷിഭൂമി ഒന്നാം കക്ഷിയുടെ
+രേഖാമൂലമുള്ള അനുവാദമില്ലാതെ മറ്റൊരു വ്യക്തിക്കോ
+കർഷകനോ മറിച്ച് പാട്ടത്തിന് നൽകാനോ കൈമാറ്റം
+ചെയ്യാനോ രണ്ടാം കക്ഷിക്ക് പാടുള്ളതല്ല.
+
+7. ഒഴിഞ്ഞുതരൽ:
+കരാർ കാലാവധി അവസാനിക്കുമ്പോൾ രണ്ടാം കക്ഷി
+ഭൂമി പഴയപടിയാക്കി ഒന്നാം കക്ഷിക്ക് ഒഴിഞ്ഞു
+നൽകേണ്ടതാണ്. കാലാവധിക്ക് മുൻപ് കരാർ
+അവസാനിപ്പിക്കാൻ ഉദ്ദേശിക്കുന്ന കക്ഷി
+${noticePeriod} മാസം മുൻപ് നോട്ടീസ്
+നൽകേണ്ടതാണ്.
+
+സമ്മതപത്രം:
+മേൽ വിവരിച്ച വ്യവസ്ഥകളെല്ലാം ഇരുകക്ഷികളും
+പൂർണ്ണമായി വായിച്ചു മനസ്സിലാക്കി സമ്മതിച്ചും
+സാക്ഷികളുടെ മുൻപാകെ ഇന്നേ ദിവസം ഈ കാർഷിക
+പാട്ട കരാറിൽ ഒപ്പിടുന്നു.
+
+ഒന്നാം കക്ഷി (ഭൂവുടമ):
+പേര്   : ${p1.name}
+ഒപ്പ്   : ____________________________
+തീയതി  : ____________________________
+
+രണ്ടാം കക്ഷി (കർഷകൻ):
+പേര്   : ${p2.name}
+ഒപ്പ്   : ____________________________
+തീയതി  : ____________________________
+
+സാക്ഷികൾ:
+1. പേര്: ____________________________
+   ഒപ്പ്: ____________________________
+2. പേര്: ____________________________
+   ഒപ്പ്: ____________________________`;
 }
 
 function buildSaleDeedDocument(party1, party2, det) {
@@ -1646,11 +1974,14 @@ async function generateDraft() {
 
   try {
     let text;
-    if (currentTool === 'agreement' && document.getElementById('agr-type').value === 'Sale Deed') {
+    const _agrType = currentTool === 'agreement' ? document.getElementById('agr-type').value : null;
+    if (_agrType === 'Sale Deed' || _agrType === 'Commercial Lease' || _agrType === 'Agricultural Lease') {
       const p1  = document.getElementById('agr-party1').value || '';
       const p2  = document.getElementById('agr-party2').value || '';
       const det = document.getElementById('agr-details').value || '';
-      text = buildSaleDeedDocument(p1, p2, det);
+      if (_agrType === 'Sale Deed')           text = buildSaleDeedDocument(p1, p2, det);
+      else if (_agrType === 'Commercial Lease')   text = buildCommercialLeaseDocument(p1, p2, det);
+      else                                        text = buildAgriculturalLeaseDocument(p1, p2, det);
     } else {
       text = await callAPI(fullPrompt, model, maxTokens);
     }
