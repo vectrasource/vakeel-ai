@@ -1779,6 +1779,21 @@ ${duration} കാലാവധി ഉണ്ടായിരിക്കുന്�
 
 function buildAgreementPrompt(agrType, lang, party1, party2, details) {
   if (agrType === 'Affidavit') {
+    const _p2 = party2 || '';
+    const _soIdx = _p2.search(/\bS\/o\b|\bW\/o\b|\bD\/o\b/i);
+    let _depName, _depFather, _depAddress;
+    if (_soIdx !== -1) {
+      _depName = _p2.slice(0, _soIdx).replace(/,\s*$/, '').trim() || '................';
+      const afterSo = _p2.slice(_soIdx).replace(/^(S\/o|W\/o|D\/o)\s*/i, '');
+      const _commaIdx = afterSo.indexOf(',');
+      _depFather  = (_commaIdx !== -1 ? afterSo.slice(0, _commaIdx) : afterSo).trim() || '................';
+      _depAddress = _commaIdx !== -1 ? afterSo.slice(_commaIdx + 1).trim() : '................';
+    } else {
+      const _commaIdx = _p2.indexOf(',');
+      _depName    = (_commaIdx !== -1 ? _p2.slice(0, _commaIdx) : _p2).trim() || '................';
+      _depFather  = '................';
+      _depAddress = _commaIdx !== -1 ? _p2.slice(_commaIdx + 1).trim() : '................';
+    }
     return `You are a Kerala legal document writer. Generate a formal Affidavit (സത്യവാങ്മൂലം) using the details below.
 
 STRICT RULES:
@@ -1791,10 +1806,10 @@ OUTPUT THIS EXACT STRUCTURE:
 
 സത്യവാങ്മൂലം
 
-ബഹുമാനപ്പെട്ട ${party1 || '[AUTHORITY]'} മുൻപാകെ സമർപ്പിക്കുന്ന സത്യവാങ്മൂലം
+${party1 || '[AUTHORITY]'} മുൻപാകെ സമർപ്പിക്കുന്ന സത്യവാങ്മൂലം
 
-ഞാൻ, ${party2 || '[DEPONENT NAME]'}, ................ മകൻ/ഭാര്യ,
-പ്രായം ................ , വിലാസം: ................ എന്നയാൾ
+ഞാൻ, ${_depName}, ${_depFather} മകൻ/ഭാര്യ,
+പ്രായം ................ , വിലാസം: ${_depAddress} എന്നയാൾ
 താഴെ പറയുന്ന കാര്യങ്ങൾ സത്യപ്രസ്താവനയായി
 ബോധിപ്പിച്ചു കൊള്ളുന്നു:
 
@@ -1816,7 +1831,7 @@ ${details || '[NUMBERED STATEMENTS FROM USER INPUT - each on new line]'}
 ഞാൻ ഇതിൽ ഒപ്പിടുന്നു.
 
 ബോധിപ്പുകാരൻ (Deponent):
-പേര്: ${party2 || '[DEPONENT NAME]'}
+പേര്: ${_depName}
 ഒപ്പ്: ____________________________
 
 എന്റെ മുൻപാകെ ഒപ്പിട്ടു (Attestation):
