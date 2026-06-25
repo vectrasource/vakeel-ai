@@ -1779,39 +1779,49 @@ ${duration} കാലാവധി ഉണ്ടായിരിക്കുന്�
 
 function buildAgreementPrompt(agrType, lang, party1, party2, details) {
   if (agrType === 'Affidavit') {
-    const _p2 = party2 || '';
-    const _soIdx = _p2.search(/\bS\/o\b|\bW\/o\b|\bD\/o\b/i);
-    let _depName, _depFather, _depAddress;
+    const _p1 = party1 || '';
+    const _authority = party2 || '[AUTHORITY]';
+    const _soIdx = _p1.search(/\bS\/o\b|\bW\/o\b|\bD\/o\b/i);
+    let _depName, _depFather, _depAddress, _marker;
     if (_soIdx !== -1) {
-      _depName = _p2.slice(0, _soIdx).replace(/,\s*$/, '').trim() || '................';
-      const afterSo = _p2.slice(_soIdx).replace(/^(S\/o|W\/o|D\/o)\s*/i, '');
-      const _commaIdx = afterSo.indexOf(',');
-      _depFather  = (_commaIdx !== -1 ? afterSo.slice(0, _commaIdx) : afterSo).trim() || '................';
-      _depAddress = _commaIdx !== -1 ? afterSo.slice(_commaIdx + 1).trim() : '................';
+      _depName = _p1.slice(0, _soIdx).replace(/,\s*$/, '').trim() || '................';
+      const _markerMatch = _p1.slice(_soIdx).match(/^(S\/o|W\/o|D\/o)/i);
+      _marker = _markerMatch ? _markerMatch[1].toUpperCase() : 'S/O';
+      const _afterSo = _p1.slice(_soIdx).replace(/^(S\/o|W\/o|D\/o)\s*/i, '');
+      const _ci = _afterSo.indexOf(',');
+      _depFather  = (_ci !== -1 ? _afterSo.slice(0, _ci) : _afterSo).trim() || '................';
+      _depAddress = _ci !== -1 ? _afterSo.slice(_ci + 1).trim() : '................';
     } else {
-      const _commaIdx = _p2.indexOf(',');
-      _depName    = (_commaIdx !== -1 ? _p2.slice(0, _commaIdx) : _p2).trim() || '................';
+      const _ci = _p1.indexOf(',');
+      _depName    = (_ci !== -1 ? _p1.slice(0, _ci) : _p1).trim() || '................';
       _depFather  = '................';
-      _depAddress = _commaIdx !== -1 ? _p2.slice(_commaIdx + 1).trim() : '................';
+      _depAddress = _ci !== -1 ? _p1.slice(_ci + 1).trim() : '................';
+      _marker = 'S/O';
     }
-    return `You are a Kerala legal document writer. Generate a formal Affidavit (സത്യവാങ്മൂലം) using the details below.
+    const _relPhrase = _marker === 'W/O'
+      ? `ഭർത്താവ് ${_depFather}`
+      : `പിതാവ് ${_depFather} യുടെ ${_marker === 'D/O' ? 'മകൾ' : 'മകൻ'}`;
+    return `You are a Kerala legal document writer. Generate a formal സത്യവാങ്മൂലം using the details below.
 
 STRICT RULES:
 - Never invent any facts, names, dates, or details not provided in the input
 - Use ................ for any missing value
 - Plain text only, no markdown, no asterisks
-- Include Verification section at the end
+- Never use the word "അഫിഡവിറ്റ്" — use "സത്യവാങ്മൂലം" throughout
+- Never use "ഇടപാട്" — use "വസ്തു കൈമാറ്റം" or "വില്പന ഉടമ്പടി" instead
+- Amounts must be written as: 12,00,000/- (പന്ത്രണ്ട് ലക്ഷം) രൂപ
+- Use "ബഹുമാനപ്പെട്ട" (correct spelling) if needed
+- No English words inside the document body
+- Include സത്യപ്രസ്താവന section at the end
 
 OUTPUT THIS EXACT STRUCTURE:
 
 സത്യവാങ്മൂലം
 
-${party1 || '[AUTHORITY]'} മുൻപാകെ സമർപ്പിക്കുന്ന സത്യവാങ്മൂലം
-
-ഞാൻ, ${_depName}, ${_depFather} മകൻ/ഭാര്യ,
+ഞാൻ, ${_depName}, ${_relPhrase},
 പ്രായം ................ , വിലാസം: ${_depAddress} എന്നയാൾ
-താഴെ പറയുന്ന കാര്യങ്ങൾ സത്യപ്രസ്താവനയായി
-ബോധിപ്പിച്ചു കൊള്ളുന്നു:
+${_authority} മുൻപാകെ താഴെ പറയുന്ന കാര്യങ്ങൾ
+സത്യപ്രസ്താവനയായി ബോധിപ്പിച്ചു കൊള്ളുന്നു:
 
 ഞാൻ മേൽ വിലാസത്തിൽ താമസിക്കുന്ന ആളാണെന്നും
 ഈ സത്യവാങ്മൂലത്തിൽ പറയുന്ന കാര്യങ്ങൾ എനിക്ക്
@@ -1819,7 +1829,7 @@ ${party1 || '[AUTHORITY]'} മുൻപാകെ സമർപ്പിക്ക�
 
 ${details || '[NUMBERED STATEMENTS FROM USER INPUT - each on new line]'}
 
-സത്യപ്രസ്താവന (Verification):
+സത്യപ്രസ്താവന:
 
 മേൽ പ്രസ്താവിച്ച കാര്യങ്ങളെല്ലാം എന്റെ അറിവിലും
 വിശ്വാസത്തിലും പെട്ടിടത്തോളം പൂർണ്ണമായും
@@ -1830,12 +1840,12 @@ ${details || '[NUMBERED STATEMENTS FROM USER INPUT - each on new line]'}
 ഇന്നേ ദിവസം ................ (സ്ഥലം) വെച്ച്
 ഞാൻ ഇതിൽ ഒപ്പിടുന്നു.
 
-ബോധിപ്പുകാരൻ (Deponent):
+ബോധിപ്പുകാരൻ:
 പേര്: ${_depName}
 ഒപ്പ്: ____________________________
 
-എന്റെ മുൻപാകെ ഒപ്പിട്ടു (Attestation):
-____________________________ (Advocate / Notary Public)`;
+എന്റെ മുൻപാകെ ഒപ്പിട്ടു:
+____________________________ അഡ്വക്കേറ്റ് / നോട്ടറി പബ്ലിക്`;
   }
 
   if (agrType === 'Rent / Lease Agreement') {
