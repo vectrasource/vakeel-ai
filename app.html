@@ -2411,6 +2411,135 @@ function resetOutput() {
   currentRawText = '';
 }
 
+// ===== LEGAL NOTICE BUILDER =====
+function buildLegalNoticeDocument(noticeType, sender, recipient, amount, deadline, situationDetails) {
+  const D = '................';
+  const S = sender || D;
+  const R = recipient || D;
+  const AMT = amount || D;
+  const DL = deadline || '15';
+  const FACTS = situationDetails || D;
+
+  switch (noticeType) {
+
+    case 'Demand / Recovery':
+      return `അഡ്വക്കേറ്റ് ${D}
+വിലാസം: ${D}
+ഫോൺ: ${D}
+
+തീയതി: ${D}
+
+അയക്കുന്നയാൾ: എന്റെ കക്ഷി ${S} എന്നയാൾക്ക് വേണ്ടി.
+
+സ്വീകരിക്കുന്നയാൾ (പ്രതി): ${R} എന്നയാൾക്ക് അറിയിക്കുന്നത്.
+
+${FACTS}
+
+ആയതിനാൽ ഈ നോട്ടീസ് കൈപ്പറ്റി ${DL} ദിവസത്തിനകം ടി തുകയായ ${AMT}/- രൂപ എന്റെ കക്ഷിക്ക് നൽകേണ്ടതാണ്. അല്ലാത്തപക്ഷം നിങ്ങൾക്കെതിരെ സിവിൽ, ക്രിമിനൽ നിയമപ്രകാരം കോടതി മുഖേന ശക്തമായ നടപടികൾ സ്വീകരിക്കുന്നതാണെന്ന് അറിയിക്കുന്നു.
+
+അഡ്വക്കേറ്റ് ഒപ്പ്: ____________________________`;
+
+    case 'Cheque Bounce (138 NI Act)':
+      return `അഡ്വക്കേറ്റ് ${D}
+വിലാസം: ${D}
+
+തീയതി: ${D}
+
+അയക്കുന്നയാൾ: എന്റെ കക്ഷി ${S} എന്നയാൾക്ക് വേണ്ടി.
+
+സ്വീകരിക്കുന്നയാൾ: ${R} എന്നയാൾക്ക് അറിയിക്കുന്നത്.
+
+${FACTS}
+
+ആയതിനാൽ ഈ നോട്ടീസ് കൈപ്പറ്റി ${DL} ദിവസത്തിനകം ചെക്കിലെ തുകയായ ${AMT}/- രൂപ എന്റെ കക്ഷിക്ക് നൽകി ബാധ്യത തീർക്കേണ്ടതാണ്. വീഴ്ച വരുത്തുന്ന പക്ഷം നെഗോഷ്യബിൾ ഇൻസ്ട്രുമെന്റ്സ് ആക്ട് സെക്ഷൻ 138 പ്രകാരം ക്രിമിനൽ കേസ് ഫയൽ ചെയ്യുന്നതായിരിക്കും.
+
+അഡ്വക്കേറ്റ് ഒപ്പ്: ____________________________`;
+
+    case 'Property / Eviction':
+      return `അഡ്വക്കേറ്റ് ${D}
+വിലാസം: ${D}
+
+തീയതി: ${D}
+
+അയക്കുന്നയാൾ: എന്റെ കക്ഷി ${S} (കെട്ടിട ഉടമസ്ഥൻ) എന്നയാൾക്ക് വേണ്ടി.
+
+സ്വീകരിക്കുന്നയാൾ: ${R} (വാടകക്കാരൻ) എന്നയാൾക്ക് അറിയിക്കുന്നത്.
+
+${FACTS}
+
+ആയതിനാൽ ഈ നോട്ടീസ് ലഭിച്ച് ${DL} ദിവസത്തിനകം വാടക കുടിശ്ശിക പൂർണ്ണമായി തീർത്ത് കെട്ടിടത്തിന്റെ കൈവശാവകാശം ഒഴിഞ്ഞു തരേണ്ടതാണ്. അല്ലാത്തപക്ഷം കോടതി വഴി നിങ്ങളെ ഒഴിപ്പിക്കുന്നതിനുള്ള നടപടികളിലേക്ക് കടക്കുന്നതാണ്.
+
+അഡ്വക്കേറ്റ് ഒപ്പ്: ____________________________`;
+
+    case 'Employment Dispute':
+      return `അഡ്വക്കേറ്റ് ${D}
+വിലാസം: ${D}
+
+തീയതി: ${D}
+
+അയക്കുന്നയാൾ: എന്റെ കക്ഷി ${S} (തൊഴിലാളി) എന്നയാൾക്ക് വേണ്ടി.
+
+സ്വീകരിക്കുന്നയാൾ: ${R} (സ്ഥാപനത്തിന്റെ പേര് / മാനേജ്മെന്റ്) എന്നയാൾക്ക് അറിയിക്കുന്നത്.
+
+${FACTS}
+
+ആയതിനാൽ ഈ നോട്ടീസ് കൈപ്പറ്റി ${DL} ദിവസത്തിനകം എന്റെ കക്ഷിയുടെ ശമ്പള കുടിശ്ശികയായ ${AMT}/- രൂപ നൽകി തീർക്കണമെന്നും അല്ലെങ്കിൽ ജോലിയിൽ തിരിച്ചെടുക്കണമെന്നും ആവശ്യപ്പെടുന്നു. അല്ലാത്തപക്ഷം ലേബർ കോടതിയെ സമീപിക്കുന്നതാണ്.
+
+അഡ്വക്കേറ്റ് ഒപ്പ്: ____________________________`;
+
+    case 'Consumer Complaint':
+      return `അഡ്വക്കേറ്റ് ${D}
+വിലാസം: ${D}
+
+തീയതി: ${D}
+
+അയക്കുന്നയാൾ: എന്റെ കക്ഷി ${S} (ഉപഭോക്താവ്) എന്നയാൾക്ക് വേണ്ടി.
+
+സ്വീകരിക്കുന്നയാൾ: ${R} (ഉടമസ്ഥൻ / കമ്പനി പേര്) എന്നയാൾക്ക് അറിയിക്കുന്നത്.
+
+${FACTS}
+
+ആയതിനാൽ ഈ നോട്ടീസ് കൈപ്പറ്റി ${DL} ദിവസത്തിനകം തകരാറുള്ള ഉൽപ്പന്നം മാറ്റി പുതിയത് നൽകുകയോ ${AMT}/- രൂപ തിരികെ നൽകുകയോ ചെയ്യേണ്ടതാണ്. വീഴ്ച വരുത്തിയാൽ ഉപഭോക്തൃ കോടതിയിൽ (Consumer Forum) കേസ് ഫയൽ ചെയ്യുന്നതാണ്.
+
+അഡ്വക്കേറ്റ് ഒപ്പ്: ____________________________`;
+
+    case 'Defamation':
+      return `അഡ്വക്കേറ്റ് ${D}
+വിലാസം: ${D}
+
+തീയതി: ${D}
+
+അയക്കുന്നയാൾ: എന്റെ കക്ഷി ${S} എന്നയാൾക്ക് വേണ്ടി.
+
+സ്വീകരിക്കുന്നയാൾ: ${R} എന്നയാൾക്ക് അറിയിക്കുന്നത്.
+
+${FACTS}
+
+ആയതിനാൽ ഈ നോട്ടീസ് കൈപ്പറ്റി ${DL} ദിവസത്തിനകം നിങ്ങളുടെ തെറ്റായ പ്രസ്താവന പിൻവലിച്ച് പരസ്യമായി മാപ്പ് പറയേണ്ടതാണ്. കൂടാതെ എന്റെ കക്ഷിക്ക് ഉണ്ടായ മാനനഷ്ടത്തിന് പ്രതിഫലമായി ${AMT}/- രൂപ നൽകേണ്ടതുമാണ്. അല്ലാത്തപക്ഷം സിവിൽ, ക്രിമിനൽ നടപടികൾ സ്വീകരിക്കുന്നതാണ്.
+
+അഡ്വക്കേറ്റ് ഒപ്പ്: ____________________________`;
+
+    case 'Reply to Notice':
+      return `അഡ്വക്കേറ്റ് ${D}
+വിലാസം: ${D}
+
+തീയതി: ${D}
+
+അയക്കുന്നയാൾ: എന്റെ കക്ഷി ${S} എന്നയാൾക്ക് വേണ്ടി.
+
+സ്വീകരിക്കുന്നയാൾ: അഡ്വക്കേറ്റ് ${D} (നിങ്ങളുടെ കക്ഷി ${R} എന്നയാൾക്ക് വേണ്ടി അയച്ച നോട്ടീസിനുള്ള മറുപടി).
+
+${FACTS}
+
+ആയതിനാൽ നിങ്ങളുടെ കക്ഷി അയച്ച അടിസ്ഥാനരഹിതമായ നോട്ടീസിലെ ആവശ്യങ്ങൾ എന്റെ കക്ഷി പൂർണ്ണമായി നിഷേധിക്കുന്നു. മേൽ നടപടികളുമായി മുന്നോട്ട് പോകുന്ന പക്ഷം ഉണ്ടാകുന്ന എല്ലാ ചിലവുകൾക്കും നിങ്ങളുടെ കക്ഷി തന്നെ ഉത്തരവാദിയായിരിക്കും.
+
+അഡ്വക്കേറ്റ് ഒപ്പ്: ____________________________`;
+
+    default:
+      return null;
+  }
+}
+
 // ===== AGREEMENT GUIDE SIDEBAR =====
 const AGR_GUIDES = {
   'Rent / Lease Agreement': [
@@ -2504,7 +2633,17 @@ async function generateDraft() {
 
   try {
     let text;
-    const _agrType = currentTool === 'agreement' ? document.getElementById('agr-type').value : null;
+    if (currentTool === 'notice') {
+      const _nType   = document.getElementById('not-type').value;
+      const _nSender = document.getElementById('not-sender').value || '';
+      const _nRecip  = document.getElementById('not-recipient').value || '';
+      const _nAmt    = document.getElementById('not-amount') ? document.getElementById('not-amount').value : '';
+      const _nDays   = document.getElementById('not-days') ? document.getElementById('not-days').value : '15';
+      const _nFacts  = document.getElementById('not-facts').value || '';
+      const _noticeDoc = buildLegalNoticeDocument(_nType, _nSender, _nRecip, _nAmt, _nDays, _nFacts);
+      if (_noticeDoc) { text = _noticeDoc; }
+    }
+    const _agrType = !text && currentTool === 'agreement' ? document.getElementById('agr-type').value : null;
     if (_agrType === 'Sale Deed' || _agrType === 'Commercial Lease' || _agrType === 'Agricultural Lease'
         || _agrType === 'General POA' || _agrType === 'Special POA'
         || _agrType === 'Partnership Deed' || _agrType === 'MoU') {
@@ -2518,7 +2657,7 @@ async function generateDraft() {
       else if (_agrType === 'Special POA')      text = buildSpecialPOADocument(p1, p2, det);
       else if (_agrType === 'Partnership Deed') text = buildPartnershipDeedDocument(p1, p2, det);
       else                                      text = buildMoUDocument(p1, p2, det);
-    } else {
+    } else if (!text) {
       text = await callAPI(fullPrompt, model, maxTokens);
     }
     currentRawText = text;
