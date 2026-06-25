@@ -474,10 +474,15 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
       <!-- SMART FIELDS: Legal Notice -->
       <div class="smart-fields hidden" id="fields-notice">
         <div class="form-divider">Notice Details</div>
+
+        <!-- GUIDED SIDEBAR -->
+        <div class="agr-guide-card" id="notice-guide">
+          <div class="guide-empty">ഒരു നോട്ടീസ് തരം തിരഞ്ഞെടുക്കുക</div>
+        </div>
         <div class="form-grid-3">
           <div>
             <label>Notice Type</label>
-            <select id="not-type" onchange="updateNoticeFields()">
+            <select id="not-type" onchange="updateNoticeFields(); updateNoticeGuide(this.value)">
               <option>Demand / Recovery</option>
               <option>Cheque Bounce (138 NI Act)</option>
               <option>Property / Eviction</option>
@@ -2394,6 +2399,7 @@ function selectTool(btn) {
   if (fields) fields.classList.remove('hidden');
   document.getElementById('court-field-wrap').style.display = currentTool === 'agreement' ? 'none' : '';
   if (currentTool === 'agreement') updateAgrGuide(document.getElementById('agr-type').value);
+  if (currentTool === 'notice') updateNoticeGuide(document.getElementById('not-type').value);
   resetOutput();
 }
 
@@ -2409,6 +2415,73 @@ function resetOutput() {
   document.getElementById('loaderEl').style.display = 'none';
   document.getElementById('feedbackRow').style.display = 'none';
   currentRawText = '';
+}
+
+// ===== NOTICE GUIDE SIDEBAR =====
+const NOTICE_GUIDES = {
+  'Demand / Recovery': [
+    ['SENDER', 'രാജേഷ് കുമാർ, MG റോഡ്, തൃശ്ശൂർ'],
+    ['RECIPIENT', 'സുരേഷ് നായർ, കളമശ്ശേരി, എറണാകുളം'],
+    ['AMOUNT', '50000'],
+    ['DEADLINE', '15'],
+    ['SITUATION', '2024 ജനുവരി 15-ന് ₹50,000 കടം നൽകി. 6 മാസമായി തിരിച്ചു നൽകിയിട്ടില്ല.'],
+  ],
+  'Cheque Bounce (138 NI Act)': [
+    ['SENDER', 'രാജേഷ് കുമാർ, MG റോഡ്, തൃശ്ശൂർ'],
+    ['RECIPIENT', 'സുരേഷ് നായർ, കളമശ്ശേരി, എറണാകുളം'],
+    ['AMOUNT', '75000'],
+    ['DEADLINE', '15'],
+    ['SITUATION', 'Federal Bank അക്കൗണ്ടിൽ നിന്ന് 2024 മാർച്ച് 10-ന് ₹75,000 ചെക്ക് നൽകി. 2024 മാർച്ച് 15-ന് പണലഭ്യതക്കുറവ് മൂലം മടങ്ങി.'],
+  ],
+  'Property / Eviction': [
+    ['SENDER', 'രാജേഷ് കുമാർ, തൃശ്ശൂർ (കെട്ടിടമുടമ)'],
+    ['RECIPIENT', 'സുരേഷ് നായർ, തൃശ്ശൂർ (വാടകക്കാരൻ)'],
+    ['AMOUNT', '24000'],
+    ['DEADLINE', '15'],
+    ['SITUATION', 'തൃശ്ശൂർ വില്ലേജ്, 3 മാസം വാടക കുടിശ്ശിക ₹24,000. കരാർ കാലാവധി 2024 മാർച്ചിൽ അവസാനിച്ചു.'],
+  ],
+  'Employment Dispute': [
+    ['SENDER', 'രാജേഷ് കുമാർ, തൃശ്ശൂർ (തൊഴിലാളി)'],
+    ['RECIPIENT', 'ABC കമ്പനി, എറണാകുളം (മാനേജ്മെന്റ്)'],
+    ['AMOUNT', '45000'],
+    ['DEADLINE', '15'],
+    ['SITUATION', '2020 മുതൽ സെയിൽസ് മാനേജർ ആയി ജോലി ചെയ്തു. 2024 ഫെബ്രുവരി 10-ന് നോട്ടീസ് ഇല്ലാതെ പിരിച്ചുവിട്ടു. 3 മാസം ശമ്പളം ₹45,000 കുടിശ്ശിക.'],
+  ],
+  'Consumer Complaint': [
+    ['SENDER', 'രാജേഷ് കുമാർ, തൃശ്ശൂർ (ഉപഭോക്താവ്)'],
+    ['RECIPIENT', 'XYZ ഇലക്ട്രോണിക്സ്, തൃശ്ശൂർ'],
+    ['AMOUNT', '35000'],
+    ['DEADLINE', '15'],
+    ['SITUATION', '2024 ജനുവരി 5-ന് ₹35,000 നൽകി TV വാങ്ങി (ബിൽ നമ്പർ 1234). 1 മാസത്തിനകം നിർമ്മാണ തകരാർ. വാറന്റി ഉണ്ടെങ്കിലും മാറ്റി നൽകാൻ വിസമ്മതിച്ചു.'],
+  ],
+  'Defamation': [
+    ['SENDER', 'രാജേഷ് കുമാർ, തൃശ്ശൂർ'],
+    ['RECIPIENT', 'സുരേഷ് നായർ, എറണാകുളം'],
+    ['AMOUNT', '100000'],
+    ['DEADLINE', '15'],
+    ['SITUATION', '2024 മാർച്ച് 1-ന് Facebook-ൽ എന്റെ കക്ഷിക്കെതിരെ വ്യാജ ആരോപണങ്ങൾ പ്രചരിപ്പിച്ചു. ബിസിനസ്സ് തകർച്ചയും മാനഹാനിയും ഉണ്ടായി.'],
+  ],
+  'Reply to Notice': [
+    ['SENDER', 'രാജേഷ് കുമാർ, തൃശ്ശൂർ (മറുപടി നൽകുന്നയാൾ)'],
+    ['RECIPIENT', 'സുരേഷ് നായർ, എറണാകുളം (നോട്ടീസ് അയച്ചയാൾ)'],
+    ['AMOUNT', '(ആവശ്യമില്ലെങ്കിൽ ഒഴിവാക്കുക)'],
+    ['DEADLINE', '15'],
+    ['SITUATION', '2024 മാർച്ച് 10-ലെ നോട്ടീസ് ലഭിച്ചു. ആരോപണങ്ങൾ തികച്ചും അടിസ്ഥാനരഹിതം. യഥാർത്ഥത്തിൽ തുക തിരിച്ചു നൽകിയിട്ടുണ്ട്.'],
+  ],
+};
+
+function updateNoticeGuide(type) {
+  const el = document.getElementById('notice-guide');
+  if (!el) return;
+  const guide = NOTICE_GUIDES[type];
+  if (!guide) {
+    el.innerHTML = '<div class="guide-empty">ഒരു നോട്ടീസ് തരം തിരഞ്ഞെടുക്കുക</div>';
+    return;
+  }
+  el.innerHTML = '<div class="guide-title">📋 ഇങ്ങനെ നൽകുക</div>' +
+    guide.map(([label, val]) =>
+      `<div class="guide-line"><span class="guide-label">${label}:</span> ${val}</div>`
+    ).join('');
 }
 
 // ===== LEGAL NOTICE BUILDER =====
