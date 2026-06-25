@@ -110,6 +110,16 @@ textarea{resize:vertical;min-height:80px;line-height:1.65;}
 /* SMART FIELDS */
 .smart-fields{margin-bottom:14px;}
 .smart-fields.hidden{display:none;}
+
+/* AGREEMENT GUIDE SIDEBAR */
+.agr-guide-card{background:rgba(7,7,14,0.85);border:1px solid rgba(212,160,23,0.45);
+  border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;
+  font-family:'Noto Sans Malayalam',sans-serif;font-size:13px;line-height:1.8;}
+.agr-guide-card .guide-title{font-size:11px;color:var(--gold);font-weight:600;
+  letter-spacing:0.6px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.agr-guide-card .guide-line{color:var(--text-dim);margin-bottom:4px;}
+.agr-guide-card .guide-label{color:var(--gold);font-weight:600;font-size:12px;}
+.agr-guide-card .guide-empty{color:var(--text-faint);font-size:13px;text-align:center;padding:8px 0;}
 .form-divider{display:flex;align-items:center;gap:10px;margin-bottom:14px;
   color:var(--text-faint);font-size:11px;letter-spacing:0.5px;text-transform:uppercase;font-weight:600;}
 .form-divider::before,.form-divider::after{content:'';flex:1;height:1px;background:var(--gold-border);}
@@ -563,9 +573,15 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
       <!-- SMART FIELDS: Agreement / Deed -->
       <div class="smart-fields hidden" id="fields-agreement">
         <div class="form-divider">Agreement Details</div>
+
+        <!-- GUIDED SIDEBAR -->
+        <div class="agr-guide-card" id="agr-guide">
+          <div class="guide-empty">ഒരു ഡോക്യുമെന്റ് തരം തിരഞ്ഞെടുക്കുക</div>
+        </div>
+
         <div class="form-row">
           <label>Agreement Type</label>
-          <select id="agr-type">
+          <select id="agr-type" onchange="updateAgrGuide(this.value)">
             <option>Rent / Lease Agreement</option>
             <option>Sale Agreement</option>
             <option>Sale Deed</option>
@@ -2359,6 +2375,7 @@ function selectTool(btn) {
   const fields = document.getElementById('fields-' + currentTool);
   if (fields) fields.classList.remove('hidden');
   document.getElementById('court-field-wrap').style.display = currentTool === 'agreement' ? 'none' : '';
+  if (currentTool === 'agreement') updateAgrGuide(document.getElementById('agr-type').value);
   resetOutput();
 }
 
@@ -2374,6 +2391,69 @@ function resetOutput() {
   document.getElementById('loaderEl').style.display = 'none';
   document.getElementById('feedbackRow').style.display = 'none';
   currentRawText = '';
+}
+
+// ===== AGREEMENT GUIDE SIDEBAR =====
+const AGR_GUIDES = {
+  'Rent / Lease Agreement': [
+    ['PARTY 1 (വാടകക്കാരൻ)', 'രാജേഷ് കുമാർ'],
+    ['PARTY 2 (വീട്ടുടമ)', 'സുരേഷ് നായർ'],
+    ['KEY DETAILS', 'തൃശ്ശൂർ, മാസ വാടക ₹8000, 2 മാസം അഡ്വാൻസ്, 11 മാസ കരാർ, 2024 ജനുവരി 1 മുതൽ'],
+  ],
+  'Sale Deed': [
+    ['PARTY 1 (വിൽക്കുന്നയാൾ)', 'രാജേഷ് കുമാർ'],
+    ['PARTY 2 (വാങ്ങുന്നയാൾ)', 'സുരേഷ് നായർ'],
+    ['KEY DETAILS', 'തൃശ്ശൂർ, 5 സെന്റ് ഭൂമി, സർവേ നമ്പർ 123/4, ₹25,00,000, 2024 മാർച്ച് 15'],
+  ],
+  'Commercial Lease': [
+    ['PARTY 1 (വാടകക്കാരൻ)', 'രാജേഷ് ട്രേഡേഴ്സ്'],
+    ['PARTY 2 (കെട്ടിടമുടമ)', 'സുരേഷ് നായർ'],
+    ['KEY DETAILS', 'തൃശ്ശൂർ MG റോഡ്, 500 sqft ഷോപ്പ്, മാസ വാടക ₹15000, 11 മാസ കരാർ, 3 മാസം അഡ്വാൻസ്'],
+  ],
+  'Agricultural Lease': [
+    ['PARTY 1 (കുടിയാൻ)', 'രാജേഷ് കുമാർ'],
+    ['PARTY 2 (ഭൂവുടമ)', 'സുരേഷ് നായർ'],
+    ['KEY DETAILS', 'തൃശ്ശൂർ, 50 സെന്റ് നെൽപ്പാടം, സർവേ നമ്പർ 45/2, വാർഷിക പാട്ടം ₹12000, 3 വർഷ കരാർ'],
+  ],
+  'Partnership Deed': [
+    ['PARTY 1 (പങ്കാളി 1)', 'രാജേഷ് കുമാർ'],
+    ['PARTY 2 (പങ്കാളി 2)', 'സുരേഷ് നായർ'],
+    ['KEY DETAILS', 'തൃശ്ശൂർ, റാജ് ട്രേഡേഴ്സ് എന്ന പേരിൽ ടെക്സ്റ്റൈൽ ബിസിനസ്, മൂലധനം ₹5,00,000 തുല്യ പങ്കുകൾ, ലാഭനഷ്ടം 50-50'],
+  ],
+  'General POA': [
+    ['PARTY 1 (അധികാരം നൽകുന്നയാൾ)', 'രാജേഷ് കുമാർ'],
+    ['PARTY 2 (അധികാരം ലഭിക്കുന്നയാൾ)', 'സുരേഷ് നായർ'],
+    ['KEY DETAILS', 'തൃശ്ശൂർ, ബാങ്ക് ഇടപാടുകൾ, വസ്തു വിൽപ്പന, കോടതി കാര്യങ്ങൾ എന്നിവയ്ക്ക് പൂർണ്ണ അധികാരം'],
+  ],
+  'Special POA': [
+    ['PARTY 1 (അധികാരം നൽകുന്നയാൾ)', 'രാജേഷ് കുമാർ'],
+    ['PARTY 2 (അധികാരം ലഭിക്കുന്നയാൾ)', 'സുരേഷ് നായർ'],
+    ['KEY DETAILS', 'തൃശ്ശൂർ, സർവേ നമ്പർ 123/4 വസ്തു വിൽക്കാൻ മാത്രം അധികാരം, വില ₹15,00,000'],
+  ],
+  'MoU': [
+    ['PARTY 1 (സ്ഥാപനം 1)', 'രാജേഷ് കൺസ്ട്രക്ഷൻസ്'],
+    ['PARTY 2 (സ്ഥാപനം 2)', 'സുരേഷ് ബിൽഡേഴ്സ്'],
+    ['KEY DETAILS', 'തൃശ്ശൂർ, ഫ്ലാറ്റ് നിർമ്മാണ പദ്ധതി, ചെലവ് പങ്കുവെക്കൽ 60-40, 2024 ജൂൺ മുതൽ 18 മാസം'],
+  ],
+  'Affidavit': [
+    ['PARTY 1 (അപേക്ഷകൻ)', 'രാജേഷ് കുമാർ'],
+    ['PARTY 2', '(ആവശ്യമില്ല, ഒഴിച്ചിടുക)'],
+    ['KEY DETAILS', 'തൃശ്ശൂർ, വയസ്സ് 35, ഫ്ലാറ്റ് നമ്പർ 4B വസ്തു കൈമാറ്റം, തുക ₹12,00,000, 2024 ജനുവരി 15'],
+  ],
+};
+
+function updateAgrGuide(type) {
+  const el = document.getElementById('agr-guide');
+  if (!el) return;
+  const guide = AGR_GUIDES[type];
+  if (!guide) {
+    el.innerHTML = '<div class="guide-empty">ഒരു ഡോക്യുമെന്റ് തരം തിരഞ്ഞെടുക്കുക</div>';
+    return;
+  }
+  el.innerHTML = '<div class="guide-title">📋 ഇങ്ങനെ നൽകുക</div>' +
+    guide.map(([label, val]) =>
+      `<div class="guide-line"><span class="guide-label">${label}:</span> ${val}</div>`
+    ).join('');
 }
 
 // ===== GENERATE DRAFT =====
