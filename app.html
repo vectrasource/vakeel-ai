@@ -525,6 +525,18 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
       <!-- SMART FIELDS: Clause Explainer -->
       <div class="smart-fields hidden" id="fields-explain">
         <div class="form-divider">Clause Explainer</div>
+
+        <!-- GUIDED SIDEBAR -->
+        <div class="agr-guide-card" id="explain-guide">
+          <div class="guide-title">📋 ഇങ്ങനെ നൽകുക</div>
+          <div class="guide-line">ഏതൊരു കരാറിലെയും clause copy ചെയ്ത് textarea-യിൽ paste ചെയ്യുക.</div>
+          <div class="guide-line" style="margin-top:8px"><span class="guide-label">ഉദാഹരണം (English clause):</span></div>
+          <div class="guide-line" style="font-style:italic;color:var(--text-faint)">"The Tenant shall not sublet or assign the premises without prior written consent of the Landlord."</div>
+          <div class="guide-line" style="margin-top:8px"><span class="guide-label">ഉദാഹരണം (Malayalam clause):</span></div>
+          <div class="guide-line" style="font-style:italic;color:var(--text-faint)">"വാടകക്കാരൻ കെട്ടിടം ഉടമസ്ഥന്റെ രേഖാമൂലമുള്ള അനുമതി കൂടാതെ മറ്റൊരാൾക്ക് കൈമാറരുത്."</div>
+          <div class="guide-line" style="margin-top:8px">ഏത് ഭാഷയിലുള്ള clause ആണെങ്കിലും Malayalam-ൽ explanation ലഭിക്കും.</div>
+        </div>
+
         <div class="form-row">
           <label>Output Language</label>
           <select id="exp-lang">
@@ -541,32 +553,31 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
 
       <!-- SMART FIELDS: Client Letter -->
       <div class="smart-fields hidden" id="fields-client">
-        <div class="form-divider">Letter Details</div>
+        <div class="form-divider">Client Letter</div>
+        <div class="form-row">
+          <label>Letter Type</label>
+          <select id="cl-type">
+            <option>കേസ് സ്റ്റാറ്റസ് അപ്‌ഡേറ്റ്</option>
+            <option>ഹിയറിംഗ് തീയതി അറിയിപ്പ്</option>
+            <option>രേഖകൾ ആവശ്യപ്പെടൽ</option>
+            <option>ഒത്തുതീർപ്പ് ഓഫർ</option>
+            <option>ഫീസ് റിമൈൻഡർ</option>
+            <option>കേസ് ക്ലോഷർ അറിയിപ്പ്</option>
+          </select>
+        </div>
         <div class="form-grid">
           <div>
-            <label>Letter Purpose</label>
-            <select id="cl-purpose" onchange="updateClientFields()">
-              <option>Case status update</option>
-              <option>Hearing date intimation</option>
-              <option>Document request</option>
-              <option>Settlement offer</option>
-              <option>Fee payment reminder</option>
-              <option>Case closure</option>
-              <option>Legal Opinion</option>
-            </select>
+            <label>കക്ഷിയുടെ പേര്</label>
+            <input type="text" id="cl-client" placeholder="ഉദാ: രാജേഷ് കുമാർ" />
           </div>
           <div>
-            <label>Tone</label>
-            <select id="cl-tone">
-              <option value="formal and professional">Formal</option>
-              <option value="warm and reassuring">Warm & Reassuring</option>
-              <option value="urgent and firm">Urgent & Firm</option>
-            </select>
+            <label>അഡ്വക്കേറ്റിന്റെ പേര്</label>
+            <input type="text" id="cl-advocate" placeholder="അഡ്വക്കേറ്റിന്റെ പേര്" />
           </div>
         </div>
         <div class="form-row">
-          <label>Case Update Details</label>
-          <textarea id="cl-details" placeholder="e.g. Hearing postponed to 25 June 2026. Judge requested additional documents — original title deed and tax receipts from 2020-2024..." style="min-height:70px"></textarea>
+          <label>പ്രധാന വിവരങ്ങൾ</label>
+          <textarea id="cl-details" placeholder="കേസ് നമ്പർ, തീയതി, തുക, മറ്റ് വിവരങ്ങൾ" style="min-height:70px"></textarea>
         </div>
       </div>
 
@@ -2263,74 +2274,7 @@ Clause to analyze:
 ${clause}`;
     }
     case 'client': {
-      const purpose = document.getElementById('cl-purpose').value;
-      const tone = document.getElementById('cl-tone').value;
-      const details = document.getElementById('cl-details').value || '';
-      if (purpose === 'Legal Opinion') {
-        return `You are an expert Kerala advocate drafting a formal Legal Opinion in ${lang}.
-
-# Legal Opinion — [Subject/Matter]
-
-**[Law Firm Letterhead]**
-**Date:** [Date]
-
-**Re:** [Legal Question/Issue]
-
-## Question Presented
-[Restate the legal question clearly]
-
-## Brief Answer
-[Short direct answer to the question]
-
-## Facts
-[Facts as provided: ${details}]
-
-## Analysis / Applicable Law
-[Legal reasoning, relevant Acts/Sections for Kerala/India context]
-
-## Conclusion & Recommendation
-[Clear recommendation/next steps]
-
-**[Advocate Name]**
-[Bar Council No.]
-
-Mark variable fields [BRACKETS]. Write in ${lang}.`;
-      }
-      return `You are Vakeel AI drafting a ${tone} client letter in ${lang} for an advocate.
-
-Purpose: ${purpose}
-Details: ${details}
-Court context: ${court}
-
-Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Do not wrap the output in triple backtick characters or any code block. Use numbered points like '1.' and '1.1' for structure.
-
-# Client Communication — ${purpose}
-
-**[Law Firm Letterhead]**
-**Date:** [Date]
-
-**To,**
-[Client Name]
-[Address]
-
-**Subject:** ${purpose} — Your Case Update
-
-Dear [Client Name],
-
-[${tone} letter body in ${lang} — clear, professional, explaining: ${details}]
-
-## Action Required from You
-- [ ] [Item if any]
-
-**Next Hearing / Deadline:** [Date]
-
-Please feel free to contact us for any clarifications.
-
-**[Advocate Name]**
-[Firm Name]
-[Bar Council No. | Phone | Email]
-
-Mark variable fields [BRACKETS]. Write in ${lang}.`;
+      return '';
     }
     case 'agreement': {
       const agrType = document.getElementById('agr-type').value;
@@ -2455,6 +2399,139 @@ function updateNoticeGuide(type) {
     guide.map(([label, val]) =>
       `<div class="guide-line"><span class="guide-label">${label}:</span> ${val}</div>`
     ).join('');
+}
+
+// ===== CLIENT LETTER BUILDER =====
+function buildClientLetterDocument(type, clientName, advocateName, details) {
+  const D = '................';
+  const CLIENT = clientName || D;
+  const ADVOCATE = advocateName || D;
+  const DETAILS = details || D;
+
+  switch (type) {
+    case 'കേസ് സ്റ്റാറ്റസ് അപ്‌ഡേറ്റ്':
+      return `തീയതി: ................
+
+പ്രിയ ${CLIENT},
+
+വിഷയം: നിങ്ങളുടെ കേസിന്റെ ഇപ്പോഴത്തെ നില
+
+നിങ്ങളുടെ കേസ് സംബന്ധിച്ച് ഇപ്പോഴത്തെ നില ചുവടെ അറിയിക്കുന്നു.
+
+${DETAILS}
+
+ഏതെങ്കിലും സംശയം ഉണ്ടെങ്കിൽ ദയവായി ഞങ്ങളെ ബന്ധപ്പെടുക.
+
+ഭവദീയൻ,
+
+${ADVOCATE}
+അഡ്വക്കേറ്റ്
+[ബാർ കൗൺസിൽ നമ്പർ]
+[ഫോൺ | ഇ-മെയിൽ]`;
+
+    case 'ഹിയറിംഗ് തീയതി അറിയിപ്പ്':
+      return `തീയതി: ................
+
+പ്രിയ ${CLIENT},
+
+വിഷയം: കോടതി ഹിയറിംഗ് തീയതി അറിയിപ്പ്
+
+നിങ്ങളുടെ കേസുമായി ബന്ധപ്പെട്ട് കോടതി ഹിയറിംഗ് ചുവടെ പറയുന്ന തീയതിയിൽ നടക്കുന്നതാണ്.
+
+${DETAILS}
+
+ഹിയറിംഗ് ദിവസം ഉക്ത സമയത്ത് കോടതിയിൽ ഹാജരാകുവാൻ ദയവായി ശ്രദ്ധിക്കണം. ആവശ്യമായ എല്ലാ രേഖകളും കൊണ്ടുവരുക.
+
+ഭവദീയൻ,
+
+${ADVOCATE}
+അഡ്വക്കേറ്റ്
+[ബാർ കൗൺസിൽ നമ്പർ]
+[ഫോൺ | ഇ-മെയിൽ]`;
+
+    case 'രേഖകൾ ആവശ്യപ്പെടൽ':
+      return `തീയതി: ................
+
+പ്രിയ ${CLIENT},
+
+വിഷയം: കേസ് സംബന്ധമായ രേഖകൾ ആവശ്യപ്പെടൽ
+
+നിങ്ങളുടെ കേസ് ശക്തിപ്പെടുത്തുന്നതിനായി ചുവടെ പറയുന്ന രേഖകൾ അടിയന്തരമായി ആവശ്യമാണ്.
+
+${DETAILS}
+
+ഉക്ത രേഖകൾ ................-നകം ഞങ്ങളുടെ ഓഫീസിൽ എത്തിക്കുവാൻ ദയവായി ശ്രദ്ധിക്കണം. ഈ രേഖകൾ ഇല്ലാതെ കേസ് ഫലപ്രദമായി നടത്തുവാൻ ബുദ്ധിമുട്ടാകും.
+
+ഭവദീയൻ,
+
+${ADVOCATE}
+അഡ്വക്കേറ്റ്
+[ബാർ കൗൺസിൽ നമ്പർ]
+[ഫോൺ | ഇ-മെയിൽ]`;
+
+    case 'ഒത്തുതീർപ്പ് ഓഫർ':
+      return `തീയതി: ................
+
+പ്രിയ ${CLIENT},
+
+വിഷയം: ഒത്തുതീർപ്പ് ഓഫർ സംബന്ധിച്ച്
+
+നിങ്ങളുടെ കേസുമായി ബന്ധപ്പെട്ട് എതിർ കക്ഷിയിൽ നിന്ന് ഒത്തുതീർപ്പ് ഓഫർ ലഭിച്ചിരിക്കുന്നു. അതിന്റെ വിശദ വിവരങ്ങൾ ചുവടെ ചേർക്കുന്നു.
+
+${DETAILS}
+
+ഈ ഓഫർ സ്വീകരിക്കണമോ നിരസിക്കണമോ എന്ന് തീരുമാനിക്കുന്നതിന് മുമ്പ് ദയവായി ഞങ്ങളുമായി ഒരു കൂടിക്കാഴ്ച നടത്തുക. ................-ന് മുൻപ് നിങ്ങളുടെ തീരുമാനം അറിയിക്കണം.
+
+ഭവദീയൻ,
+
+${ADVOCATE}
+അഡ്വക്കേറ്റ്
+[ബാർ കൗൺസിൽ നമ്പർ]
+[ഫോൺ | ഇ-മെയിൽ]`;
+
+    case 'ഫീസ് റിമൈൻഡർ':
+      return `തീയതി: ................
+
+പ്രിയ ${CLIENT},
+
+വിഷയം: അഡ്വക്കേറ്റ് ഫീസ് അടയ്ക്കൽ സംബന്ധിച്ച് ഓർമ്മപ്പെടുത്തൽ
+
+നിങ്ങളുടെ കേസ് നടത്തിപ്പുമായി ബന്ധപ്പെട്ട് ഇനിപ്പറയുന്ന ഫീസ് കുടിശ്ശിക ആയിരിക്കുന്നു.
+
+${DETAILS}
+
+കോടതി നടപടികൾ ഫലപ്രദമായി തുടരുന്നതിനായി ഉക്ത തുക ................-നകം ഞങ്ങളുടെ ഓഫീസിൽ അടയ്ക്കുവാൻ ദയവായി ശ്രദ്ധിക്കണം. ഏതെങ്കിലും ബുദ്ധിമുട്ടുണ്ടെങ്കിൽ ദയവായി ഞങ്ങളെ നേരിൽ കണ്ട് ബോദ്ധ്യപ്പെടുത്തുക.
+
+ഭവദീയൻ,
+
+${ADVOCATE}
+അഡ്വക്കേറ്റ്
+[ബാർ കൗൺസിൽ നമ്പർ]
+[ഫോൺ | ഇ-മെയിൽ]`;
+
+    case 'കേസ് ക്ലോഷർ അറിയിപ്പ്':
+      return `തീയതി: ................
+
+പ്രിയ ${CLIENT},
+
+വിഷയം: കേസ് അവസാനിച്ചതിനെ സംബന്ധിച്ച അറിയിപ്പ്
+
+നിങ്ങൾ ഞങ്ങളെ ഏൽപ്പിച്ച കേസ് ചുവടെ വിശദീകരിക്കുന്ന പ്രകാരം അവസാനിച്ചിരിക്കുന്നു.
+
+${DETAILS}
+
+കേസ് നടത്തിപ്പിനായി നൽകിയ എല്ലാ യഥാർത്ഥ രേഖകളും തിരിച്ചു വാങ്ങുവാൻ ദയവായി ................-നകം ഞങ്ങളുടെ ഓഫീസ് സന്ദർശിക്കുക. നിങ്ങൾ ഞങ്ങളിൽ അർപ്പിച്ച വിശ്വാസത്തിനു നന്ദി.
+
+ഭവദീയൻ,
+
+${ADVOCATE}
+അഡ്വക്കേറ്റ്
+[ബാർ കൗൺസിൽ നമ്പർ]
+[ഫോൺ | ഇ-മെയിൽ]`;
+
+    default:
+      return null;
+  }
 }
 
 // ===== LEGAL NOTICE BUILDER =====
@@ -2688,9 +2765,7 @@ async function generateDraft() {
       : 'anthropic/claude-haiku-4-5';
   const maxTokens = currentTool === 'agreement'
     ? getMaxTokens(document.getElementById('agr-type').value)
-    : (currentTool === 'client' && document.getElementById('cl-purpose').value === 'Legal Opinion')
-      ? 8000
-      : (currentTool === 'petition' && (lang === 'Malayalam' || lang === 'bilingual Malayalam and English'))
+    : (currentTool === 'petition' && (lang === 'Malayalam' || lang === 'bilingual Malayalam and English'))
         ? 8000
         : (currentTool === 'notice')
           ? 6000
@@ -2715,6 +2790,13 @@ async function generateDraft() {
       const _nFacts  = document.getElementById('not-facts').value || '';
       const _noticeDoc = buildLegalNoticeDocument(_nType, _nSender, _nRecip, _nAmt, _nDays, _nFacts);
       if (_noticeDoc) { text = _noticeDoc; }
+    }
+    if (!text && currentTool === 'client') {
+      const _clType     = document.getElementById('cl-type').value;
+      const _clClient   = document.getElementById('cl-client').value || '................';
+      const _clAdvocate = document.getElementById('cl-advocate').value || '................';
+      const _clDetails  = document.getElementById('cl-details').value || '................';
+      text = buildClientLetterDocument(_clType, _clClient, _clAdvocate, _clDetails);
     }
     const _agrType = !text && currentTool === 'agreement' ? document.getElementById('agr-type').value : null;
     if (_agrType === 'Sale Deed' || _agrType === 'Commercial Lease' || _agrType === 'Agricultural Lease'
