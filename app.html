@@ -2412,11 +2412,35 @@ function resetOutput() {
 }
 
 // ===== LEGAL NOTICE BUILDER =====
+function _stripAge(str) {
+  return (str || '').replace(/,\s*\d+\s*വയസ്സ്/g, '').trim();
+}
+
+function _formatAmount(amt) {
+  const n = parseInt((amt || '').toString().replace(/[^0-9]/g, ''), 10);
+  if (!n || isNaN(n)) return amt || '................';
+  const ones = ['', 'ഒന്ന്', 'രണ്ട്', 'മൂന്ന്', 'നാല്', 'അഞ്ച്', 'ആറ്', 'ഏഴ്', 'എട്ട്', 'ഒൻപത്',
+    'പത്ത്', 'പതിനൊന്ന്', 'പന്ത്രണ്ട്', 'പതിമൂന്ന്', 'പതിന്നാല്', 'പതിനഞ്ച്', 'പതിനാറ്',
+    'പതിനേഴ്', 'പതിനെട്ട്', 'പത്തൊൻപത്'];
+  const tens = ['', '', 'ഇരുപത്', 'മുപ്പത്', 'നാല്പത്', 'അമ്പത്', 'അറുപത്', 'എഴുപത്', 'എൺപത്', 'തൊണ്ണൂറ്'];
+  function toWords(num) {
+    if (num === 0) return '';
+    if (num < 20) return ones[num];
+    if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? ' ' + ones[num % 10] : '');
+    if (num < 1000) return ones[Math.floor(num / 100)] + ' നൂറ്' + (num % 100 ? ' ' + toWords(num % 100) : '');
+    if (num < 100000) return toWords(Math.floor(num / 1000)) + ' ആയിരം' + (num % 1000 ? ' ' + toWords(num % 1000) : '');
+    if (num < 10000000) return toWords(Math.floor(num / 100000)) + ' ലക്ഷം' + (num % 100000 ? ' ' + toWords(num % 100000) : '');
+    return toWords(Math.floor(num / 10000000)) + ' കോടി' + (num % 10000000 ? ' ' + toWords(num % 10000000) : '');
+  }
+  const formatted = n.toLocaleString('en-IN');
+  return `${formatted}/- (${toWords(n)} രൂപ)`;
+}
+
 function buildLegalNoticeDocument(noticeType, sender, recipient, amount, deadline, situationDetails) {
   const D = '................';
-  const S = sender || D;
-  const R = recipient || D;
-  const AMT = amount || D;
+  const S = _stripAge(sender) || D;
+  const R = _stripAge(recipient) || D;
+  const AMT = _formatAmount(amount);
   const DL = deadline || '15';
   const FACTS = situationDetails || D;
 
@@ -2439,7 +2463,8 @@ ${FACTS}
 
 അഡ്വക്കേറ്റ് ഒപ്പ്: ____________________________`;
 
-    case 'Cheque Bounce (138 NI Act)':
+    case 'Cheque Bounce (138 NI Act)': {
+      const _cbFacts = FACTS.replace(/അക്കൗണ്ടിൽ പണമില്ല/g, 'പണലഭ്യതക്കുറവ് മൂലം (Funds Insufficient)');
       return `അഡ്വക്കേറ്റ് ${D}
 വിലാസം: ${D}
 
@@ -2449,11 +2474,11 @@ ${FACTS}
 
 സ്വീകരിക്കുന്നയാൾ: ${R} എന്നയാൾക്ക് അറിയിക്കുന്നത്.
 
-${FACTS}
+${_cbFacts}
 
-ആയതിനാൽ ഈ നോട്ടീസ് കൈപ്പറ്റി ${DL} ദിവസത്തിനകം ചെക്കിലെ തുകയായ ${AMT}/- രൂപ എന്റെ കക്ഷിക്ക് നൽകി ബാധ്യത തീർക്കേണ്ടതാണ്. വീഴ്ച വരുത്തുന്ന പക്ഷം നെഗോഷ്യബിൾ ഇൻസ്ട്രുമെന്റ്സ് ആക്ട് സെക്ഷൻ 138 പ്രകാരം ക്രിമിനൽ കേസ് ഫയൽ ചെയ്യുന്നതായിരിക്കും.
+ആയതിനാൽ ഈ നോട്ടീസ് കൈപ്പറ്റി ${DL} ദിവസത്തിനകം ചെക്കിലെ തുകയായ ${AMT} എന്റെ കക്ഷിക്ക് നൽകി ബാധ്യത തീർക്കേണ്ടതാണ്. വീഴ്ച വരുത്തുന്ന പക്ഷം നെഗോഷ്യബിൾ ഇൻസ്ട്രുമെന്റ്സ് ആക്ട് സെക്ഷൻ 138 പ്രകാരം ക്രിമിനൽ കേസ് ഫയൽ ചെയ്യുന്നതായിരിക്കും.
 
-അഡ്വക്കേറ്റ് ഒപ്പ്: ____________________________`;
+അഡ്വക്കേറ്റ് ഒപ്പ്: ____________________________`; }
 
     case 'Property / Eviction':
       return `അഡ്വക്കേറ്റ് ${D}
