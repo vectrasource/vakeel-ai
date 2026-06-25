@@ -501,6 +501,16 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
             </select>
           </div>
         </div>
+        <div class="form-grid">
+          <div>
+            <label>നോട്ടീസ് അയക്കുന്നയാൾ (Sender)</label>
+            <input type="text" id="not-sender" placeholder="ഉദാ: രാജേഷ് കുമാർ, 35 വയസ്സ്, MG റോഡ്, തൃശ്ശൂർ" />
+          </div>
+          <div>
+            <label>നോട്ടീസ് കിട്ടുന്നയാൾ (Recipient)</label>
+            <input type="text" id="not-recipient" placeholder="ഉദാ: സുരേഷ് നായർ, 40 വയസ്സ്, കളമശ്ശേരി, എറണാകുളം" />
+          </div>
+        </div>
         <div class="form-row">
           <label>Situation Details</label>
           <textarea id="not-facts" placeholder="e.g. Cheque of ₹50,000 issued by Suresh Kumar bounced on 12 May 2026. Presented twice, both dishonoured. Demand for payment before legal action..." style="min-height:70px"></textarea>
@@ -2118,6 +2128,8 @@ Use formal registration/court Malayalam register throughout, similar to language
     case 'notice': {
       const type = document.getElementById('not-type').value;
       const facts = document.getElementById('not-facts').value || '';
+      const sender = document.getElementById('not-sender').value || '';
+      const recipient = document.getElementById('not-recipient').value || '';
       if (type === 'Reply to Notice') {
         const styleGuide = (lang === 'Malayalam' || lang === 'bilingual Malayalam and English')
           ? MALAYALAM_LEGAL_STYLE + '\n\n' + REPLY_TO_NOTICE_TEMPLATE
@@ -2126,6 +2138,8 @@ Use formal registration/court Malayalam register throughout, similar to language
 ${styleGuide}
 Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Do not wrap the output in triple backtick characters or any code block. Use numbered points like '1.' and '1.1' for structure.
 
+${sender ? `Our client (sender of reply): ${sender}` : ''}
+${recipient ? `Original notice sender (now recipient of reply): ${recipient}` : ''}
 Client details and original notice claims / counter-facts: ${facts}
 
 Draft the complete Reply to Notice now. Mark all missing details as [PLACEHOLDER]. Write all content in ${lang}.`;
@@ -2173,15 +2187,19 @@ Output the formatted legal document inside a clean HTML structure wrapped in a d
 
 --- USER INPUT ---
 Notice Type: ${type}
+${sender ? `Sender (our client): ${sender}` : ''}
+${recipient ? `Recipient: ${recipient}` : ''}
 Amount: ₹${amount}
 Reply deadline: ${days} days
 Facts: ${facts}
 Context: ${court}
 
-Draft the complete Malayalam legal notice now. Mark all missing party details as [PLACEHOLDER].`;
+Draft the complete Malayalam legal notice now. Use the provided sender and recipient names and addresses directly — do not use placeholders like [കക്ഷിയുടെ പൂർണ്ണ വിലാസം] for any detail that was given.`;
       }
       return `You are Vakeel AI's document drafting engine. Draft a formal ${type} legal notice in ${lang}.
 
+${sender ? `Sender (our client): ${sender}` : ''}
+${recipient ? `Recipient: ${recipient}` : ''}
 Amount: ₹${amount}
 Reply deadline: ${days} days
 Facts: ${facts}
