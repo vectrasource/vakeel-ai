@@ -524,33 +524,18 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
 
       <!-- SMART FIELDS: Clause Explainer -->
       <div class="smart-fields hidden" id="fields-explain">
-        <div class="form-divider">Clause Details</div>
-        <div class="form-grid">
-          <div>
-            <label>Document Type</label>
-            <select id="exp-type">
-              <option>Rental Agreement</option>
-              <option>Employment Contract</option>
-              <option>Sale Agreement</option>
-              <option>Loan Agreement</option>
-              <option>Partnership Deed</option>
-              <option>Court Order</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div>
-            <label>Explain to</label>
-            <select id="exp-audience">
-              <option value="a common person in Kerala">Common Person</option>
-              <option value="a business owner in Kerala">Business Owner</option>
-              <option value="an employee">Employee</option>
-              <option value="a tenant">Tenant</option>
-            </select>
-          </div>
+        <div class="form-divider">Clause Explainer</div>
+        <div class="form-row">
+          <label>Output Language</label>
+          <select id="exp-lang">
+            <option value="Malayalam">Malayalam (മലയാളം)</option>
+            <option value="English">English</option>
+            <option value="bilingual Malayalam and English">Bilingual</option>
+          </select>
         </div>
         <div class="form-row">
-          <label>Paste the clause text</label>
-          <textarea id="exp-clause" placeholder="Paste the contract clause or legal text you want explained..." style="min-height:80px"></textarea>
+          <label>ഇവിടെ clause paste ചെയ്യുക</label>
+          <textarea id="exp-clause" placeholder="ഏതു ഡോക്യുമെന്റിൽ നിന്നുള്ളതും ആകാം — വാടക കരാർ, ജോലി കരാർ, ആധാരം, കോടതി ഉത്തരവ്, നോട്ടീസ്..." style="min-height:120px"></textarea>
         </div>
       </div>
 
@@ -2251,43 +2236,31 @@ You are hereby called upon to **pay ₹${amount}** (Rupees [amount in words]) wi
 Mark all variable fields [BRACKETS]. Write in ${lang}.`;
     }
     case 'explain': {
-      const docType = document.getElementById('exp-type').value;
-      const audience = document.getElementById('exp-audience').value;
+      const _expLang = (() => { const el = document.getElementById('exp-lang'); return el ? el.value : lang; })();
       const clause = document.getElementById('exp-clause').value || 'No clause provided';
-      return `You are Vakeel AI explaining a legal clause in simple ${lang} to ${audience}.
+      return `You are the "Universal Legal Clause Explainer Engine" for Vakeel AI. Your job is to analyze any legal clause from any document type (Rental Agreements, Sale Deeds, Employment Contracts, Partnership Deeds, Legal Notices, Court Petitions, etc.) and break it down into clean, layman-friendly Malayalam.
 
-Document type: ${docType}
-Clause: ${clause}
+CRITICAL RULES FOR EXPLANATION:
+1. No Markdown Symbols: Do NOT use asterisks (*), bold markers, or hashtags. Output must be completely plain text with neat line breaks.
+2. Structure of Output: Follow the exact universal skeleton provided below.
+3. Adaptive Context: Dynamically adjust the terminology based on the document type (e.g., if it's a deed use "ആധാരം", if it's a contract use "കരാർ", if it's a notice use "നോട്ടീസ്").
 
-Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Do not wrap the output in triple backtick characters or any code block. Use numbered points like '1.' and '1.1' for structure.
+UNIVERSAL SKELETON:
+വകുപ്പ്/വ്യവസ്ഥ: [Clause Name in Malayalam & English]
 
-# Clause Explanation — ${docType}
+ലളിതമായ അർത്ഥം:
+ഈ നിയമപരമായ ഡോക്യുമെന്റിൽ ഉൾപ്പെടുത്തിയിരിക്കുന്ന ഈ വ്യവസ്ഥയുടെ പ്രധാന ഉദ്ദേശം [Core Purpose] എന്നതാണ്. ലളിതമായി പറഞ്ഞാൽ, കക്ഷികൾ തമ്മിലുള്ള ഇടപാടുകളിലോ നിയമനടപടികളിലോ [Plain Breakdown] എന്ന കാര്യം യാതൊരുവിധ ആശയക്കുഴപ്പവുമില്ലാതെ കൃത്യമായി ഉറപ്പുവരുത്താൻ വേണ്ടിയാണ് ഇത് ഉൾപ്പെടുത്തുന്നത്.
 
----
+നിയമപരമായ പ്രത്യാഘാതം:
+ഈ വ്യവസ്ഥ ലംഘിക്കപ്പെടുകയോ, പാലിക്കാതിരിക്കുകയോ, അല്ലെങ്കിൽ ഡോക്യുമെന്റിൽ ഇത് കൃത്യമായി രേഖപ്പെടുത്താതിരിക്കുകയോ ചെയ്താൽ, ഭാവിയിൽ ബന്ധപ്പെട്ട കക്ഷികൾക്ക് [Legal Consequence] എന്ന തരത്തിലുള്ള വലിയ നിയമപരമായ തടസ്സങ്ങളും സാമ്പത്തിക നഷ ്ടങ്ങളും കോടതി നടപടികളും നേരിടേണ്ടി വരും.
 
-## What This Means (Simple Version)
-[Plain language explanation in ${lang} — no jargon]
+ശ്രദ്ധിക്കേണ്ട കാര്യങ്ങൾ:
+ഈ ഡോക്യുമെന്റിൽ ഒപ്പുവെക്കുന്നതിന് മുൻപോ അല്ലെങ്കിൽ നിയമനടപടികളിലേക്ക് കടക്കുന്നതിന് മുൻപോ കക്ഷികൾ [Practical Warning/Tips] എന്ന കാര്യം പ്രത്യേകം പരിശോധിച്ച് ബോധ്യപ്പെടേണ്ടതാണ്.
 
-## Your Obligations
-[What YOU must do under this clause]
+Output language: ${_expLang}
 
-## The Other Party's Obligations
-[What THEY must do]
-
-## ⚠️ Risks & Red Flags
-[What to watch out for]
-
-## Kerala Legal Context
-[How this applies specifically in Kerala]
-
-## What You Should Do
-1. [Action step 1]
-2. [Action step 2]
-
----
-> *Always consult a qualified advocate before signing any legal document.*
-
-Write in simple ${lang}.`;
+Clause to analyze:
+${clause}`;
     }
     case 'client': {
       const purpose = document.getElementById('cl-purpose').value;
@@ -2708,9 +2681,11 @@ async function generateDraft() {
   const lang = document.getElementById('langSelect').value;
   const court = document.getElementById('courtSelect').value;
   const fullPrompt = buildDraftPrompt(currentTool, lang, court);
-  const model = (lang === 'Malayalam' || lang === 'bilingual Malayalam and English')
-    ? 'google/gemini-2.5-flash'
-    : 'anthropic/claude-haiku-4-5';
+  const model = currentTool === 'explain'
+    ? 'anthropic/claude-sonnet-4-6'
+    : (lang === 'Malayalam' || lang === 'bilingual Malayalam and English')
+      ? 'google/gemini-2.5-flash'
+      : 'anthropic/claude-haiku-4-5';
   const maxTokens = currentTool === 'agreement'
     ? getMaxTokens(document.getElementById('agr-type').value)
     : (currentTool === 'client' && document.getElementById('cl-purpose').value === 'Legal Opinion')
