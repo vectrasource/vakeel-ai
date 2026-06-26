@@ -160,6 +160,18 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
   function showError(msg) {
     const el = document.getElementById('error-box');
     el.textContent = msg;
+    el.style.background = 'rgba(224,85,85,0.08)';
+    el.style.borderColor = 'rgba(224,85,85,0.28)';
+    el.style.color = '#fca5a5';
+    el.style.display = 'block';
+  }
+
+  function showSuccess(msg) {
+    const el = document.getElementById('error-box');
+    el.textContent = msg;
+    el.style.background = 'rgba(74,222,128,0.08)';
+    el.style.borderColor = 'rgba(74,222,128,0.28)';
+    el.style.color = '#86efac';
     el.style.display = 'block';
   }
 
@@ -184,8 +196,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
     try {
       if (currentTab === 'signup') {
         await signUpWithEmail(email, password, name);
-        showError('Check your email to confirm your account, then sign in.');
-        btn.textContent = 'Create Account';
+        showSuccess('Account created! Signing you in...');
+        await signInWithEmail(email, password);
+        window.location.href = 'app.html';
       } else {
         await signInWithEmail(email, password);
         window.location.href = 'app.html';
