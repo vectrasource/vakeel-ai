@@ -347,6 +347,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
   <div class="nav-right">
     <span class="nav-badge">V3 • Vectrasource</span>
     <div class="status-dot"></div>
+    <span id="gen-counter" style="display:none;font-size:12px;color:var(--gold);font-weight:600;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:20px;padding:3px 10px;font-family:'DM Sans',sans-serif;"></span>
     <div id="nav-user-widget" style="display:none;align-items:center;"></div>
   </div>
 </nav>
@@ -2760,8 +2761,86 @@ function updateAgrGuide(type) {
     ).join('');
 }
 
+// ===== GENERATION COUNTER (Supabase) =====
+const GEN_LIMIT = 10;
+let _genUsed = 0;
+
+async function initGenCounter() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+  const userId = session.user.id;
+  // Upsert so first-time users get a row
+  const { data, error } = await sb
+    .from('generation_count')
+    .upsert({ user_id: userId, count: 0 }, { onConflict: 'user_id', ignoreDuplicates: true })
+    .select('count')
+    .single();
+  if (error && error.code !== '23505') {
+    // Row may already exist — just fetch it
+    const { data: existing } = await sb
+      .from('generation_count')
+      .select('count')
+      .eq('user_id', userId)
+      .single();
+    _genUsed = existing?.count ?? 0;
+  } else {
+    _genUsed = data?.count ?? 0;
+  }
+  _updateGenBadge();
+}
+
+function _updateGenBadge() {
+  const el = document.getElementById('gen-counter');
+  if (!el) return;
+  const remaining = Math.max(0, GEN_LIMIT - _genUsed);
+  el.style.display = 'inline-block';
+  el.textContent = `${remaining} gen${remaining === 1 ? '' : 's'} left`;
+  el.style.color = remaining <= 2 ? '#e05555' : 'var(--gold)';
+  el.style.borderColor = remaining <= 2 ? 'rgba(224,85,85,0.3)' : 'var(--gold-border)';
+  el.style.background = remaining <= 2 ? 'rgba(224,85,85,0.08)' : 'var(--gold-dim)';
+}
+
+async function checkGenLimit() {
+  if (_genUsed >= GEN_LIMIT) {
+    _showUpgradeModal();
+    return false;
+  }
+  return true;
+}
+
+async function incrementGenCount() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+  const userId = session.user.id;
+  _genUsed += 1;
+  _updateGenBadge();
+  await sb.from('generation_count')
+    .update({ count: _genUsed })
+    .eq('user_id', userId);
+}
+
+function _showUpgradeModal() {
+  if (document.getElementById('upgradeModalOverlay')) return;
+  const o = document.createElement('div');
+  o.id = 'upgradeModalOverlay';
+  o.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1.5rem;animation:fadeIn 0.3s ease';
+  o.innerHTML = `
+    <div style="background:#0d0d18;border:1px solid rgba(212,160,23,0.3);border-radius:20px;padding:2.5rem;max-width:420px;width:100%;text-align:center;animation:scaleIn 0.3s ease">
+      <div style="font-size:44px;margin-bottom:1rem;">⚖️</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:800;color:#ede8dc;margin-bottom:0.6rem;">Beta Limit Reached</div>
+      <div style="font-size:14px;color:rgba(237,232,220,0.5);margin-bottom:1.8rem;line-height:1.65;">You've used all 10 free beta generations.<br>Upgrade to continue — <strong style="color:#d4a017;">₹299/month</strong>, locked in before our ₹899 launch price.</div>
+      <a href="https://rzp.io/rzp/9e3BAQH1" target="_blank"
+        style="display:block;width:100%;background:linear-gradient(135deg,#b8860b,#f0c040);color:#07070e;border:none;border-radius:30px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;text-align:center;margin-bottom:0.75rem;transition:opacity 0.2s;">
+        Upgrade Now
+      </a>
+      <button onclick="document.getElementById('upgradeModalOverlay').remove()" style="font-size:12px;color:rgba(237,232,220,0.25);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;margin-top:4px;">Maybe later</button>
+    </div>`;
+  document.body.appendChild(o);
+}
+
 // ===== GENERATE DRAFT =====
 async function generateDraft() {
+  if (!await checkGenLimit()) return;
 
   const lang = document.getElementById('langSelect').value;
   const court = document.getElementById('courtSelect').value;
@@ -2833,6 +2912,7 @@ async function generateDraft() {
     const waText = encodeURIComponent(text.slice(0, 1000) + (text.length > 1000 ? '\n\n— Vakeel AI (vakeel-ai-eta.vercel.app)' : ''));
     document.getElementById('waBtn').href = `https://wa.me/?text=${waText}`;
 
+    await incrementGenCount();
     saveToHistory(currentTool, lang, text);
     renderHistory();
     document.getElementById('outputText').scrollIntoView({ behavior: 'smooth' });
@@ -3036,6 +3116,7 @@ function fmtBot(text) {
 function scrollChatBottom() { setTimeout(()=>document.getElementById('chat-bottom').scrollIntoView({behavior:'smooth'}),50); }
 
 async function doChat(userText) {
+  if (!await checkGenLimit()) return;
   chatHistory.push({ role:'user', content:userText });
   appendMsg('user', userText);
   document.getElementById('typing-ind').style.display = 'block';
@@ -3047,6 +3128,7 @@ async function doChat(userText) {
     chatHistory.push({ role:'assistant', content:reply });
     document.getElementById('typing-ind').style.display = 'none';
     appendMsg('assistant', reply);
+    await incrementGenCount();
   } catch(e) {
     document.getElementById('typing-ind').style.display = 'none';
     appendMsg('assistant', 'Network error: '+e.message+'. Please try again.');
@@ -3194,6 +3276,7 @@ function updateNoticeFields() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   await initVakeelAuth();
+  await initGenCounter();
   renderHistory();
   setupVoice();
 });
