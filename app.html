@@ -2769,23 +2769,22 @@ async function initGenCounter() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) return;
   const userId = session.user.id;
-  // Upsert so first-time users get a row
-  const { data, error } = await sb
+
+  // Always read existing row first — never overwrite an existing count
+  const { data: existing } = await sb
     .from('generation_count')
-    .upsert({ user_id: userId, count: 0 }, { onConflict: 'user_id', ignoreDuplicates: true })
     .select('count')
+    .eq('user_id', userId)
     .single();
-  if (error && error.code !== '23505') {
-    // Row may already exist — just fetch it
-    const { data: existing } = await sb
-      .from('generation_count')
-      .select('count')
-      .eq('user_id', userId)
-      .single();
-    _genUsed = existing?.count ?? 0;
+
+  if (existing) {
+    _genUsed = existing.count;
   } else {
-    _genUsed = data?.count ?? 0;
+    // No row yet — first-time user, insert with count 0
+    await sb.from('generation_count').insert({ user_id: userId, count: 0 });
+    _genUsed = 0;
   }
+
   _updateGenBadge();
 }
 
