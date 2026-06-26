@@ -328,36 +328,46 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
   background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
   animation:shimmer 3s linear infinite;}
 
-/* ===== COURT DATES SIDEBAR ===== */
-#court-sidebar{
+/* ===== SIDEBARS ===== */
+.vs-sidebar{
   display:none;
-  position:fixed;top:60px;left:0;bottom:0;
-  width:calc((100vw - 680px) / 2 - 24px);
-  max-width:280px;min-width:200px;
-  padding:18px 16px;overflow-y:auto;z-index:10;
+  position:fixed;top:60px;bottom:0;
+  width:calc((100vw - 700px) / 2);
+  min-width:220px;
+  padding:20px 16px;overflow-y:auto;z-index:10;
+  background:rgba(7,7,14,0.72);
+  border-color:var(--gold-border);
 }
-@media(min-width:1100px){#court-sidebar{display:flex;flex-direction:column;gap:12px;}}
-.cd-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;
-  color:var(--gold);display:flex;align-items:center;gap:7px;margin-bottom:2px;}
+@media(min-width:1100px){.vs-sidebar{display:flex;flex-direction:column;gap:14px;}}
+#court-sidebar{left:0;border-right:1px solid var(--gold-border);}
+#howto-sidebar{right:0;border-left:1px solid var(--gold-border);}
+
+.sb-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;
+  color:var(--gold);display:flex;align-items:center;gap:7px;padding-bottom:10px;
+  border-bottom:1px solid var(--gold-border);margin-bottom:2px;}
+
+/* Court dates */
 .cd-form{background:var(--surface);border:1px solid var(--gold-border);
-  border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:8px;}
+  border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:6px;}
+.cd-label{font-size:10px;font-weight:600;color:var(--text-faint);letter-spacing:0.5px;
+  text-transform:uppercase;margin-bottom:1px;}
 .cd-input{background:rgba(255,255,255,0.04);border:1px solid rgba(212,160,23,0.2);
   border-radius:7px;color:var(--text);font-size:12px;padding:7px 10px;
   font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.15s;width:100%;}
 .cd-input:focus{border-color:rgba(212,160,23,0.5);}
 .cd-input::placeholder{color:var(--text-faint);}
 .cd-add-btn{background:linear-gradient(135deg,#b8860b,#f0c040);color:#07070e;
-  border:none;border-radius:7px;padding:7px;font-size:12px;font-weight:700;
-  cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s;}
+  border:none;border-radius:7px;padding:8px;font-size:12px;font-weight:700;
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s;width:100%;margin-top:2px;}
 .cd-add-btn:hover{opacity:0.85;}
 .cd-list{display:flex;flex-direction:column;gap:8px;}
 .cd-empty{font-size:12px;color:var(--text-faint);text-align:center;padding:16px 0;font-style:italic;}
 .cd-item{background:var(--surface);border:1px solid var(--gold-border);
   border-radius:var(--radius);padding:10px 12px;position:relative;}
 .cd-item.today{border-color:rgba(212,160,23,0.6);background:rgba(212,160,23,0.07);}
-.cd-item-case{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;
+.cd-item-case{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;
   padding-right:20px;line-height:1.3;}
-.cd-item-court{font-size:11px;color:var(--text-dim);margin-bottom:4px;}
+.cd-item-court{font-size:11px;color:var(--text-dim);margin-bottom:3px;}
 .cd-item-date{font-size:11px;color:var(--gold);font-weight:600;}
 .cd-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;
   border-radius:10px;margin-left:6px;vertical-align:middle;}
@@ -367,6 +377,15 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
   color:var(--text-faint);cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;
   transition:color 0.15s;}
 .cd-del:hover{color:#e05555;}
+
+/* How to use */
+.ht-section{display:flex;flex-direction:column;gap:8px;}
+.ht-tip{background:var(--surface);border:1px solid var(--gold-border);
+  border-radius:var(--radius);padding:11px 13px;}
+.ht-tip-label{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;
+  text-transform:uppercase;margin-bottom:5px;}
+.ht-tip-text{font-size:12px;color:var(--text-dim);line-height:1.65;}
+.ht-tip-text em{color:var(--text);font-style:normal;font-weight:600;}
 </style>
 </head>
 <body>
@@ -379,16 +398,25 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
 <div id="bg-glow"></div>
 <div id="grain"></div>
 
-<!-- COURT DATES SIDEBAR -->
-<aside id="court-sidebar">
-  <div class="cd-title">📅 Court Dates</div>
+<!-- LEFT SIDEBAR: Court Dates -->
+<aside id="court-sidebar" class="vs-sidebar">
+  <div class="sb-title">📅 Court Dates</div>
   <div class="cd-form">
-    <input class="cd-input" id="cd-case" placeholder="Case name" maxlength="60"/>
-    <input class="cd-input" id="cd-court" placeholder="Court name" maxlength="60"/>
+    <div class="cd-label">Case Name</div>
+    <input class="cd-input" id="cd-case" placeholder="e.g. Rajan vs State of Kerala" maxlength="60"/>
+    <div class="cd-label">Court</div>
+    <input class="cd-input" id="cd-court" placeholder="e.g. Kerala High Court" maxlength="60"/>
+    <div class="cd-label">Hearing Date</div>
     <input class="cd-input" id="cd-date" type="date"/>
     <button class="cd-add-btn" onclick="cdAdd()">+ Add Hearing</button>
   </div>
   <div class="cd-list" id="cd-list"></div>
+</aside>
+
+<!-- RIGHT SIDEBAR: How to Use -->
+<aside id="howto-sidebar" class="vs-sidebar">
+  <div class="sb-title">📝 How to Use</div>
+  <div class="ht-section" id="ht-content"></div>
 </aside>
 
 <nav>
@@ -2366,6 +2394,7 @@ function switchMain(tab, el) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('panel-' + tab).classList.add('active');
+  updateHowToUse(tab);
 }
 
 // ===== TOOL SELECTION =====
@@ -2379,6 +2408,7 @@ function selectTool(btn) {
   document.getElementById('court-field-wrap').style.display = currentTool === 'agreement' ? 'none' : '';
   if (currentTool === 'agreement') updateAgrGuide(document.getElementById('agr-type').value);
   if (currentTool === 'notice') updateNoticeGuide(document.getElementById('not-type').value);
+  updateHowToUse('draft_' + currentTool);
   resetOutput();
 }
 
@@ -3325,6 +3355,59 @@ function updateNoticeFields() {
     : 'e.g. Cheque of ₹50,000 issued by Suresh Kumar bounced on 12 May 2026. Presented twice, both dishonoured. Demand for payment before legal action...';
 }
 
+// ===== HOW TO USE SIDEBAR =====
+const HT_TIPS = {
+  chat: [
+    { label: 'Ask in Malayalam', text: '"വീട്ടുടമ deposit തിരിച്ചു തരുന്നില്ല, എന്ത് ചെയ്യണം?"' },
+    { label: 'Ask in English', text: '"My landlord is refusing to return the security deposit. What are my legal options?"' },
+    { label: 'Draft request', text: '"Tenant eviction notice draft ചെയ്യണം — 3 months rent unpaid"' },
+  ],
+  draft_notice: [
+    { label: 'Notice Type', text: 'Select the notice type from the dropdown — Demand / Recovery, Cheque Bounce, Property Eviction, etc.' },
+    { label: 'Sender & Recipient', text: 'Enter full name and address for both parties. Age is optional.' },
+    { label: 'Key Facts', text: 'Describe the situation: amount owed, dates, what happened. The template fills in the rest.' },
+  ],
+  draft_petition: [
+    { label: 'Petition Type', text: 'Choose from Civil, Criminal, Writ, Bail Application, Written Statement, etc.' },
+    { label: 'Facts', text: 'Write the facts clearly: who, what, when, where. Include case numbers if available.' },
+    { label: 'Language', text: 'Select Malayalam for a court-ready draft in Malayalam, or Bilingual for both.' },
+  ],
+  draft_agreement: [
+    { label: 'Agreement Type', text: 'Sale Deed, Rent/Lease, POA, Partnership Deed, MoU, Affidavit — all supported.' },
+    { label: 'Party 1 & Party 2', text: 'Enter name S/o or W/o father\'s name, address. The builder parses it automatically.' },
+    { label: 'Key Details', text: 'Property details, amounts, dates, survey numbers — use the guide card that appears.' },
+  ],
+  draft_client: [
+    { label: 'Letter Type', text: 'Pick the letter purpose: case update, hearing date, document request, fee reminder, etc.' },
+    { label: 'Client & Advocate', text: 'Enter the client\'s name and your name — these fill the letter header and signature.' },
+    { label: 'Details', text: 'Add case number, hearing date, or any specific information to include in the body.' },
+  ],
+  draft_explain: [
+    { label: 'Paste any clause', text: 'Copy a clause from any contract, deed, court order, or notice and paste it in.' },
+    { label: 'Any language', text: 'Works with English, Malayalam, or mixed clauses — explanation is always in Malayalam.' },
+    { label: 'Example', text: '"The Tenant shall not sublet or assign the premises without prior written consent of the Landlord."' },
+  ],
+  upload: [
+    { label: 'Supported files', text: 'Upload any legal document — PDF, image, or scanned notice. AI reads and summarises it.' },
+    { label: 'What it does', text: 'Extracts key facts, parties, dates, and obligations. Useful for understanding received notices.' },
+    { label: 'Ask questions', text: 'After upload, ask specific questions about the document in Malayalam or English.' },
+  ],
+  rights: [
+    { label: 'Know your rights', text: 'Browse Kerala and Indian legal rights by category — tenant, consumer, employment, etc.' },
+    { label: 'Plain language', text: 'Every right explained simply without legal jargon, in Malayalam where available.' },
+    { label: 'Share', text: 'Copy or share any rights card to help clients understand their situation.' },
+  ],
+};
+
+function updateHowToUse(key) {
+  const el = document.getElementById('ht-content');
+  if (!el) return;
+  const tips = HT_TIPS[key] || HT_TIPS.chat;
+  el.innerHTML = tips.map(t =>
+    `<div class="ht-tip"><div class="ht-tip-label">${t.label}</div><div class="ht-tip-text">${t.text}</div></div>`
+  ).join('');
+}
+
 // ===== COURT DATES =====
 const CD_KEY = 'vakeel_court_dates';
 
@@ -3390,6 +3473,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderHistory();
   setupVoice();
   cdRender();
+  updateHowToUse('chat');
 });
 </script>
 </body>
