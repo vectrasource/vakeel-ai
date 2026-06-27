@@ -703,15 +703,8 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
           </select>
         </div>
 
-        <!-- Guided sidebar — visible only for Hearing Date Intimation -->
-        <div class="agr-guide-card" id="cl-guide" style="display:none">
-          <div class="guide-title">📋 ഓരോ വിവരവും പ്രത്യേക വരിയിൽ ടൈപ്പ് ചെയ്യുക</div>
-          <div class="guide-line"><span class="guide-label">കോടതി:</span> തൃശ്ശൂർ ജില്ലാ കോടതി</div>
-          <div class="guide-line"><span class="guide-label">കേസ് നമ്പർ:</span> 245/2024</div>
-          <div class="guide-line"><span class="guide-label">വിചാരണ തീയതി:</span> 2024 ജൂലൈ 15</div>
-          <div class="guide-line"><span class="guide-label">സമയം:</span> രാവിലെ 10:30 മണി</div>
-          <div class="guide-line"><span class="guide-label">ഓഫീസ് ബന്ധപ്പെടേണ്ട തീയതി:</span> ജൂലൈ 10-ന് മുൻപ്</div>
-        </div>
+        <!-- Guided sidebar — updated dynamically by updateClientGuide() -->
+        <div class="agr-guide-card" id="cl-guide"></div>
 
         <div class="form-grid">
           <div>
@@ -2466,6 +2459,7 @@ function selectTool(btn) {
   document.getElementById('court-field-wrap').style.display = currentTool === 'agreement' ? 'none' : '';
   if (currentTool === 'agreement') updateAgrGuide(document.getElementById('agr-type').value);
   if (currentTool === 'notice') updateNoticeGuide(document.getElementById('not-type').value);
+  if (currentTool === 'client') updateClientGuide(document.getElementById('cl-type').value);
   updateHowToUse('draft_' + currentTool);
   resetOutput();
 }
@@ -3386,13 +3380,81 @@ function updateFactsPlaceholder() {
   }
 }
 
+const CLIENT_LETTER_GUIDES = {
+  'കേസ് സ്റ്റാറ്റസ് അപ്‌ഡേറ്റ്': [
+    ['CLIENT NAME', 'രാജേഷ് കുമാർ'],
+    ['ADVOCATE NAME', 'അഡ്വക്കേറ്റ് സുരേഷ് നായർ'],
+    ['KEY DETAILS', ''],
+    ['കേസ് നമ്പർ', '112/2024'],
+    ['കോടതി', 'തൃശ്ശൂർ ജില്ലാ കോടതി'],
+    ['നിലവിലെ സ്ഥിതി', 'സാക്ഷി വിസ്താരം പൂർത്തിയായി'],
+    ['അടുത്ത ഘട്ടം', 'വാദം കേൾക്കൽ 2024 ആഗസ്റ്റ് 5'],
+  ],
+  'ഹിയറിംഗ് തീയതി അറിയിപ്പ്': [
+    ['CLIENT NAME', 'രാജേഷ് കുമാർ'],
+    ['ADVOCATE NAME', 'അഡ്വക്കേറ്റ് സുരേഷ് നായർ'],
+    ['KEY DETAILS', ''],
+    ['കോടതി', 'തൃശ്ശൂർ ജില്ലാ കോടതി'],
+    ['കേസ് നമ്പർ', '245/2024'],
+    ['വിചാരണ തീയതി', '2024 ജൂലൈ 15'],
+    ['സമയം', 'രാവിലെ 10:30 മണി'],
+    ['ഓഫീസ് ബന്ധപ്പെടേണ്ട തീയതി', 'ജൂലൈ 10-ന് മുൻപ്'],
+  ],
+  'രേഖകൾ ആവശ്യപ്പെടൽ': [
+    ['CLIENT NAME', 'രാജേഷ് കുമാർ'],
+    ['ADVOCATE NAME', 'അഡ്വക്കേറ്റ് സുരേഷ് നായർ'],
+    ['KEY DETAILS', ''],
+    ['കേസ്', 'വാടക തർക്കം 2024'],
+    ['ആവശ്യമായ രേഖകൾ', '1. വാടക കരാറിന്റെ അസ്സൽ<br>2. വാടക രസീതുകൾ<br>3. ആധാർ കാർഡ് പകർപ്പ്'],
+    ['സമർപ്പിക്കേണ്ട തീയതി', '2024 ജൂലൈ 10'],
+  ],
+  'ഫീസ് റിമൈൻഡർ': [
+    ['CLIENT NAME', 'രാജേഷ് കുമാർ'],
+    ['ADVOCATE NAME', 'അഡ്വക്കേറ്റ് സുരേഷ് നായർ'],
+    ['KEY DETAILS', ''],
+    ['കേസ്', 'വാടക തർക്കം 2024'],
+    ['കുടിശ്ശിക തുക', '₹15,000'],
+    ['അടയ്ക്കേണ്ട തീയതി', '2024 ജൂലൈ 20'],
+    ['അക്കൗണ്ട്', 'SBI, തൃശ്ശൂർ'],
+  ],
+  'ഒത്തുതീർപ്പ് ഓഫർ': [
+    ['CLIENT NAME', 'സുരേഷ് നായർ'],
+    ['ADVOCATE NAME', 'അഡ്വക്കേറ്റ് രാജേഷ് കുമാർ'],
+    ['KEY DETAILS', ''],
+    ['തർക്കം', 'വസ്തു അതിർത്തി തർക്കം'],
+    ['ഒത്തുതീർപ്പ് വ്യവസ്ഥകൾ', '₹2,00,000 നഷ്ടപരിഹാരം'],
+    ['മറുപടി നൽകേണ്ട തീയതി', '2024 ജൂലൈ 20'],
+  ],
+  'കേസ് ക്ലോഷർ അറിയിപ്പ്': [
+    ['CLIENT NAME', 'രാജേഷ് കുമാർ'],
+    ['ADVOCATE NAME', 'അഡ്വക്കേറ്റ് സുരേഷ് നായർ'],
+    ['KEY DETAILS', ''],
+    ['കേസ് നമ്പർ', '245/2024'],
+    ['കോടതി', 'തൃശ്ശൂർ ജില്ലാ കോടതി'],
+    ['വിധി', 'താങ്കൾക്ക് അനുകൂലമായി'],
+    ['തീയതി', '2024 ജൂലൈ 1'],
+    ['രേഖകൾ കൈപ്പറ്റാം', 'ഓഫീസ് സമയത്ത്'],
+  ],
+};
+
+function updateClientGuide(type) {
+  const el = document.getElementById('cl-guide');
+  if (!el) return;
+  const rows = CLIENT_LETTER_GUIDES[type];
+  if (!rows) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="guide-title">📋 ഇങ്ങനെ നൽകുക</div>' +
+    rows.map(([label, val]) =>
+      val === ''
+        ? `<div class="guide-line" style="margin-top:6px"><span class="guide-label">${label}:</span></div>`
+        : `<div class="guide-line"><span class="guide-label">${label}:</span> ${val}</div>`
+    ).join('');
+}
+
 function updateClientFields() {
   const type = document.getElementById('cl-type').value;
+  updateClientGuide(type);
   const textarea = document.getElementById('cl-details');
-  const guide = document.getElementById('cl-guide');
-  const isHearing = type === 'ഹിയറിംഗ് തീയതി അറിയിപ്പ്';
-  guide.style.display = isHearing ? 'block' : 'none';
-  if (isHearing) {
+  if (type === 'ഹിയറിംഗ് തീയതി അറിയിപ്പ്') {
     textarea.placeholder = 'കോടതി: തൃശ്ശൂർ ജില്ലാ കോടതി\nകേസ് നമ്പർ: 245/2024\nവിചാരണ തീയതി: 2024 ജൂലൈ 15\nസമയം: രാവിലെ 10:30 മണി\nഓഫീസ് ബന്ധപ്പെടേണ്ട തീയതി: ജൂലൈ 10-ന് മുൻപ്';
   } else {
     textarea.placeholder = 'കേസ് നമ്പർ, തീയതി, തുക, മറ്റ് വിവരങ്ങൾ';
