@@ -2934,6 +2934,8 @@ function _updateGenBadge() {
 }
 
 async function checkGenLimit() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user?.email === 'kpharis.hk@gmail.com') return true;
   if (_genUsed >= GEN_LIMIT) {
     _showUpgradeModal();
     return false;
