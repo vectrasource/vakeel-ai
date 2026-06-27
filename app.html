@@ -424,7 +424,13 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
   text-transform:uppercase;margin-bottom:5px;}
 .ht-tip-text{font-size:12px;color:var(--text-dim);line-height:1.65;}
 .ht-tip-text em{color:var(--text);font-style:normal;font-weight:600;}
+.varnam-toggle{font-size:10px;font-family:'DM Sans',sans-serif;background:var(--gold-dim);
+  border:1px solid var(--gold-border);color:var(--gold);border-radius:4px;padding:2px 7px;
+  cursor:pointer;font-weight:700;line-height:1.4;transition:all 0.15s;flex-shrink:0;}
+.varnam-toggle:hover{background:rgba(212,160,23,0.2);}
+.varnam-toggle.active{background:var(--gold);color:#07070e;border-color:var(--gold);}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/varnam-transliteration/dist/varnam.min.js"></script>
 </head>
 <body>
 <!-- Auth loading overlay — hidden once session confirmed -->
@@ -3598,6 +3604,74 @@ function cdDelete(i) {
   cdRender();
 }
 
+// ===== VARNAM MANGLISH → MALAYALAM =====
+const VARNAM_FIELDS = [
+  'pet-facts',
+  'not-sender', 'not-recipient', 'not-facts',
+  'exp-clause',
+  'cl-client', 'cl-advocate', 'cl-details',
+  'agr-party1', 'agr-party2', 'agr-details'
+];
+let _varnam = null;
+const _varnamActive = new Set();
+
+function initVarnam() {
+  if (typeof Varnam === 'undefined') return;
+  try { _varnam = new Varnam('ml'); } catch(e) { console.warn('Varnam init failed', e); }
+}
+
+function setupVarnamFields() {
+  initVarnam();
+  VARNAM_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const label = el.previousElementSibling;
+    if (!label || label.tagName !== 'LABEL') return;
+
+    label.style.display = 'flex';
+    label.style.justifyContent = 'space-between';
+    label.style.alignItems = 'center';
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'varnam-toggle';
+    btn.textContent = 'മ';
+    btn.title = 'Manglish → Malayalam toggle';
+    btn.onclick = () => {
+      const on = _varnamActive.has(id) ? (_varnamActive.delete(id), false) : (_varnamActive.add(id), true);
+      btn.classList.toggle('active', on);
+    };
+    label.appendChild(btn);
+
+    el.addEventListener('keydown', async e => {
+      if (!_varnamActive.has(id) || !_varnam) return;
+      if (e.key !== ' ' && e.key !== 'Enter') return;
+      const val = el.value;
+      const pos = el.selectionStart ?? val.length;
+      const before = val.substring(0, pos);
+      const after = val.substring(pos);
+      const lastBoundary = Math.max(before.lastIndexOf(' '), before.lastIndexOf('\n'));
+      const word = before.substring(lastBoundary + 1);
+      if (!word) return;
+      e.preventDefault();
+      try {
+        const results = await _varnam.transliterate(word);
+        const ml = Array.isArray(results) && results[0] ? results[0] : word;
+        const sep = e.key === 'Enter' ? '\n' : ' ';
+        const prefix = before.substring(0, lastBoundary + 1);
+        el.value = prefix + ml + sep + after;
+        const newPos = prefix.length + ml.length + 1;
+        el.setSelectionRange(newPos, newPos);
+        el.dispatchEvent(new Event('input'));
+      } catch(err) {
+        const sep = e.key === 'Enter' ? '\n' : ' ';
+        el.value = before + sep + after;
+        el.setSelectionRange(pos + 1, pos + 1);
+      }
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await initVakeelAuth();
   await initGenCounter();
@@ -3605,6 +3679,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupVoice();
   cdRender();
   updateHowToUse('chat');
+  setupVarnamFields();
 });
 </script>
 </body>
