@@ -3619,7 +3619,7 @@ async function transliterateWord(word) {
 
 function setupTranslitFields() {
   const fieldIds = [
-    'pet-facts',
+    'pet-subject', 'pet-facts',
     'not-sender', 'not-recipient', 'not-facts',
     'exp-clause',
     'cl-client', 'cl-advocate', 'cl-details',
@@ -3668,6 +3668,44 @@ function setupTranslitFields() {
 
     label.appendChild(toggleBtn);
   });
+
+  // chat-input is contenteditable — handle separately
+  const chatField = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('send-btn');
+  if (chatField && sendBtn) {
+    const chatToggle = document.createElement('button');
+    chatToggle.type = 'button';
+    chatToggle.textContent = 'മ';
+    chatToggle.className = 'varnam-toggle';
+    chatToggle.title = 'Manglish to Malayalam';
+    let chatActive = false;
+    chatToggle.addEventListener('click', () => {
+      chatActive = !chatActive;
+      chatToggle.classList.toggle('active', chatActive);
+    });
+    sendBtn.parentElement.insertBefore(chatToggle, sendBtn);
+
+    chatField.addEventListener('keydown', async e => {
+      if (!chatActive) return;
+      if (e.key !== ' ' && e.key !== 'Enter') return;
+      const text = chatField.innerText;
+      const words = text.trimEnd().split(/\s/);
+      const lastWord = words[words.length - 1];
+      if (!lastWord) return;
+      e.preventDefault();
+      const sep = e.key === 'Enter' ? '\n' : ' ';
+      const translated = await transliterateWord(lastWord);
+      chatField.innerText = text.slice(0, text.length - lastWord.length) + translated + sep;
+      // move cursor to end
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(chatField);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      chatField.dispatchEvent(new Event('input'));
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
