@@ -430,7 +430,6 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
 .varnam-toggle:hover{background:rgba(212,160,23,0.2);}
 .varnam-toggle.active{background:var(--gold);color:#07070e;border-color:var(--gold);}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/varnam-transliteration/dist/varnam.min.js"></script>
 </head>
 <body>
 <!-- Auth loading overlay — hidden once session confirmed -->
@@ -3605,70 +3604,91 @@ function cdDelete(i) {
 }
 
 // ===== VARNAM MANGLISH → MALAYALAM =====
-const VARNAM_FIELDS = [
-  'pet-facts',
-  'not-sender', 'not-recipient', 'not-facts',
-  'exp-clause',
-  'cl-client', 'cl-advocate', 'cl-details',
-  'agr-party1', 'agr-party2', 'agr-details'
-];
-let _varnam = null;
-const _varnamActive = new Set();
+// ===== MANGLISH → MALAYALAM =====
+const manglishMap = {
+  'ente': 'എന്റെ', 'njaan': 'ഞാൻ', 'njan': 'ഞാൻ',
+  'ningal': 'നിങ്ങൾ', 'thankal': 'താങ്കൾ', 'avan': 'അവൻ',
+  'aval': 'അവൾ', 'avr': 'അവർ', 'nammal': 'നമ്മൾ',
+  'kakshi': 'കക്ഷി', 'court': 'കോടതി',
+  'notees': 'നോട്ടീസ്', 'notice': 'നോട്ടീസ്',
+  'petition': 'പെറ്റിഷൻ', 'case': 'കേസ്',
+  'advocate': 'അഡ്വക്കേറ്റ്', 'vakeel': 'വക്കീൽ',
+  'deed': 'ആധാരം', 'agreement': 'കരാർ',
+  'karaar': 'കരാർ', 'karar': 'കരാർ',
+  'vaadam': 'വാദം', 'vadam': 'വാദം',
+  'vishayam': 'വിഷയം', 'theerumanam': 'തീരുമാനം',
+  'niyamam': 'നിയമം', 'kodathi': 'കോടതി',
+  'rajeesh': 'രാജേഷ്', 'rajesh': 'രാജേഷ്',
+  'suresh': 'സുരേഷ്', 'kumar': 'കുമാർ',
+  'nair': 'നായർ', 'menon': 'മേനോൻ',
+  'pillai': 'പിള്ള', 'varma': 'വർമ്മ',
+  'thrissur': 'തൃശ്ശൂർ', 'trichur': 'തൃശ്ശൂർ',
+  'trivandrum': 'തിരുവനന്തപുരം', 'ernakulam': 'എറണാകുളം',
+  'kozhikode': 'കോഴിക്കോട്', 'kollam': 'കൊല്ലം',
+  'kochi': 'കൊച്ചി', 'palakkad': 'പാലക്കാട്',
+  'veedu': 'വീട്', 'nilam': 'നിലം',
+  'vazhi': 'വഴി', 'paisa': 'പൈസ',
+  'rupee': 'രൂപ', 'tharkam': 'തർക്കം',
+  'prashnam': 'പ്രശ്നം', 'sammadam': 'സമ്മതം',
+  'vivaram': 'വിവരം', 'aadhar': 'ആധാർ',
+  'documents': 'രേഖകൾ', 'rekhakal': 'രേഖകൾ',
+};
 
-function initVarnam() {
-  if (typeof Varnam === 'undefined') return;
-  try { _varnam = new Varnam('ml'); } catch(e) { console.warn('Varnam init failed', e); }
+function transliterateWord(word) {
+  return manglishMap[word.toLowerCase()] || word;
 }
 
-function setupVarnamFields() {
-  initVarnam();
-  VARNAM_FIELDS.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const label = el.previousElementSibling;
+function setupTranslitFields() {
+  const fieldIds = [
+    'pet-facts',
+    'not-sender', 'not-recipient', 'not-facts',
+    'exp-clause',
+    'cl-client', 'cl-advocate', 'cl-details',
+    'agr-party1', 'agr-party2', 'agr-details'
+  ];
+
+  fieldIds.forEach(id => {
+    const field = document.getElementById(id);
+    if (!field) return;
+    const label = field.previousElementSibling;
     if (!label || label.tagName !== 'LABEL') return;
 
     label.style.display = 'flex';
     label.style.justifyContent = 'space-between';
     label.style.alignItems = 'center';
 
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'varnam-toggle';
-    btn.textContent = 'മ';
-    btn.title = 'Manglish → Malayalam toggle';
-    btn.onclick = () => {
-      const on = _varnamActive.has(id) ? (_varnamActive.delete(id), false) : (_varnamActive.add(id), true);
-      btn.classList.toggle('active', on);
-    };
-    label.appendChild(btn);
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.textContent = 'മ';
+    toggleBtn.className = 'varnam-toggle';
+    toggleBtn.title = 'Manglish to Malayalam';
 
-    el.addEventListener('keydown', async e => {
-      if (!_varnamActive.has(id) || !_varnam) return;
+    let active = false;
+    toggleBtn.addEventListener('click', () => {
+      active = !active;
+      toggleBtn.classList.toggle('active', active);
+    });
+
+    field.addEventListener('keydown', e => {
+      if (!active) return;
       if (e.key !== ' ' && e.key !== 'Enter') return;
-      const val = el.value;
-      const pos = el.selectionStart ?? val.length;
-      const before = val.substring(0, pos);
-      const after = val.substring(pos);
-      const lastBoundary = Math.max(before.lastIndexOf(' '), before.lastIndexOf('\n'));
-      const word = before.substring(lastBoundary + 1);
-      if (!word) return;
-      e.preventDefault();
-      try {
-        const results = await _varnam.transliterate(word);
-        const ml = Array.isArray(results) && results[0] ? results[0] : word;
-        const sep = e.key === 'Enter' ? '\n' : ' ';
-        const prefix = before.substring(0, lastBoundary + 1);
-        el.value = prefix + ml + sep + after;
-        const newPos = prefix.length + ml.length + 1;
-        el.setSelectionRange(newPos, newPos);
-        el.dispatchEvent(new Event('input'));
-      } catch(err) {
-        const sep = e.key === 'Enter' ? '\n' : ' ';
-        el.value = before + sep + after;
-        el.setSelectionRange(pos + 1, pos + 1);
+      const pos = field.selectionStart;
+      const text = field.value;
+      const beforeCursor = text.substring(0, pos);
+      const words = beforeCursor.split(/\s/);
+      const lastWord = words[words.length - 1];
+      if (lastWord) {
+        const translated = transliterateWord(lastWord);
+        if (translated !== lastWord) {
+          const newText = beforeCursor.slice(0, beforeCursor.length - lastWord.length) + translated + text.substring(pos);
+          field.value = newText;
+          const newPos = pos - lastWord.length + translated.length;
+          field.setSelectionRange(newPos, newPos);
+        }
       }
     });
+
+    label.appendChild(toggleBtn);
   });
 }
 
@@ -3679,7 +3699,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupVoice();
   cdRender();
   updateHowToUse('chat');
-  setupVarnamFields();
+  setupTranslitFields();
 });
 </script>
 </body>
