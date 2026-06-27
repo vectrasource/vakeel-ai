@@ -344,15 +344,18 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
 
 /* Mobile overlay mode */
 @media(max-width:767px){
+  /* Always display:flex on mobile — transform hides/shows, not display */
   .vs-sidebar{
+    display:flex;flex-direction:column;gap:14px;
     width:82vw;max-width:320px;
     top:0;bottom:0;
     transition:transform 0.28s ease;
     background:rgba(7,7,14,0.97);
+    pointer-events:none;
   }
   #court-sidebar{left:0;border-right:1px solid var(--gold-border);transform:translateX(-100%);}
   #howto-sidebar{right:0;border-left:1px solid var(--gold-border);transform:translateX(100%);}
-  .vs-sidebar.open{display:flex;flex-direction:column;gap:14px;transform:translateX(0);}
+  .vs-sidebar.open{transform:translateX(0);pointer-events:auto;}
   #sb-overlay{display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,0.55);}
   #sb-overlay.visible{display:block;}
   .sb-toggle-bar{
