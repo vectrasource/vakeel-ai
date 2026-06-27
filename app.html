@@ -355,7 +355,8 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
   }
   #court-sidebar{left:0;border-right:1px solid var(--gold-border);transform:translateX(-100%);}
   #howto-sidebar{right:0;border-left:1px solid var(--gold-border);transform:translateX(100%);}
-  .vs-sidebar.open{transform:translateX(0);pointer-events:auto;}
+  /* Must use ID selectors here to beat specificity of the closed-state ID rules above */
+  #court-sidebar.open,#howto-sidebar.open{transform:translateX(0);pointer-events:auto;}
   #sb-overlay{display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,0.55);}
   #sb-overlay.visible{display:block;}
   .sb-toggle-bar{
