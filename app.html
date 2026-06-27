@@ -3604,38 +3604,17 @@ function cdDelete(i) {
 }
 
 // ===== VARNAM MANGLISH → MALAYALAM =====
-// ===== MANGLISH → MALAYALAM =====
-const manglishMap = {
-  'ente': 'എന്റെ', 'njaan': 'ഞാൻ', 'njan': 'ഞാൻ',
-  'ningal': 'നിങ്ങൾ', 'thankal': 'താങ്കൾ', 'avan': 'അവൻ',
-  'aval': 'അവൾ', 'avr': 'അവർ', 'nammal': 'നമ്മൾ',
-  'kakshi': 'കക്ഷി', 'court': 'കോടതി',
-  'notees': 'നോട്ടീസ്', 'notice': 'നോട്ടീസ്',
-  'petition': 'പെറ്റിഷൻ', 'case': 'കേസ്',
-  'advocate': 'അഡ്വക്കേറ്റ്', 'vakeel': 'വക്കീൽ',
-  'deed': 'ആധാരം', 'agreement': 'കരാർ',
-  'karaar': 'കരാർ', 'karar': 'കരാർ',
-  'vaadam': 'വാദം', 'vadam': 'വാദം',
-  'vishayam': 'വിഷയം', 'theerumanam': 'തീരുമാനം',
-  'niyamam': 'നിയമം', 'kodathi': 'കോടതി',
-  'rajeesh': 'രാജേഷ്', 'rajesh': 'രാജേഷ്',
-  'suresh': 'സുരേഷ്', 'kumar': 'കുമാർ',
-  'nair': 'നായർ', 'menon': 'മേനോൻ',
-  'pillai': 'പിള്ള', 'varma': 'വർമ്മ',
-  'thrissur': 'തൃശ്ശൂർ', 'trichur': 'തൃശ്ശൂർ',
-  'trivandrum': 'തിരുവനന്തപുരം', 'ernakulam': 'എറണാകുളം',
-  'kozhikode': 'കോഴിക്കോട്', 'kollam': 'കൊല്ലം',
-  'kochi': 'കൊച്ചി', 'palakkad': 'പാലക്കാട്',
-  'veedu': 'വീട്', 'nilam': 'നിലം',
-  'vazhi': 'വഴി', 'paisa': 'പൈസ',
-  'rupee': 'രൂപ', 'tharkam': 'തർക്കം',
-  'prashnam': 'പ്രശ്നം', 'sammadam': 'സമ്മതം',
-  'vivaram': 'വിവരം', 'aadhar': 'ആധാർ',
-  'documents': 'രേഖകൾ', 'rekhakal': 'രേഖകൾ',
-};
-
-function transliterateWord(word) {
-  return manglishMap[word.toLowerCase()] || word;
+// ===== MANGLISH → MALAYALAM (Google Transliteration) =====
+async function transliterateWord(word) {
+  try {
+    const url = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=ml-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`;
+    const res = await fetch(url);
+    const data = await res.json();
+    // Response shape: [status, [[word, [suggestion, ...]], ...]]
+    return data?.[1]?.[0]?.[1]?.[0] || word;
+  } catch {
+    return word;
+  }
 }
 
 function setupTranslitFields() {
@@ -3669,7 +3648,7 @@ function setupTranslitFields() {
       toggleBtn.classList.toggle('active', active);
     });
 
-    field.addEventListener('keydown', e => {
+    field.addEventListener('keydown', async e => {
       if (!active) return;
       if (e.key !== ' ' && e.key !== 'Enter') return;
       const pos = field.selectionStart;
@@ -3677,15 +3656,14 @@ function setupTranslitFields() {
       const beforeCursor = text.substring(0, pos);
       const words = beforeCursor.split(/\s/);
       const lastWord = words[words.length - 1];
-      if (lastWord) {
-        const translated = transliterateWord(lastWord);
-        if (translated !== lastWord) {
-          const newText = beforeCursor.slice(0, beforeCursor.length - lastWord.length) + translated + text.substring(pos);
-          field.value = newText;
-          const newPos = pos - lastWord.length + translated.length;
-          field.setSelectionRange(newPos, newPos);
-        }
-      }
+      if (!lastWord) return;
+      e.preventDefault();
+      const sep = e.key === 'Enter' ? '\n' : ' ';
+      const translated = await transliterateWord(lastWord);
+      const newText = beforeCursor.slice(0, beforeCursor.length - lastWord.length) + translated + sep + text.substring(pos);
+      field.value = newText;
+      const newPos = pos - lastWord.length + translated.length + 1;
+      field.setSelectionRange(newPos, newPos);
     });
 
     label.appendChild(toggleBtn);
