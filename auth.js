@@ -77,7 +77,7 @@ async function initVakeelAuth() {
       <div style="position:relative;display:flex;align-items:center;">
         <button onclick="toggleVakeelMenu()" style="display:flex;align-items:center;gap:7px;background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.3);border-radius:8px;padding:5px 10px;cursor:pointer;color:#ede8dc;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;">
           <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#b8860b,#f0c040);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#07070e;flex-shrink:0;">${initials}</div>
-          <span style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${email}</span>
+          <span class="nav-mobile-hide" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${email}</span>
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
         </button>
         <div id="vakeel-user-menu" style="display:none;position:absolute;right:0;top:calc(100% + 8px);background:#0d0d18;border:1px solid rgba(212,160,23,0.25);border-radius:12px;min-width:190px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,0.6);z-index:1000;">

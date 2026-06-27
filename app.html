@@ -45,6 +45,14 @@ nav{position:sticky;top:0;z-index:100;background:rgba(7,7,14,0.95);backdrop-filt
   color:var(--gold);padding:3px 10px;border-radius:20px;letter-spacing:0.8px;font-weight:600;}
 .nav-right{display:flex;align-items:center;gap:10px;}
 .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);}
+@media(max-width:575px){
+  nav{padding:0 1rem;}
+  .nav-logo{width:30px;height:30px;font-size:15px;}
+  .nav-name{font-size:18px;}
+  .nav-badge{display:none;}
+  .status-dot{display:none;}
+  .nav-mobile-hide{display:none;}
+}
 
 .hero{text-align:center;padding:3.5rem 1.5rem 2rem;max-width:680px;margin:0 auto;position:relative;z-index:2;}
 .hero-pill{display:inline-flex;align-items:center;gap:6px;background:var(--gold-dim);
@@ -2914,7 +2922,7 @@ function _updateGenBadge() {
   if (!el) return;
   const remaining = Math.max(0, GEN_LIMIT - _genUsed);
   el.style.display = 'inline-block';
-  el.textContent = `${remaining} gen${remaining === 1 ? '' : 's'} left`;
+  el.innerHTML = `${remaining}<span class="nav-mobile-hide"> gen${remaining===1?'':'s'} left</span>`;
   el.style.color = remaining <= 2 ? '#e05555' : 'var(--gold)';
   el.style.borderColor = remaining <= 2 ? 'rgba(224,85,85,0.3)' : 'var(--gold-border)';
   el.style.background = remaining <= 2 ? 'rgba(224,85,85,0.08)' : 'var(--gold-dim)';
