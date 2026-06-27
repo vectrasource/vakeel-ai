@@ -334,13 +334,39 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
   position:fixed;top:60px;bottom:0;
   width:calc((100vw - 700px) / 2);
   min-width:220px;
-  padding:20px 16px;overflow-y:auto;z-index:10;
+  padding:20px 16px;overflow-y:auto;z-index:200;
   background:rgba(7,7,14,0.72);
   border-color:var(--gold-border);
 }
 @media(min-width:1100px){.vs-sidebar{display:flex;flex-direction:column;gap:14px;}}
 #court-sidebar{left:0;border-right:1px solid var(--gold-border);}
 #howto-sidebar{right:0;border-left:1px solid var(--gold-border);}
+
+/* Mobile overlay mode */
+@media(max-width:767px){
+  .vs-sidebar{
+    width:82vw;max-width:320px;
+    top:0;bottom:0;
+    transition:transform 0.28s ease;
+    background:rgba(7,7,14,0.97);
+  }
+  #court-sidebar{left:0;border-right:1px solid var(--gold-border);transform:translateX(-100%);}
+  #howto-sidebar{right:0;border-left:1px solid var(--gold-border);transform:translateX(100%);}
+  .vs-sidebar.open{display:flex;flex-direction:column;gap:14px;transform:translateX(0);}
+  #sb-overlay{display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,0.55);}
+  #sb-overlay.visible{display:block;}
+  .sb-toggle-bar{
+    display:flex;justify-content:space-between;padding:8px 1rem;
+    background:rgba(7,7,14,0.9);border-bottom:1px solid var(--gold-border);
+    position:sticky;top:60px;z-index:50;
+  }
+  .sb-toggle-btn{
+    background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--gold);
+    border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;
+    cursor:pointer;font-family:'DM Sans',sans-serif;
+  }
+}
+@media(min-width:768px){.sb-toggle-bar{display:none;}#sb-overlay{display:none!important;}}
 
 .sb-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;
   color:var(--gold);display:flex;align-items:center;gap:7px;padding-bottom:10px;
@@ -397,6 +423,15 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
 
 <div id="bg-glow"></div>
 <div id="grain"></div>
+
+<!-- Mobile sidebar backdrop -->
+<div id="sb-overlay" onclick="sbCloseAll()"></div>
+
+<!-- Mobile toggle bar (hidden on desktop) -->
+<div class="sb-toggle-bar">
+  <button class="sb-toggle-btn" onclick="sbToggle('court-sidebar')">📅 Court Dates</button>
+  <button class="sb-toggle-btn" onclick="sbToggle('howto-sidebar')">ℹ️ How to Use</button>
+</div>
 
 <!-- LEFT SIDEBAR: Court Dates -->
 <aside id="court-sidebar" class="vs-sidebar">
@@ -3353,6 +3388,21 @@ function updateNoticeFields() {
   document.getElementById('not-facts').placeholder = isReply
     ? 'Original notice claims (summarise each point) + your client\'s counter-facts for each...'
     : 'e.g. Cheque of ₹50,000 issued by Suresh Kumar bounced on 12 May 2026. Presented twice, both dishonoured. Demand for payment before legal action...';
+}
+
+// ===== MOBILE SIDEBAR TOGGLES =====
+function sbToggle(id) {
+  const isOpen = document.getElementById(id).classList.contains('open');
+  sbCloseAll();
+  if (!isOpen) {
+    document.getElementById(id).classList.add('open');
+    document.getElementById('sb-overlay').classList.add('visible');
+  }
+}
+function sbCloseAll() {
+  document.querySelectorAll('.vs-sidebar').forEach(s => s.classList.remove('open'));
+  const ov = document.getElementById('sb-overlay');
+  if (ov) ov.classList.remove('visible');
 }
 
 // ===== HOW TO USE SIDEBAR =====
