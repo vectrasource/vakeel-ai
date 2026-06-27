@@ -2201,15 +2201,16 @@ function buildDraftPrompt(tool, lang, court) {
       const type = document.getElementById('pet-type').value;
       const subject = document.getElementById('pet-subject').value || 'Legal matter';
       const facts = document.getElementById('pet-facts').value || '';
+      const isMalayalam = lang === 'Malayalam' || lang === 'bilingual Malayalam and English';
       let prompt = `You are Vakeel AI's document drafting engine for Kerala/India legal documents.
+${isMalayalam ? `Generate the entire petition in formal legal Malayalam (ഔദ്യോഗിക നിയമ മലയാളം). All sections including Facts, Grounds, Reliefs must be in Malayalam. Use Kerala court petition format.` : `Write all content in ${lang}.`}
 
-Draft a complete ${type} for ${court} in ${lang}.
+Draft a complete ${type} for ${court}.
 Subject: ${subject}
 Facts: ${facts}
 
 Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Do not wrap the output in triple backtick characters or any code block. Use numbered points like '1.' and '1.1' for structure.
 
-${type}
 Court: ${court}
 Subject: ${subject}
 
@@ -2221,8 +2222,6 @@ IN THE MATTER OF:
 [Petitioner Name] ... Petitioner
 vs.
 [Respondent Name] ... Respondent
-
-PETITION
 
 Most Respectfully Showeth:
 
@@ -2244,8 +2243,8 @@ Counsel for Petitioner
 Date:
 Place: Kerala
 
-Mark all variable fields with [BRACKETS]. Write all content in ${lang}. Use proper legal terminology.`;
-      if (lang === 'Malayalam' || lang === 'bilingual Malayalam and English') {
+Mark all variable fields with [BRACKETS]. Use proper legal terminology.`;
+      if (isMalayalam) {
         prompt += `
 
 IMPORTANT MALAYALAM LEGAL TERMINOLOGY — use these exact terms:
