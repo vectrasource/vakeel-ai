@@ -2202,6 +2202,11 @@ function buildDraftPrompt(tool, lang, court) {
       const subject = document.getElementById('pet-subject').value || 'Legal matter';
       const facts = document.getElementById('pet-facts').value || '';
       const isMalayalam = lang === 'Malayalam' || lang === 'bilingual Malayalam and English';
+      const mlCourtHeader = (() => {
+        if (/rent|eviction|civil/i.test(type)) return 'ബഹുമാനപ്പെട്ട റെന്റ് കൺട്രോൾ കോടതി മുൻപാകെ';
+        if (/writ/i.test(type)) return 'ബഹുമാനപ്പെട്ട കേരള ഹൈക്കോടതി മുൻപാകെ';
+        return `ബഹുമാനപ്പെട്ട ${court} മുൻപാകെ`;
+      })();
       let prompt = `You are Vakeel AI's document drafting engine for Kerala/India legal documents.
 ${isMalayalam ? `Generate the entire petition in formal legal Malayalam (ഔദ്യോഗിക നിയമ മലയാളം). All sections including Facts, Grounds, Reliefs must be in Malayalam. Use Kerala court petition format.` : `Write all content in ${lang}.`}
 
@@ -2214,16 +2219,22 @@ Do NOT use markdown formatting symbols anywhere in the output, including #, ##, 
 Court: ${court}
 Subject: ${subject}
 
-IN THE ${court.toUpperCase()}
+${isMalayalam ? mlCourtHeader : `IN THE ${court.toUpperCase()}`}
 
 PETITION NO.: [To be filled]
 
-IN THE MATTER OF:
+${isMalayalam ? `ഹർജിക്കാരൻ:
+[Petitioner Name]
+
+എതിർകക്ഷി:
+[Respondent Name]
+
+കേരള കെട്ടിട നികുതിയും വാടക നിയന്ത്രണവും നിയമപ്രകാരം ബോധിപ്പിക്കുന്ന ഹർജി` : `IN THE MATTER OF:
 [Petitioner Name] ... Petitioner
 vs.
-[Respondent Name] ... Respondent
+[Respondent Name] ... Respondent`}
 
-Most Respectfully Showeth:
+${isMalayalam ? 'വിനയപൂർവ്വം സമർപ്പിക്കുന്നത്:' : 'Most Respectfully Showeth:'}
 
 1. Facts of the Case
 [Detailed facts based on: ${facts}]
