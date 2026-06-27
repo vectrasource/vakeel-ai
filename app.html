@@ -693,7 +693,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
         <div class="form-divider">Client Letter</div>
         <div class="form-row">
           <label>Letter Type</label>
-          <select id="cl-type">
+          <select id="cl-type" onchange="updateClientFields()">
             <option>കേസ് സ്റ്റാറ്റസ് അപ്‌ഡേറ്റ്</option>
             <option>ഹിയറിംഗ് തീയതി അറിയിപ്പ്</option>
             <option>രേഖകൾ ആവശ്യപ്പെടൽ</option>
@@ -702,6 +702,17 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
             <option>കേസ് ക്ലോഷർ അറിയിപ്പ്</option>
           </select>
         </div>
+
+        <!-- Guided sidebar — visible only for Hearing Date Intimation -->
+        <div class="agr-guide-card" id="cl-guide" style="display:none">
+          <div class="guide-title">📋 ഓരോ വിവരവും പ്രത്യേക വരിയിൽ ടൈപ്പ് ചെയ്യുക</div>
+          <div class="guide-line"><span class="guide-label">കോടതി:</span> തൃശ്ശൂർ ജില്ലാ കോടതി</div>
+          <div class="guide-line"><span class="guide-label">കേസ് നമ്പർ:</span> 245/2024</div>
+          <div class="guide-line"><span class="guide-label">വിചാരണ തീയതി:</span> 2024 ജൂലൈ 15</div>
+          <div class="guide-line"><span class="guide-label">സമയം:</span> രാവിലെ 10:30 മണി</div>
+          <div class="guide-line"><span class="guide-label">ഓഫീസ് ബന്ധപ്പെടേണ്ട തീയതി:</span> ജൂലൈ 10-ന് മുൻപ്</div>
+        </div>
+
         <div class="form-grid">
           <div>
             <label>കക്ഷിയുടെ പേര്</label>
@@ -3374,15 +3385,15 @@ function updateFactsPlaceholder() {
 }
 
 function updateClientFields() {
-  const purpose = document.getElementById('cl-purpose').value;
-  const label = document.querySelector('label[for="cl-details"], #fields-client label');
+  const type = document.getElementById('cl-type').value;
   const textarea = document.getElementById('cl-details');
-  if (purpose === 'Legal Opinion') {
-    textarea.previousElementSibling.textContent = 'Legal Question / Issue';
-    textarea.placeholder = 'e.g. Whether a tenant can be evicted without a court order if the rent agreement has expired and they refuse to vacate...';
+  const guide = document.getElementById('cl-guide');
+  const isHearing = type === 'ഹിയറിംഗ് തീയതി അറിയിപ്പ്';
+  guide.style.display = isHearing ? 'block' : 'none';
+  if (isHearing) {
+    textarea.placeholder = 'കോടതി: തൃശ്ശൂർ ജില്ലാ കോടതി\nകേസ് നമ്പർ: 245/2024\nവിചാരണ തീയതി: 2024 ജൂലൈ 15\nസമയം: രാവിലെ 10:30 മണി\nഓഫീസ് ബന്ധപ്പെടേണ്ട തീയതി: ജൂലൈ 10-ന് മുൻപ്';
   } else {
-    textarea.previousElementSibling.textContent = 'Case Update Details';
-    textarea.placeholder = 'e.g. Hearing postponed to 25 June 2026. Judge requested additional documents — original title deed and tax receipts from 2020-2024...';
+    textarea.placeholder = 'കേസ് നമ്പർ, തീയതി, തുക, മറ്റ് വിവരങ്ങൾ';
   }
 }
 
