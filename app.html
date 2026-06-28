@@ -595,6 +595,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
             <label>Petition Type</label>
             <select id="pet-type" onchange="updateFactsPlaceholder()">
               <option>Civil Petition</option>
+              <option>Injunction Petition</option>
               <option>Criminal Petition</option>
               <option>Writ Petition (HC)</option>
               <option>Revision Petition</option>
@@ -2218,11 +2219,98 @@ function buildDraftPrompt(tool, lang, court) {
       const respondent = document.getElementById('petition-respondent').value || '[Respondent Name]';
       const isMalayalam = lang === 'Malayalam' || lang === 'bilingual Malayalam and English';
       const isCivil = isMalayalam && /civil/i.test(type);
+      const isInjunction = isMalayalam && /injunction/i.test(type);
       const mlCourtHeader = (() => {
         if (/rent|eviction|civil/i.test(type)) return 'ബഹുമാനപ്പെട്ട റെന്റ് കൺട്രോൾ കോടതി മുൻപാകെ';
         if (/writ/i.test(type)) return 'ബഹുമാനപ്പെട്ട കേരള ഹൈക്കോടതി മുൻപാകെ';
+        if (/injunction/i.test(type)) return `ബഹുമാനപ്പെട്ട ${court} മുൻസിഫ് കോടതി മുൻപാകെ`;
         return `ബഹുമാനപ്പെട്ട ${court} മുൻപാകെ`;
       })();
+      if (isInjunction) {
+        return `CRITICAL: The petitioner's name is EXACTLY: ${petitioner}. The respondent's name is EXACTLY: ${respondent}. These names must appear character-for-character as provided. Do NOT change, translate, modify or replace any part of these names under any circumstances.
+
+Generate an Injunction Petition in Malayalam following this exact skeleton. Extract all available details from case facts. Use [...] placeholders for missing information. Never invent details. Follow Kerala Munsiff Court format exactly. Use the three-test structure: Prima Facie Case (1), Balance of Convenience (2), Irreparable Injury (3).
+
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Use numbered points like '1.' and '1.1' for structure.
+
+Case Facts provided: ${facts}
+
+${mlCourtHeader}
+
+I.A. NO. ____________ / 2026
+ഇൻ
+O.S. NO. ____________ / 2026
+
+ഹർജിക്കാരൻ / വാദി:
+${petitioner}, വയസ്സ് [...], പിതാവിന്റെ പേര് [...], [തൊഴിൽ], [മുഴുവൻ വിലാസം], [ജില്ല].
+
+എതിർകക്ഷി / പ്രതി:
+${respondent}, വയസ്സ് [...], പിതാവിന്റെ പേര് [...], [തൊഴിൽ], [മുഴുവൻ വിലാസം], [ജില്ല].
+
+
+1908-ലെ സിവിൽ നടപടിക്രമ നിയമം (CPC) ഓർഡർ 39, റൂൾസ് 1, 2, ഒപ്പം സെക്ഷൻ 151 പ്രകാരം ബോധിപ്പിക്കുന്ന ഹർജി
+
+
+ഹർജിക്കാരൻ വിനയപൂർവ്വം സമർപ്പിക്കുന്ന വസ്തുതകൾ താഴെ പറയുന്നവയാകുന്നു:
+
+1. ഹർജി വക വസ്തുവിന്റെയും ഉടമസ്ഥതയുടെയും വിവരങ്ങൾ (Prima Facie Case):
+   1.1 താഴെ ഷെഡ്യൂളിൽ വിവരിച്ചിട്ടുള്ളതും ഈ ഹർജിയോടൊപ്പമുള്ള പ്രധാന ഹർജിയിൽ (O.S.) പരാമർശിച്ചിട്ടുള്ളതുമായ സ്വത്ത് ഹർജിക്കാരന്റെ പൂർണ്ണ ഉടമസ്ഥതയിലും തർക്കമില്ലാത്ത കൈവശാനുഭവത്തിലും ഉള്ളതാകുന്നു.
+   1.2 ഹർജിക്കാരൻ പ്രസ്തുത വസ്തുവിൽ [കൈവശാവകാശം ലഭിച്ച രീതി - ഉദാഹരണത്തിന്: ആധാരപ്രകാരം/പട്ടയപ്രകാരം/പാരമ്പര്യമായി] നിയമപരമായ അവകാശങ്ങൾ അനുഭവിച്ചു വരികയും, ആയതിന്റെ കരങ്ങൾ കൃത്യമായി ഒടുക്കി വരുന്നതുമാകുന്നു.
+
+2. തർക്കത്തിനുള്ള കാരണവും എതിർകക്ഷിയുടെ നിയമവിരുദ്ധമായ ഇടപെടലുകളും (Balance of Convenience & Injury):
+   2.1 ഹർജി വക വസ്തുവിലോ അതിലെ അതിരുകളിലോ യാതൊരുവിധ അവകാശവുമില്ലാത്ത എതിർകക്ഷി, ഹർജിക്കാരനോടുള്ള മുൻവൈരാഗ്യം കാരണം [തർക്കമുണ്ടായ തീയതി/ആഴ്ച]-ൽ ഹർജി വക വസ്തുവിലേക്ക് നിയമവിരുദ്ധമായി അതിക്രമിച്ചു കയറുവാൻ ശ്രമിക്കുകയുണ്ടായി.
+   2.2 എതിർകക്ഷി ഹർജി വക വസ്തുവിന്റെ [അതിര്/മതിൽ/വേലി തകർക്കാനോ / വഴി തടസ്സപ്പെടുത്താനോ / നിർമ്മാണപ്രവർത്തനങ്ങൾ നടത്താനോ] നിയമവിരുദ്ധമായ രീതിയിൽ ആളുകളെ കൂട്ടി ശ്രമിച്ചുവരുന്നു.
+   2.3 ഹർജിക്കാരൻ ഇത് ചോദ്യം ചെയ്തപ്പോൾ, വരും ദിവസങ്ങളിൽ വീണ്ടും അതിക്രമം നടത്തുമെന്നും ഹർജി വക വസ്തുവിന്റെ നിലവിലെ അവസ്ഥയ്ക്ക് (Status Quo) മാറ്റം വരുത്തുമെന്നും എതിർകക്ഷി ഭീഷണിപ്പെടുത്തുകയുണ്ടായി.
+
+3. അടിയന്തിര സാഹചര്യവും ബോധ്യപ്പെടുത്തലും (Irreparable Injury):
+   3.1 ഹർജി വക വസ്തുവിലേക്ക് അതിക്രമിച്ചു കയറുന്നതിൽ നിന്നും അതിന്റെ അവസ്ഥയ്ക്ക് മാറ്റം വരുത്തുന്നതിൽ നിന്നും എതിർകക്ഷിയെ തടയാത്തപക്ഷം ഹർജിക്കാരന് നികത്താനാകാത്ത വലിയ സാമ്പത്തിക നഷ്ടവും മാനസിക പ്രയാസങ്ങളും ഉണ്ടാകുന്നതാകുന്നു.
+   3.2 ഈ കേസിന്റെ സുഗമമായ നടത്തിപ്പിനായി ഹർജി വക വസ്തുവിന്റെ നിലവിലെ അവസ്ഥ യാതൊരു മാറ്റവുമില്ലാതെ സംരക്ഷിക്കപ്പെടേണ്ടത് അനിവാര്യമാകുന്നു.
+
+അധികാരപരിധിയും കോർട്ട് ഫീസും:
+ഹർജി വക വസ്തു സ്ഥിതി ചെയ്യുന്നത് ഈ ബഹുമാനപ്പെട്ട കോടതിയുടെ പ്രാദേശിക അധികാരപരിധിയിലാകുന്നു. ഈ ഇടക്കാല ഹർജിക്ക് ആവശ്യമായ കോർട്ട് ഫീസ് നിയമപ്രകാരം ഇതിനോടൊപ്പം ഒട്ടിച്ചിട്ടുള്ളതുമാകുന്നു.
+
+
+പ്രാർത്ഥന (Reliefs)
+
+മേൽ വിവരിച്ച സാഹചര്യങ്ങളാൽ ബഹുമാനപ്പെട്ട കോടതി കനിവുണ്ടാകണം എന്ന് അപേക്ഷിച്ചുകൊണ്ട് താഴെ പറയുന്ന ഉത്തരവുകൾക്കായി പ്രാർത്ഥിക്കുന്നു:
+
+A) ഈ പ്രധാന കേസ് (O.S.) തീർപ്പുകൽപ്പിക്കുന്നത് വരെ, ഹർജിക്കാരന്റെ സമാധാനപരമായ കൈവശാനുഭവത്തിലുള്ള താഴെ ഷെഡ്യൂളിൽ വിവരിക്കുന്ന വസ്തുവിലേക്ക് എതിർകക്ഷിയോ എതിർകക്ഷിക്ക് വേണ്ടിയുള്ള ആളുകളോ അതിക്രമിച്ചു കയറുന്നതിനോ, അതിരുകൾ ഭേദഗതി ചെയ്യുന്നതിനോ, വസ്തുവിന്റെ നിലവിലെ അവസ്ഥയ്ക്ക് (Status Quo) മാറ്റം വരുത്തുന്നതിനോ പാടില്ലാത്തതാകുന്നു എന്ന് കാണിച്ച് എതിർകക്ഷിക്കെതിരെ ഒരു താത്കാലിക നിരോധന ഉത്തരവ് (Temporary Injunction) പുറപ്പെടുവിച്ച് കനിവുണ്ടാകണം.
+
+B) ഈ ഹർജിയുടെ ചിലവുകൾ എതിർകക്ഷിയിൽ നിന്നും ഈടാക്കി തരുവാൻ ഉത്തരവുണ്ടാകണം.
+
+C) ഈ കേസിലെ സാഹചര്യങ്ങൾ പരിഗണിച്ചു ബഹുമാനപ്പെട്ട കോടതിക്ക് ഉചിതമെന്ന് തോന്നുന്ന മറ്റ് ഉത്തരവുകൾ പുറപ്പെടുവിക്കാൻ കനിവുണ്ടാകണം.
+
+
+ഹർജി വക വസ്തുവിന്റെ വിവരങ്ങൾ (Schedule of Property)
+ജില്ല: [ജില്ല]
+താലൂക്ക്: [താലൂക്ക്]
+വില്ലേജ്: [വില്ലേജ്]
+മുറി/സർവ്വേ നമ്പർ: [നമ്പർ]
+വിസ്തീർണ്ണം: [വിസ്തീർണ്ണം]
+അതിരുകൾ:
+കിഴക്ക്: [കിഴക്കേ അതിര്]
+പടിഞ്ഞാറ്: [പടിഞ്ഞാറേ അതിര്]
+വടക്ക്: [വടക്കേ അതിര്]
+തെക്ക്: [തെക്കേ അതിര്]
+
+
+2026 [മാസം] മാസം _____ -ാം തീയതി.
+
+
+
+ഹർജിക്കാരന് വേണ്ടി കൗൺസൽ                                       ഹർജിക്കാരൻ
+
+
+Verification (സത്യവാങ്മൂലം)
+
+${petitioner} ആയ ഞാൻ, മേൽ വിവരിച്ച 1 മുതൽ 3 വരെയുള്ള ഖണ്ഡികകളിൽ പറഞ്ഞിരിക്കുന്ന കാര്യങ്ങൾ എന്റെ നേരിട്ടുള്ള അറിവിലും വിശ്വാസത്തിലും പൂർണ്ണമായും സത്യമാണെന്ന് ഇതിനാൽ ബോധിപ്പിക്കുന്നു.
+
+2026 [മാസം] മാസം _____ -ാം തീയതി [സ്ഥലം] വെച്ച് ഒപ്പിട്ടത്.
+
+
+                                                              ഹർജിക്കാരൻ.`;
+      }
+
       let prompt = `CRITICAL: The petitioner's name is EXACTLY: ${petitioner}. The respondent's name is EXACTLY: ${respondent}. These names must appear character-for-character as provided. Do NOT change, translate, modify or replace any part of these names under any circumstances. If petitioner is 'സുരേഷ് നായർ', output must be 'സുരേഷ് നായർ' — never 'സുരേഷ് കുമാർ' or any other variation.
 
 You are Vakeel AI's document drafting engine for Kerala/India legal documents.
