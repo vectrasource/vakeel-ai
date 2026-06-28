@@ -2223,7 +2223,9 @@ function buildDraftPrompt(tool, lang, court) {
         if (/writ/i.test(type)) return 'ബഹുമാനപ്പെട്ട കേരള ഹൈക്കോടതി മുൻപാകെ';
         return `ബഹുമാനപ്പെട്ട ${court} മുൻപാകെ`;
       })();
-      let prompt = `You are Vakeel AI's document drafting engine for Kerala/India legal documents.
+      let prompt = `CRITICAL: The petitioner's name is EXACTLY: ${petitioner}. The respondent's name is EXACTLY: ${respondent}. These names must appear character-for-character as provided. Do NOT change, translate, modify or replace any part of these names under any circumstances. If petitioner is 'സുരേഷ് നായർ', output must be 'സുരേഷ് നായർ' — never 'സുരേഷ് കുമാർ' or any other variation.
+
+You are Vakeel AI's document drafting engine for Kerala/India legal documents.
 ${isMalayalam ? `Generate the entire petition in formal legal Malayalam (ഔദ്യോഗിക നിയമ മലയാളം). All sections including Facts, Grounds, Reliefs must be in Malayalam. Use Kerala court petition format.` : `Write all content in ${lang}.`}
 
 Draft a complete ${type} for ${court}.
