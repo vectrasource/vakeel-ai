@@ -610,6 +610,16 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
             <input type="text" id="pet-subject" placeholder="e.g. Property dispute, Custody, Cheque bounce" />
           </div>
         </div>
+        <div class="form-grid">
+          <div>
+            <label>ഹർജിക്കാരൻ (Petitioner)</label>
+            <input type="text" id="petition-petitioner" placeholder="ഉദാ: രാജേഷ് കുമാർ, തൃശ്ശൂർ" />
+          </div>
+          <div>
+            <label>എതിർകക്ഷി (Respondent)</label>
+            <input type="text" id="petition-respondent" placeholder="ഉദാ: സുരേഷ് നായർ, എറണാകുളം" />
+          </div>
+        </div>
         <div class="form-row">
           <label>Case Facts</label>
           <textarea id="pet-facts" placeholder="e.g. Property dispute in Thrissur, tenant refusing to vacate since 3 years despite court notice. Petitioner is the owner with registered title deed..." style="min-height:80px"></textarea>
@@ -2204,6 +2214,8 @@ function buildDraftPrompt(tool, lang, court) {
       const type = document.getElementById('pet-type').value;
       const subject = document.getElementById('pet-subject').value || 'Legal matter';
       const facts = document.getElementById('pet-facts').value || '';
+      const petitioner = document.getElementById('petition-petitioner').value || '[Petitioner Name]';
+      const respondent = document.getElementById('petition-respondent').value || '[Respondent Name]';
       const isMalayalam = lang === 'Malayalam' || lang === 'bilingual Malayalam and English';
       const mlCourtHeader = (() => {
         if (/rent|eviction|civil/i.test(type)) return 'ബഹുമാനപ്പെട്ട റെന്റ് കൺട്രോൾ കോടതി മുൻപാകെ';
@@ -2214,6 +2226,8 @@ function buildDraftPrompt(tool, lang, court) {
 ${isMalayalam ? `Generate the entire petition in formal legal Malayalam (ഔദ്യോഗിക നിയമ മലയാളം). All sections including Facts, Grounds, Reliefs must be in Malayalam. Use Kerala court petition format.` : `Write all content in ${lang}.`}
 
 Draft a complete ${type} for ${court}.
+Petitioner: ${petitioner}
+Respondent: ${respondent}
 Subject: ${subject}
 Facts: ${facts}
 
@@ -2227,15 +2241,15 @@ ${isMalayalam ? mlCourtHeader : `IN THE ${court.toUpperCase()}`}
 PETITION NO.: [To be filled]
 
 ${isMalayalam ? `ഹർജിക്കാരൻ:
-[Petitioner Name]
+${petitioner}
 
 എതിർകക്ഷി:
-[Respondent Name]
+${respondent}
 
 കേരള കെട്ടിട നികുതിയും വാടക നിയന്ത്രണവും നിയമപ്രകാരം ബോധിപ്പിക്കുന്ന ഹർജി` : `IN THE MATTER OF:
-[Petitioner Name] ... Petitioner
+${petitioner} ... Petitioner
 vs.
-[Respondent Name] ... Respondent`}
+${respondent} ... Respondent`}
 
 ${isMalayalam ? 'വിനയപൂർവ്വം സമർപ്പിക്കുന്നത്:' : 'Most Respectfully Showeth:'}
 
@@ -3662,7 +3676,7 @@ async function transliterateWord(word) {
 
 function setupTranslitFields() {
   const fieldIds = [
-    'pet-subject', 'pet-facts',
+    'pet-subject', 'pet-facts', 'petition-petitioner', 'petition-respondent',
     'not-sender', 'not-recipient', 'not-facts',
     'exp-clause',
     'cl-client', 'cl-advocate', 'cl-details',
