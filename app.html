@@ -2223,7 +2223,7 @@ function buildDraftPrompt(tool, lang, court) {
       const mlCourtHeader = (() => {
         if (/rent|eviction|civil/i.test(type)) return 'ബഹുമാനപ്പെട്ട റെന്റ് കൺട്രോൾ കോടതി മുൻപാകെ';
         if (/writ/i.test(type)) return 'ബഹുമാനപ്പെട്ട കേരള ഹൈക്കോടതി മുൻപാകെ';
-        if (/injunction/i.test(type)) { const c = court.replace(/munsiff court.*$/i,'').replace(/Kerala$/i,'').trim().replace(/\s*\/\s*$/,'').trim() || court; return `ബഹുമാനപ്പെട്ട ${c} മുൻസിഫ് കോടതി മുൻപാകെ`; }
+        if (/injunction/i.test(type)) return /munsiff/i.test(court) ? 'ബഹുമാനപ്പെട്ട മുൻസിഫ് കോടതി മുൻപാകെ' : `ബഹുമാനപ്പെട്ട ${court} മുൻസിഫ് കോടതി മുൻപാകെ`;
         return `ബഹുമാനപ്പെട്ട ${court} മുൻപാകെ`;
       })();
       if (isInjunction) {
