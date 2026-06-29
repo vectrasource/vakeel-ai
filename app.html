@@ -2941,10 +2941,13 @@ ${clause}`;
 
 // ===== SHARED API =====
 async function callAPI(fullPrompt, model, maxTokens) {
+  const { data: { session } } = await sb.auth.getSession();
+  const userId = session?.user?.id || null;
+  const userEmail = session?.user?.email || null;
   const res = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fullPrompt, model, maxTokens })
+    body: JSON.stringify({ fullPrompt, model, maxTokens, userId, userEmail })
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error.message);
