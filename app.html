@@ -2322,13 +2322,15 @@ ${petitioner} ആയ ഞാൻ, മേൽ വിവരിച്ച 1 മുത�
       }
 
       if (isBail) {
-        return `CRITICAL: The petitioner's name is EXACTLY: ${petitioner}. These names must appear character-for-character as provided. Do NOT change, translate, modify or replace any part of these names under any circumstances.
+        return `CRITICAL: Output must follow EXACTLY this skeleton structure. Do not deviate. Do not create your own format. Do not reorder sections. Do not add or remove sections. The petitioner's name is EXACTLY: ${petitioner} — copy character-for-character, never modify.
 
-Generate a Bail Application in Malayalam following this exact skeleton. Extract all available details from case facts — crime number, sections, arrest date, custody days, police station. Use [...] placeholders for missing information. Never invent details. Include both CrPC S.437/439 and BNSS S.480/483 references. The respondent is always Kerala State represented through the Public Prosecutor.
+Your task: fill in the [...] placeholders below using details extracted from the Case Facts. Use [...] for any information not found in the facts. Never invent details. Never change the structure, headings, numbering, or Malayalam text outside the placeholders.
 
-Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Use numbered points like '1.' and '1.1' for structure.
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only.
 
 Case Facts provided: ${facts}
+
+SKELETON TO OUTPUT — FILL PLACEHOLDERS ONLY:
 
 ${mlCourtHeader}
 
