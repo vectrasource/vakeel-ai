@@ -622,6 +622,10 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
           </div>
         </div>
         <div class="form-row">
+          <label>കോടതി സ്ഥിതി ചെയ്യുന്ന സ്ഥലം</label>
+          <input type="text" id="petition-place" placeholder="ഉദാ: തൃശ്ശൂർ" />
+        </div>
+        <div class="form-row">
           <label>Case Facts</label>
           <textarea id="pet-facts" placeholder="e.g. Property dispute in Thrissur, tenant refusing to vacate since 3 years despite court notice. Petitioner is the owner with registered title deed..." style="min-height:80px"></textarea>
         </div>
@@ -2217,13 +2221,14 @@ function buildDraftPrompt(tool, lang, court) {
       const facts = document.getElementById('pet-facts').value || '';
       const petitioner = document.getElementById('petition-petitioner').value || '[Petitioner Name]';
       const respondent = document.getElementById('petition-respondent').value || '[Respondent Name]';
+      const place = document.getElementById('petition-place').value || '[സ്ഥലം]';
       const isMalayalam = lang === 'Malayalam' || lang === 'bilingual Malayalam and English';
       const isCivil = isMalayalam && /civil/i.test(type);
       const isInjunction = isMalayalam && /injunction/i.test(type);
       const mlCourtHeader = (() => {
-        if (/rent|eviction|civil/i.test(type)) return 'ബഹുമാനപ്പെട്ട റെന്റ് കൺട്രോൾ കോടതി മുൻപാകെ';
+        if (/rent|eviction|civil/i.test(type)) return `ബഹുമാനപ്പെട്ട ${place} റെന്റ് കൺട്രോൾ കോടതി മുൻപാകെ`;
         if (/writ/i.test(type)) return 'ബഹുമാനപ്പെട്ട കേരള ഹൈക്കോടതി മുൻപാകെ';
-        if (/injunction/i.test(type)) return /munsiff/i.test(court) ? 'ബഹുമാനപ്പെട്ട മുൻസിഫ് കോടതി മുൻപാകെ' : `ബഹുമാനപ്പെട്ട ${court} മുൻസിഫ് കോടതി മുൻപാകെ`;
+        if (/injunction/i.test(type)) return `ബഹുമാനപ്പെട്ട ${place} മുൻസിഫ് കോടതി മുൻപാകെ`;
         return `ബഹുമാനപ്പെട്ട ${court} മുൻപാകെ`;
       })();
       if (isInjunction) {
@@ -3807,7 +3812,7 @@ async function transliterateWord(word) {
 
 function setupTranslitFields() {
   const fieldIds = [
-    'pet-subject', 'pet-facts', 'petition-petitioner', 'petition-respondent',
+    'pet-subject', 'pet-facts', 'petition-petitioner', 'petition-respondent', 'petition-place',
     'not-sender', 'not-recipient', 'not-facts',
     'exp-clause',
     'cl-client', 'cl-advocate', 'cl-details',
