@@ -596,6 +596,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
             <select id="pet-type" onchange="updateFactsPlaceholder()">
               <option>Civil Petition</option>
               <option>Injunction Petition</option>
+              <option>Maintenance Petition</option>
               <option>Criminal Petition</option>
               <option>Writ Petition (HC)</option>
               <option>Revision Petition</option>
@@ -2225,10 +2226,12 @@ function buildDraftPrompt(tool, lang, court) {
       const isMalayalam = lang === 'Malayalam' || lang === 'bilingual Malayalam and English';
       const isCivil = isMalayalam && /civil/i.test(type);
       const isInjunction = isMalayalam && /injunction/i.test(type);
+      const isMaintenance = isMalayalam && /maintenance/i.test(type);
       const mlCourtHeader = (() => {
         if (/rent|eviction|civil/i.test(type)) return `ബഹുമാനപ്പെട്ട ${place} റെന്റ് കൺട്രോൾ കോടതി മുൻപാകെ`;
         if (/writ/i.test(type)) return 'ബഹുമാനപ്പെട്ട കേരള ഹൈക്കോടതി മുൻപാകെ';
         if (/injunction/i.test(type)) return `ബഹുമാനപ്പെട്ട ${place} മുൻസിഫ് കോടതി മുൻപാകെ`;
+        if (/maintenance/i.test(type)) return `ബഹുമാനപ്പെട്ട ${place} ഫാമിലി കോടതി മുൻപാകെ`;
         return `ബഹുമാനപ്പെട്ട ${court} മുൻപാകെ`;
       })();
       if (isInjunction) {
@@ -2314,6 +2317,80 @@ ${petitioner} ആയ ഞാൻ, മേൽ വിവരിച്ച 1 മുത�
 
 
                                                               ഹർജിക്കാരൻ.`;
+      }
+
+      if (isMaintenance) {
+        return `CRITICAL: The petitioner's name is EXACTLY: ${petitioner}. The respondent's name is EXACTLY: ${respondent}. These names must appear character-for-character as provided. Do NOT change, translate, modify or replace any part of these names under any circumstances.
+
+Generate a Maintenance Petition in Malayalam following this exact skeleton. Extract all available details from case facts. Use [...] placeholders for missing information. Never invent details. Follow Kerala Family Court format exactly. Include both CrPC S.125 and BNSS S.144 references.
+
+Do NOT use markdown formatting symbols anywhere in the output, including #, ##, ###, **, ---, *, _, or triple backtick code fences. Write plain text only. Use numbered points like '1.' and '1.1' for structure.
+
+Case Facts provided: ${facts}
+
+${mlCourtHeader}
+
+M.C. NO. ____________ / 2026
+
+ഹർജിക്കാർ:
+1. ${petitioner}, വയസ്സ് [...], പിതാവിന്റെ പേര് [...], [തൊഴിൽ], [മുഴുവൻ വിലാസം].
+2. [മൈനർ കുട്ടിയുടെ പേര്], വയസ്സ് [...], (മൈനർ ആയതിനാൽ ഒന്നാം ഹർജിക്കാരി വലിയമ്മ/സംരക്ഷക എന്ന നിലയിൽ ഹർജി ബോധിപ്പിക്കുന്നത്).
+
+Vs.
+
+എതിർകക്ഷി:
+${respondent}, വയസ്സ് [...], പിതാവിന്റെ പേര് [...], [തൊഴിൽ], [മുഴുവൻ വിലാസം].
+
+
+1973-ലെ ക്രിമിനൽ നടപടിക്രമ നിയമം (CrPC) 125-ാം വകുപ്പ് (ഒപ്പം 2023-ലെ ഭാരതീയ നാഗരിക് സുരക്ഷാ സൻഹിത (BNSS) 144-ാം വകുപ്പ്) പ്രകാരം ബോധിപ്പിക്കുന്ന ഹർജി
+
+
+ഹർജിക്കാർ വിനയപൂർവ്വം സമർപ്പിക്കുന്ന വസ്തുതകൾ താഴെ പറയുന്നവയാകുന്നു:
+
+1. വിവാഹവും ബന്ധവും (Marriage & Relationship Facts):
+   1.1 ഒന്നാം ഹർജിക്കാരിയും എതിർകക്ഷിയും തമ്മിലുള്ള വിവാഹം [വിവാഹം നടന്ന തീയതി]-ൽ [വിവാഹം നടന്ന സ്ഥലം/ഓഡിറ്റോറിയം] വെച്ച് മതപരമായ ചടങ്ങുകളോടെ നടന്നിട്ടുള്ളതാകുന്നു.
+   1.2 ഈ ബന്ധത്തിൽ അവർക്ക് [കുട്ടികളുടെ എണ്ണം] കുട്ടികൾ ഉള്ളതും, ആയത് ഈ ഹർജിയിലെ രണ്ടാം ഹർജിക്കാരൻ/കാരി ആകുന്നു. വിവാഹത്തിന് ശേഷം അവർ [താമസിച്ച സ്ഥലം] കുറച്ചുകാലം ഒന്നിച്ച് താമസിച്ചിട്ടുള്ളതുമാകുന്നു.
+
+2. ക്രൂരതയും ഉപേക്ഷിക്കലും (Cruelty & Desertion - Ground for Maintenance):
+   2.1 വിവാഹജീവിതത്തിനിടയിൽ എതിർകക്ഷി ഒന്നാം ഹർജിക്കാരിയോട് മാനസികമായും ശാരീരികമായും ക്രൂരതകൾ കാണിക്കുകയും, സ്ത്രീധനത്തിന്റെ പേരിൽ പീഡിപ്പിക്കുകയും ചെയ്യുകയുണ്ടായി.
+   2.2 [ഉപേക്ഷിച്ച തീയതി/മാസം]-ൽ എതിർകക്ഷി ഹർജിക്കാരിമാരെ ക്രൂരമായി ഉപദ്രവിച്ച് സ്വന്തം വീട്ടിൽ നിന്നും ഇറക്കിവിടുകയോ അല്ലെങ്കിൽ യാതൊരു ന്യായമായ കാരണവുമില്ലാതെ ഉപേക്ഷിച്ചു പോവുകയോ ചെയ്തിട്ടുള്ളതാകുന്നു.
+   2.3 അന്നേദിവസം മുതൽ ഹർജിക്കാർ ഒന്നാം ഹർജിക്കാരിയുടെ മാതാപിതാക്കളുടെ സംരക്ഷണയിലാണ് കഴിഞ്ഞുവരുന്നത്.
+
+3. ഹർജിക്കാരുടെ വരുമാനമില്ലായ്മയും എതിർകക്ഷിയുടെ സാമ്പത്തിക ശേഷിയും (Inability to Maintain & Means of Respondent):
+   3.1 ഒന്നാം ഹർജിക്കാരിക്ക് സ്വന്തമായി യാതൊരുവിധ വരുമാനമാർഗ്ഗങ്ങളോ സ്വത്തോ ഇല്ലാത്തതാകുന്നു. കുട്ടിയുടെ വിദ്യാഭ്യാസ ചെലവുകൾക്കും നിത്യനിദാന ചെലവുകൾക്കും പണം കണ്ടെത്താൻ ഹർജിക്കാരി വലിയ ബുദ്ധിമുട്ട് അനുഭവിക്കുന്നു.
+   3.2 എന്നാൽ എതിർകക്ഷി [എതിർകക്ഷിയുടെ ജോലി/ബിസിനസ്സ്] വഴി പ്രതിമാസം ₹[വരുമാനം] രൂപയോളം വരുമാനം സമ്പാദിക്കുന്ന വ്യക്തിയാകുന്നു. കൂടാതെ എതിർകക്ഷിയുടെ പേരിൽ [വസ്തുവകകളുടെ വിവരം] സ്വത്തുക്കൾ ഉള്ളതുമാകുന്നു.
+   3.3 ഹർജിക്കാരിമാരെ സംരക്ഷിക്കാൻ ആവശ്യമായ സാമ്പത്തിക ശേഷിയുണ്ടായിട്ടും എതിർകക്ഷി ബോധപൂർവ്വം അവരെ സംരക്ഷിക്കാതെ ഒഴിഞ്ഞുമാറുകയും ചെലവിന് നൽകാതിരിക്കുകയും ചെയ്യുന്നു.
+
+അധികാരപരിധി:
+ഹർജിക്കാർ നിലവിൽ താമസിക്കുന്നത് ഈ ബഹുമാനപ്പെട്ട കോടതിയുടെ പ്രാദേശിക അധികാരപരിധിയിലാകുന്നു. ഈ ഹർജിക്ക് ആവശ്യമായ കോർട്ട് ഫീസ് ഇതിനോടൊപ്പം ഒട്ടിച്ചിട്ടുള്ളതുമാകുന്നു.
+
+
+പ്രാർത്ഥന (Reliefs)
+
+മേൽ വിവരിച്ച സാഹചര്യങ്ങളാൽ ബഹുമാനപ്പെട്ട കോടതി കനിവുണ്ടാകണം എന്ന് അപേക്ഷിച്ചുകൊണ്ട് താഴെ പറയുന്ന ഉത്തരവുകൾക്കായി പ്രാർത്ഥിക്കുന്നു:
+
+A) ഹർജിക്കാർക്ക് ജീവനാംശമായി ഒന്നാം ഹർജിക്കാരിക്ക് പ്രതിമാസം ₹[തുക]/- രൂപയും, രണ്ടാം ഹർജിക്കാരന്/കാരിക്ക് പ്രതിമാസം ₹[തുക]/- രൂപയും വീതം ഹർജി തീയതി മുതൽ എതിർകക്ഷിയിൽ നിന്നും ഈടാക്കി നൽകാൻ ഉത്തരവുണ്ടാകണം.
+
+B) ഈ ഹർജിയുടെ ചിലവുകൾ എതിർകക്ഷിയിൽ നിന്നും ഈടാക്കി തരുവാൻ ഉത്തരവുണ്ടാകണം.
+
+C) ഈ കേസിലെ സാഹചര്യങ്ങൾ പരിഗണിച്ചു ബഹുമാനപ്പെട്ട കോടതിക്ക് ഉചിതമെന്ന് തോന്നുന്ന മറ്റ് ഉത്തരവുകൾ പുറപ്പെടുവിക്കാൻ കനിവുണ്ടാകണം.
+
+
+2026 [മാസം] മാസം _____ -ാം തീയതി.
+
+
+
+ഹർജിക്കാർക്ക് വേണ്ടി കൗൺസൽ                                       1-ാം ഹർജിക്കാരി
+
+
+Verification (സത്യവാങ്മൂലം)
+
+1-ാം ഹർജിക്കാരിയായ ${petitioner} ആയ ഞാൻ, മേൽ വിവരിച്ച 1 മുതൽ 3 വരെയുള്ള ഖണ്ഡികകളിൽ പറഞ്ഞിരിക്കുന്ന കാര്യങ്ങൾ എന്റെ നേരിട്ടുള്ള അറിവിലും വിശ്വാസത്തിലും പൂർണ്ണമായും സത്യമാണെന്ന് ഇതിനാൽ ബോധിപ്പിക്കുന്നു.
+
+2026 [മാസം] മാസം _____ -ാം തീയതി [സ്ഥലം] വെച്ച് ഒപ്പിട്ടത്.
+
+
+                                                              1-ാം ഹർജിക്കാരി`;
       }
 
       let prompt = `CRITICAL: The petitioner's name is EXACTLY: ${petitioner}. The respondent's name is EXACTLY: ${respondent}. These names must appear character-for-character as provided. Do NOT change, translate, modify or replace any part of these names under any circumstances. If petitioner is 'സുരേഷ് നായർ', output must be 'സുരേഷ് നായർ' — never 'സുരേഷ് കുമാർ' or any other variation.
