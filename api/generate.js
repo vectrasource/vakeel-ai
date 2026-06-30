@@ -1,13 +1,22 @@
-import { createClient } from '@supabase/supabase-js';
-
 const DEVELOPER_EMAIL = 'kpharis.hk@gmail.com';
 const GEN_LIMIT = 10;
 
-function getSupabaseAdmin() {
+async function sbFetch(path, options = {}) {
   const url = process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) return null;
-  return createClient(url, serviceKey, { auth: { persistSession: false } });
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  const res = await fetch(`${url}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      'apikey': key,
+      'Authorization': `Bearer ${key}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || 'return=representation',
+      ...options.headers,
+    },
+  });
+  if (!res.ok) return null;
+  return res.json().catch(() => null);
 }
 
 export default async function handler(req, res) {
@@ -18,15 +27,9 @@ export default async function handler(req, res) {
     const { fullPrompt, model, maxTokens, userId, userEmail } = req.body;
 
     // ===== SERVER-SIDE GENERATION LIMIT =====
-    const supabase = getSupabaseAdmin();
-    if (supabase && userId && userEmail !== DEVELOPER_EMAIL) {
-      const { data: row, error } = await supabase
-        .from('generation_count')
-        .select('count')
-        .eq('user_id', userId)
-        .single();
-
-      if (!error && row && row.count >= GEN_LIMIT) {
+    if (userId && userEmail !== DEVELOPER_EMAIL && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const rows = await sbFetch(`generation_count?user_id=eq.${encodeURIComponent(userId)}&select=count`);
+      if (Array.isArray(rows) && rows.length > 0 && rows[0].count >= GEN_LIMIT) {
         return res.status(403).json({ error: 'Generation limit reached' });
       }
     }
@@ -65,22 +68,20 @@ export default async function handler(req, res) {
     }
 
     // ===== INCREMENT COUNT SERVER-SIDE AFTER SUCCESS =====
-    if (supabase && userId && userEmail !== DEVELOPER_EMAIL) {
-      const { data: row } = await supabase
-        .from('generation_count')
-        .select('count')
-        .eq('user_id', userId)
-        .single();
-
-      if (row) {
-        await supabase
-          .from('generation_count')
-          .update({ count: row.count + 1 })
-          .eq('user_id', userId);
+    if (userId && userEmail !== DEVELOPER_EMAIL && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const rows = await sbFetch(`generation_count?user_id=eq.${encodeURIComponent(userId)}&select=count`);
+      if (Array.isArray(rows) && rows.length > 0) {
+        await sbFetch(`generation_count?user_id=eq.${encodeURIComponent(userId)}`, {
+          method: 'PATCH',
+          prefer: 'return=minimal',
+          body: JSON.stringify({ count: rows[0].count + 1 }),
+        });
       } else {
-        await supabase
-          .from('generation_count')
-          .insert({ user_id: userId, count: 1 });
+        await sbFetch('generation_count', {
+          method: 'POST',
+          prefer: 'return=minimal',
+          body: JSON.stringify({ user_id: userId, count: 1 }),
+        });
       }
     }
 
