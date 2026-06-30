@@ -593,7 +593,7 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
         <div class="form-grid">
           <div>
             <label>Petition Type</label>
-            <select id="pet-type" onchange="updateFactsPlaceholder()">
+            <select id="pet-type" onchange="updateFactsPlaceholder(); updatePetitionGuide(this.value)">
               <option>Civil Petition</option>
               <option>Injunction Petition</option>
               <option>Maintenance Petition</option>
@@ -613,6 +613,11 @@ footer{text-align:center;padding:2rem;font-size:12px;color:var(--text-faint);
             <input type="text" id="pet-subject" placeholder="e.g. Property dispute, Custody, Cheque bounce" />
           </div>
         </div>
+        <!-- GUIDED SIDEBAR -->
+        <div class="agr-guide-card" id="pet-guide">
+          <div class="guide-empty">ഒരു ഹർജി തരം തിരഞ്ഞെടുക്കുക</div>
+        </div>
+
         <div class="form-grid">
           <div>
             <label>ഹർജിക്കാരൻ (Petitioner)</label>
@@ -2975,6 +2980,7 @@ function selectTool(btn) {
   if (currentTool === 'agreement') updateAgrGuide(document.getElementById('agr-type').value);
   if (currentTool === 'notice') updateNoticeGuide(document.getElementById('not-type').value);
   if (currentTool === 'client') updateClientGuide(document.getElementById('cl-type').value);
+  if (currentTool === 'petition') updatePetitionGuide(document.getElementById('pet-type').value);
   updateHowToUse('draft_' + currentTool);
   resetOutput();
 }
@@ -3045,6 +3051,65 @@ const NOTICE_GUIDES = {
     ['SITUATION', '2024 മാർച്ച് 10-ലെ നോട്ടീസ് ലഭിച്ചു. ആരോപണങ്ങൾ തികച്ചും അടിസ്ഥാനരഹിതം. യഥാർത്ഥത്തിൽ തുക തിരിച്ചു നൽകിയിട്ടുണ്ട്.'],
   ],
 };
+
+const PETITION_GUIDES = {
+  'Civil Petition': [
+    ['PLACE', 'തൃശ്ശൂർ'],
+    ['PETITIONER', 'രാജേഷ് കുമാർ'],
+    ['RESPONDENT', 'സുരേഷ് നായർ'],
+    ['SUBJECT', 'വാടക കുടിശ്ശിക ഒഴിപ്പിക്കൽ'],
+    ['CASE FACTS', 'രാജേഷ് കുമാർ തൻ്റെ വീട് 2022 ജനുവരി മുതൽ സുരേഷ് നായർക്ക് മാസം ₹8000 വാടകയ്ക്ക് നൽകി. 3 മാസം കുടിശ്ശിക ₹24,000 ആകുന്നു. നോട്ടീസ് അയച്ചു, 15 ദിവസം കഴിഞ്ഞു. ഒഴിപ്പിക്കൽ ആവശ്യം.'],
+  ],
+  'Injunction Petition': [
+    ['PLACE', 'എറണാകുളം'],
+    ['PETITIONER', 'രാജേഷ് കുമാർ'],
+    ['RESPONDENT', 'സുരേഷ് നായർ'],
+    ['SUBJECT', 'ഭൂമി അതിക്രമം — താത്കാലിക നിരോധന ഉത്തരവ്'],
+    ['CASE FACTS', 'രാജേഷ് കുമാറിന്റെ ഉടമസ്ഥതയിലുള്ള ഭൂമിയിലേക്ക് സുരേഷ് നായർ അതിക്രമിച്ചു കയറി. അതിർത്തി മതിൽ തകർക്കാൻ ശ്രമിച്ചു. വീണ്ടും വരുമെന്ന് ഭീഷണിപ്പെടുത്തി.'],
+  ],
+  'Maintenance Petition': [
+    ['PLACE', 'തൃശ്ശൂർ'],
+    ['PETITIONER (ഭാര്യ)', 'പ്രിയ രാജേഷ്'],
+    ['RESPONDENT (ഭർത്താവ്)', 'രാജേഷ് കുമാർ'],
+    ['SUBJECT', 'ജീവനാംശ ഹർജി — S.125 CrPC'],
+    ['CASE FACTS', '2018-ൽ വിവാഹിതരായി. 1 മകൾ, 5 വയസ്സ്. 2024-ൽ ഭർത്താവ് ഇറക്കിവിട്ടു. ഭർത്താവിന് മാസ വരുമാനം ₹50,000. ഭാര്യക്ക് ₹15,000, മകൾക്ക് ₹8,000 ജീവനാംശം ആവശ്യം.'],
+  ],
+  'Bail Application': [
+    ['PLACE', 'തൃശ്ശൂർ'],
+    ['PETITIONER', 'രാജേഷ് കുമാർ'],
+    ['RESPONDENT', 'തൃശ്ശൂർ ഈസ്റ്റ് പോലീസ് സ്റ്റേഷൻ'],
+    ['SUBJECT', 'ജാമ്യാപേക്ഷ — IPC 379'],
+    ['CASE FACTS', 'ക്രൈം നമ്പർ 245/2026 IPC 379 പ്രകാരം അറസ്റ്റ് ചെയ്തു. 7 ദിവസമായി കസ്റ്റഡിയിൽ. മുൻകാല ക്രിമിനൽ പശ്ചാത്തലം ഇല്ല.'],
+  ],
+  'Anticipatory Bail': [
+    ['PLACE', 'കോഴിക്കോട്'],
+    ['PETITIONER', 'രാജേഷ് കുമാർ'],
+    ['RESPONDENT', 'കോഴിക്കോട് ഈസ്റ്റ് പോലീസ് സ്റ്റേഷൻ'],
+    ['SUBJECT', 'മുൻകൂർ ജാമ്യാപേക്ഷ — IPC 420'],
+    ['CASE FACTS', 'IPC 420 പ്രകാരം ക്രൈം നമ്പർ 312/2026 രജിസ്റ്റർ ചെയ്തു. അറസ്റ്റ് ഭയം ഉണ്ട്. മുൻകാല ക്രിമിനൽ പശ്ചാത്തലം ഇല്ല.'],
+  ],
+  'Cheque Bounce Complaint': [
+    ['PLACE', 'തൃശ്ശൂർ'],
+    ['PETITIONER', 'രാജേഷ് കുമാർ'],
+    ['RESPONDENT', 'സുരേഷ് നായർ'],
+    ['SUBJECT', 'ചെക്ക് മടങ്ങൽ പരാതി — S.138 NI Act'],
+    ['CASE FACTS', '₹75,000 ചെക്ക് നൽകി, Funds Insufficient കാരണം മടങ്ങി. വക്കീൽ നോട്ടീസ് അയച്ചു, 15 ദിവസം കഴിഞ്ഞിട്ടും തുക നൽകിയില്ല.'],
+  ],
+};
+
+function updatePetitionGuide(type) {
+  const el = document.getElementById('pet-guide');
+  if (!el) return;
+  const rows = PETITION_GUIDES[type];
+  if (!rows) {
+    el.innerHTML = '<div class="guide-empty">ഒരു ഹർജി തരം തിരഞ്ഞെടുക്കുക</div>';
+    return;
+  }
+  el.innerHTML = `<div class="guide-title">📋 ഇങ്ങനെ നൽകുക</div>` +
+    rows.map(([label, val]) =>
+      `<div class="guide-line"><span class="guide-label">${label}:</span> ${val}</div>`
+    ).join('');
+}
 
 function updateNoticeGuide(type) {
   const el = document.getElementById('notice-guide');
